@@ -9,7 +9,7 @@ import SwiftUI
 import CoreBluetooth
 
 struct ContentView: View {
-    @EnvironmentObject var scooter: Scooter
+    @EnvironmentObject var scooterManager: ScooterManager
     
     var body: some View {
         VStack {
@@ -17,7 +17,12 @@ struct ContentView: View {
                 .imageScale(.large)
                 .foregroundStyle(.tint)
             Text("Hello, world!")
-            Text(scooter.esc ?? "N/A")
+            Text(scooterManager.scooter.esc ?? "N/A")
+            ForEach(Array(scooterManager.discoveredScooters.values)) { scooter in
+                Button("\(scooter.name): \(scooter.rssi)") {
+                    scooterManager.connectToScooter(scooter: scooter)
+                }
+            }
         }
         .padding()
     }
@@ -25,5 +30,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .environmentObject(Scooter(ScooterManager()))
+        .environmentObject(ScooterManager())
 }

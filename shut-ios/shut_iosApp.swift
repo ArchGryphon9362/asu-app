@@ -13,16 +13,13 @@ struct shut_iosApp: App {
     
     init() {
         self.scooterManager = ScooterManager()
-        
-        let scooters = scooterManager.discoverScooters()
-        // TODO: put this in the correct place
-        scooters[UUID()]?.connect()
     }
     
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(scooterManager.scooter)
+                .environmentObject(scooterManager)
+                .navigationTitle("Archs Scooter Utility")
         }
     }
 }
