@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FC5F337C2AC20BD6006B4E0B /* ScooterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */; };
+		FC5F337E2AC20BE1006B4E0B /* ScooterBluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */; };
+		FC5F33802AC213DE006B4E0B /* Scooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337F2AC213DE006B4E0B /* Scooter.swift */; };
+		FC5F33822AC26F7B006B4E0B /* SHFW.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F33812AC26F7B006B4E0B /* SHFW.swift */; };
 		FCA1AAE42AC1A4D1004578F4 /* shut_iosApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA1AAE32AC1A4D1004578F4 /* shut_iosApp.swift */; };
 		FCA1AAE62AC1A4D1004578F4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA1AAE52AC1A4D1004578F4 /* ContentView.swift */; };
 		FCA1AAE82AC1A4D2004578F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCA1AAE72AC1A4D2004578F4 /* Assets.xcassets */; };
@@ -14,6 +18,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterManager.swift; sourceTree = "<group>"; };
+		FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterBluetooth.swift; sourceTree = "<group>"; };
+		FC5F337F2AC213DE006B4E0B /* Scooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scooter.swift; sourceTree = "<group>"; };
+		FC5F33812AC26F7B006B4E0B /* SHFW.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHFW.swift; sourceTree = "<group>"; };
 		FCA1AAE02AC1A4D1004578F4 /* shut-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "shut-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCA1AAE32AC1A4D1004578F4 /* shut_iosApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = shut_iosApp.swift; sourceTree = "<group>"; };
 		FCA1AAE52AC1A4D1004578F4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -53,10 +61,14 @@
 			isa = PBXGroup;
 			children = (
 				FCA1AAE32AC1A4D1004578F4 /* shut_iosApp.swift */,
+				FC5F337F2AC213DE006B4E0B /* Scooter.swift */,
+				FC5F33812AC26F7B006B4E0B /* SHFW.swift */,
 				FCA1AAE52AC1A4D1004578F4 /* ContentView.swift */,
 				FCA1AAE72AC1A4D2004578F4 /* Assets.xcassets */,
 				FCA1AAE92AC1A4D2004578F4 /* shut_ios.entitlements */,
 				FCA1AAEA2AC1A4D2004578F4 /* Preview Content */,
+				FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */,
+				FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */,
 			);
 			path = "shut-ios";
 			sourceTree = "<group>";
@@ -139,7 +151,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FC5F33802AC213DE006B4E0B /* Scooter.swift in Sources */,
+				FC5F33822AC26F7B006B4E0B /* SHFW.swift in Sources */,
 				FCA1AAE62AC1A4D1004578F4 /* ContentView.swift in Sources */,
+				FC5F337C2AC20BD6006B4E0B /* ScooterManager.swift in Sources */,
+				FC5F337E2AC20BE1006B4E0B /* ScooterBluetooth.swift in Sources */,
 				FCA1AAE42AC1A4D1004578F4 /* shut_iosApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
