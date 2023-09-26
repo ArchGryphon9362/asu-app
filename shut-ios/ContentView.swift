@@ -25,4 +25,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .environmentObject(Scooter(ScooterManager()))
 }
