@@ -26,7 +26,7 @@ class ScooterManager : ObservableObject {
         scooterBluetooth.connect(scooter.peripheral)
     }
     
-    func disconncetFromScooter(scooter: DiscoveredScooter) {
+    func disconnectFromScooter(scooter: DiscoveredScooter) {
         scooterBluetooth.disconnect(scooter.peripheral)
     }
 }
