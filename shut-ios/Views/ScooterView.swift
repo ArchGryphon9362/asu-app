@@ -57,7 +57,7 @@ struct ScooterView: View {
             self.showConnectingPopup = state != .connected
         }
         .alert(isPresented: self.$showConnectingPopup) {
-            var message = Text(connectingMessage)
+            let message = Text(connectingMessage)
             return Alert(
                 title: Text("Connecting..."),
                 message: message,

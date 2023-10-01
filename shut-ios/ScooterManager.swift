@@ -23,7 +23,12 @@ class ScooterManager : ObservableObject {
     }
     
     func connectToScooter(scooter: DiscoveredScooter) {
-        scooterBluetooth.connect(scooter.peripheral)
+        var name = scooter.name
+        if name.count < 12 {
+            name = scooter.name.padding(toLength: 12, withPad: " ", startingAt: 0)
+        }
+        
+        scooterBluetooth.connect(scooter.peripheral, name: name)
     }
     
     func disconnectFromScooter(scooter: DiscoveredScooter) {

@@ -60,6 +60,10 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     let bluetoothManager: CBCentralManager
     @Published var connectionState: ConnectionState
     
+    private var writeChar: CBCharacteristic?
+    private var peripheral: CBPeripheral?
+    private var ninebotCrypto: NinebotCrypto
+    
     private func setConnectionState(_ connectionState: ConnectionState) {
         self.connectionState = connectionState
         self.scooterManager.scooter.connectionState = connectionState
@@ -69,22 +73,37 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.scooterManager = scooterManager
         self.bluetoothManager = CBCentralManager()
         self.connectionState = .disconnected
+        self.ninebotCrypto = .init()
         
         super.init()
         
         self.bluetoothManager.delegate = self
     }
     
-    func connect(_ peripheral: CBPeripheral) {
+    func connect(_ peripheral: CBPeripheral, name: String) {
         guard bluetoothManager.state == .poweredOn else { return }
+        self.ninebotCrypto.SetName(name)
         setConnectionState(.connecting)
         bluetoothManager.connect(peripheral)
     }
     
     func disconnect(_ peripheral: CBPeripheral) {
+        self.writeChar = nil
+        self.peripheral = nil
+        self.ninebotCrypto.Reset()
+        setConnectionState(.disconnected)
         guard bluetoothManager.state == .poweredOn else { return }
         bluetoothManager.cancelPeripheralConnection(peripheral)
-        setConnectionState(.disconnected)
+    }
+    
+    func write(_ data: Data) {
+        guard let writeChar = self.writeChar, let peripheral = self.peripheral else {
+            return
+        }
+        
+        let encryptedData = self.ninebotCrypto.Encrypt(data.bytes)
+        print("sending \(encryptedData)")
+        peripheral.writeValue(Data(encryptedData ?? []), for: writeChar, type: .withoutResponse)
     }
     
     // central manager delegate methods
@@ -178,8 +197,20 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             return
         }
         
-        print("got the chars! woohoo :)")
-        print(rxChar)
-        print(txChar)
+        peripheral.setNotifyValue(true, for: rxChar)
+        self.writeChar = txChar
+        self.peripheral = peripheral
+        
+        // write starting data
+        write(Data(hex: "5aa53e215b00"))
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
+        print("e.")
+        guard characteristic.uuid == serialRXCharUUID else {
+            return
+        }
+        
+        print(characteristic.value)
     }
 }
