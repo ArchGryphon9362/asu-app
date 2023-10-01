@@ -42,7 +42,8 @@ struct ScooterView: View {
         .onDisappear {
             self.scooterManager.disconnectFromScooter(scooter: discoveredScooter)
         }
-        .onChange(of: scooter.connectionState) { _, state in
+        // TODO: replace onChange with non-deprecated version when is fine (bc not supported on macos <14 :/)
+        .onChange(of: scooter.connectionState) { state in
             if state == .disconnected {
                 self.presentation.wrappedValue.dismiss()
             }

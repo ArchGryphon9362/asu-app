@@ -53,7 +53,7 @@ class DiscoveredScooter : ObservableObject, Identifiable, Hashable {
     }
 }
 
-// TODO: clear scooter list when no more bluetooth
+// TODO: clear scooter list when no more bluetooth (or something)
 // TODO: perhaps store current peripherals identifier to ensure double connections can't affect the intended connection
 class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, ObservableObject {
     let scooterManager: ScooterManager
@@ -90,7 +90,8 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     // central manager delegate methods
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
-            central.scanForPeripherals(withServices: nil)
+            let services = [discoveryServiceUUID]
+            central.scanForPeripherals(withServices: services, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
         } else {
             setConnectionState(.disconnected)
         }
@@ -116,6 +117,11 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         setConnectionState(.preparing)
+        
+        peripheral.delegate = self
+        
+        let services = [serialServiceUUID]
+        peripheral.discoverServices(services)
     }
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
@@ -123,4 +129,57 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     }
     
     // peripheral delegate methods
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
+        guard let services = peripheral.services else {
+            disconnect(peripheral)
+            return
+        }
+        
+        var serialService: CBService?
+        for service in services {
+            if service.uuid == serialServiceUUID {
+                serialService = service
+                break
+            }
+        }
+        
+        guard let serialService = serialService else {
+            disconnect(peripheral)
+            return
+        }
+        
+        let chars = [serialRXCharUUID, serialTXCharUUID]
+        peripheral.discoverCharacteristics(chars, for: serialService)
+    }
+    
+    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
+        guard service.uuid == serialServiceUUID else {
+            return
+        }
+        
+        guard let chars = service.characteristics else {
+            return
+        }
+        
+        var rxChar: CBCharacteristic?
+        var txChar: CBCharacteristic?
+        
+        for char in chars {
+            if char.uuid == serialRXCharUUID {
+                rxChar = char
+            }
+            if char.uuid == serialTXCharUUID {
+                txChar = char
+            }
+        }
+        
+        guard let rxChar = rxChar, let txChar = txChar else {
+            disconnect(peripheral)
+            return
+        }
+        
+        print("got the chars! woohoo :)")
+        print(rxChar)
+        print(txChar)
+    }
 }
