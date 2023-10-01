@@ -101,7 +101,7 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             return
         }
         
-        let encryptedData = self.ninebotCrypto.Encrypt(data.bytes)
+        let encryptedData = self.ninebotCrypto.Encrypt(msgHeader + data.bytes)
         print("sending \(encryptedData)")
         peripheral.writeValue(Data(encryptedData ?? []), for: writeChar, type: .withoutResponse)
     }
@@ -202,7 +202,7 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.peripheral = peripheral
         
         // write starting data
-        write(Data(hex: "5aa53e215b00"))
+        write(Data(hex: "3e215b00"))
     }
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
