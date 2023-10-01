@@ -12,8 +12,8 @@ import OrderedCollections
 class ScooterManager : ObservableObject {
     @Published var discoveredScooters: OrderedDictionary<UUID, DiscoveredScooter>
     // I, Lex, solely acknowledge that my initializing method can be classed as "fucking unsafe",
-    // I will process with care. :trollface:
-    var scooter: Scooter!
+    // I will proceed with care. :trollface:
+    @Published var scooter: Scooter!
     @Published var scooterBluetooth: ScooterBluetooth!
     
     init() {
@@ -23,6 +23,10 @@ class ScooterManager : ObservableObject {
     }
     
     func connectToScooter(scooter: DiscoveredScooter) {
-        scooterBluetooth.bluetoothManager.connect(scooter.peripheral)
+        scooterBluetooth.connect(scooter.peripheral)
+    }
+    
+    func disconncetFromScooter(scooter: DiscoveredScooter) {
+        scooterBluetooth.disconnect(scooter.peripheral)
     }
 }

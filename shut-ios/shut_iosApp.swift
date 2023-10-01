@@ -17,7 +17,7 @@ struct shut_iosApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            DiscoveryView()
                 .environmentObject(scooterManager)
                 .navigationTitle("Archs Scooter Utility")
         }

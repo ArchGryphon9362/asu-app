@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FC0579F82AC9DCC0004D8C1F /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579F72AC9DCC0004D8C1F /* InfoView.swift */; };
+		FC0579FA2AC9DCCC004D8C1F /* ToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579F92AC9DCCC004D8C1F /* ToolsView.swift */; };
+		FC0579FC2AC9DCD3004D8C1F /* FlashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579FB2AC9DCD3004D8C1F /* FlashView.swift */; };
+		FC0579FE2AC9DCDD004D8C1F /* ConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579FD2AC9DCDD004D8C1F /* ConfigView.swift */; };
 		FC5F337C2AC20BD6006B4E0B /* ScooterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */; };
 		FC5F337E2AC20BE1006B4E0B /* ScooterBluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */; };
 		FC5F33802AC213DE006B4E0B /* Scooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337F2AC213DE006B4E0B /* Scooter.swift */; };
@@ -14,21 +18,29 @@
 		FC5F33862AC3391F006B4E0B /* NinebotCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F33852AC3391F006B4E0B /* NinebotCrypto.swift */; };
 		FC5F33892AC33945006B4E0B /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = FC5F33882AC33945006B4E0B /* CryptoSwift */; };
 		FC5F338C2AC374DB006B4E0B /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = FC5F338B2AC374DB006B4E0B /* OrderedCollections */; };
+		FC5F338E2AC98ABC006B4E0B /* ScooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F338D2AC98ABC006B4E0B /* ScooterView.swift */; };
+		FC5F33902AC9D6B0006B4E0B /* ScooterIcons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC5F338F2AC9D6B0006B4E0B /* ScooterIcons.xcassets */; };
 		FCA1AAE42AC1A4D1004578F4 /* shut_iosApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA1AAE32AC1A4D1004578F4 /* shut_iosApp.swift */; };
-		FCA1AAE62AC1A4D1004578F4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA1AAE52AC1A4D1004578F4 /* ContentView.swift */; };
+		FCA1AAE62AC1A4D1004578F4 /* DiscoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA1AAE52AC1A4D1004578F4 /* DiscoveryView.swift */; };
 		FCA1AAE82AC1A4D2004578F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCA1AAE72AC1A4D2004578F4 /* Assets.xcassets */; };
 		FCA1AAEC2AC1A4D2004578F4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCA1AAEB2AC1A4D2004578F4 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FC0579F72AC9DCC0004D8C1F /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
+		FC0579F92AC9DCCC004D8C1F /* ToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolsView.swift; sourceTree = "<group>"; };
+		FC0579FB2AC9DCD3004D8C1F /* FlashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashView.swift; sourceTree = "<group>"; };
+		FC0579FD2AC9DCDD004D8C1F /* ConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigView.swift; sourceTree = "<group>"; };
 		FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterManager.swift; sourceTree = "<group>"; };
 		FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterBluetooth.swift; sourceTree = "<group>"; };
 		FC5F337F2AC213DE006B4E0B /* Scooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scooter.swift; sourceTree = "<group>"; };
 		FC5F33812AC26F7B006B4E0B /* SHFW.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHFW.swift; sourceTree = "<group>"; };
 		FC5F33852AC3391F006B4E0B /* NinebotCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NinebotCrypto.swift; sourceTree = "<group>"; };
+		FC5F338D2AC98ABC006B4E0B /* ScooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterView.swift; sourceTree = "<group>"; };
+		FC5F338F2AC9D6B0006B4E0B /* ScooterIcons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ScooterIcons.xcassets; sourceTree = "<group>"; };
 		FCA1AAE02AC1A4D1004578F4 /* shut-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "shut-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCA1AAE32AC1A4D1004578F4 /* shut_iosApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = shut_iosApp.swift; sourceTree = "<group>"; };
-		FCA1AAE52AC1A4D1004578F4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		FCA1AAE52AC1A4D1004578F4 /* DiscoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryView.swift; sourceTree = "<group>"; };
 		FCA1AAE72AC1A4D2004578F4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FCA1AAE92AC1A4D2004578F4 /* shut_ios.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = shut_ios.entitlements; sourceTree = "<group>"; };
 		FCA1AAEB2AC1A4D2004578F4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -47,6 +59,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FC0579F42AC9DC90004D8C1F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				FCA1AAE52AC1A4D1004578F4 /* DiscoveryView.swift */,
+				FC5F338D2AC98ABC006B4E0B /* ScooterView.swift */,
+				FC0579F72AC9DCC0004D8C1F /* InfoView.swift */,
+				FC0579F92AC9DCCC004D8C1F /* ToolsView.swift */,
+				FC0579FB2AC9DCD3004D8C1F /* FlashView.swift */,
+				FC0579FD2AC9DCDD004D8C1F /* ConfigView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		FCA1AAD72AC1A4D1004578F4 = {
 			isa = PBXGroup;
 			children = (
@@ -69,7 +94,8 @@
 				FCA1AAE32AC1A4D1004578F4 /* shut_iosApp.swift */,
 				FC5F337F2AC213DE006B4E0B /* Scooter.swift */,
 				FC5F33812AC26F7B006B4E0B /* SHFW.swift */,
-				FCA1AAE52AC1A4D1004578F4 /* ContentView.swift */,
+				FC5F338F2AC9D6B0006B4E0B /* ScooterIcons.xcassets */,
+				FC0579F42AC9DC90004D8C1F /* Views */,
 				FCA1AAE72AC1A4D2004578F4 /* Assets.xcassets */,
 				FCA1AAE92AC1A4D2004578F4 /* shut_ios.entitlements */,
 				FCA1AAEA2AC1A4D2004578F4 /* Preview Content */,
@@ -156,6 +182,7 @@
 			files = (
 				FCA1AAEC2AC1A4D2004578F4 /* Preview Assets.xcassets in Resources */,
 				FCA1AAE82AC1A4D2004578F4 /* Assets.xcassets in Resources */,
+				FC5F33902AC9D6B0006B4E0B /* ScooterIcons.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,12 +193,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FC0579FE2AC9DCDD004D8C1F /* ConfigView.swift in Sources */,
 				FC5F33802AC213DE006B4E0B /* Scooter.swift in Sources */,
 				FC5F33822AC26F7B006B4E0B /* SHFW.swift in Sources */,
-				FCA1AAE62AC1A4D1004578F4 /* ContentView.swift in Sources */,
+				FCA1AAE62AC1A4D1004578F4 /* DiscoveryView.swift in Sources */,
 				FC5F337C2AC20BD6006B4E0B /* ScooterManager.swift in Sources */,
+				FC0579FA2AC9DCCC004D8C1F /* ToolsView.swift in Sources */,
+				FC0579FC2AC9DCD3004D8C1F /* FlashView.swift in Sources */,
 				FC5F337E2AC20BE1006B4E0B /* ScooterBluetooth.swift in Sources */,
 				FC5F33862AC3391F006B4E0B /* NinebotCrypto.swift in Sources */,
+				FC5F338E2AC98ABC006B4E0B /* ScooterView.swift in Sources */,
+				FC0579F82AC9DCC0004D8C1F /* InfoView.swift in Sources */,
 				FCA1AAE42AC1A4D1004578F4 /* shut_iosApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

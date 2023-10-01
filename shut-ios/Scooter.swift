@@ -10,6 +10,12 @@ import Foundation
 
 enum ScooterModel {
     case XiaomiPro2
+    
+    func getImage() -> ImageResource {
+        switch(self) {
+        case .XiaomiPro2: return .xiaomiPro2
+        }
+    }
 }
 
 class Scooter : ObservableObject {
@@ -23,13 +29,12 @@ class Scooter : ObservableObject {
     @Published var model: ScooterModel?
     @Published var battery: Int?
     @Published var shfw: SHFW
-    var connectionState: ConnectionState {
-        return scooterManager.scooterBluetooth.connectionState
-    }
+    @Published var connectionState: ConnectionState
     
     init(_ scooterManager: ScooterManager) {
         self.scooterManager = scooterManager
         self.shfw = SHFW()
+        self.connectionState = .disconnected
     }
     
     func connect() {

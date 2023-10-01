@@ -11,12 +11,23 @@ import CoreBluetooth
 enum ConnectionState {
     case disconnected
     case connecting
+    case preparing
     case pairing
     case connected
-    case disconnecting
+    
+    var description : String {
+        switch self {
+        // Use Internationalization, as appropriate.
+        case .disconnected: return "dis"
+        case .connecting: return "con.."
+        case .preparing: return "prep"
+        case .pairing: return "pair"
+        case .connected: return "con!"
+        }
+    }
 }
 
-class DiscoveredScooter : ObservableObject, Identifiable {
+class DiscoveredScooter : ObservableObject, Identifiable, Hashable {
     @Published var name: String
     let model: ScooterModel
     @Published var rssi: Int
@@ -29,12 +40,30 @@ class DiscoveredScooter : ObservableObject, Identifiable {
         self.rssi = rssi
         self.peripheral = peripheral
     }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(peripheral)
+    }
+
+    static func == (lhs: DiscoveredScooter, rhs: DiscoveredScooter) -> Bool {
+        return lhs.name  == rhs.name &&
+               lhs.model == rhs.model &&
+               lhs.rssi  == rhs.rssi &&
+               lhs.peripheral  == rhs.peripheral
+    }
 }
 
+// TODO: clear scooter list when no more bluetooth
+// TODO: perhaps store current peripherals identifier to ensure double connections can't affect the intended connection
 class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, ObservableObject {
     let scooterManager: ScooterManager
     let bluetoothManager: CBCentralManager
     @Published var connectionState: ConnectionState
+    
+    private func setConnectionState(_ connectionState: ConnectionState) {
+        self.connectionState = connectionState
+        self.scooterManager.scooter.connectionState = connectionState
+    }
     
     init(_ scooterManager: ScooterManager) {
         self.scooterManager = scooterManager
@@ -46,9 +75,24 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.bluetoothManager.delegate = self
     }
     
+    func connect(_ peripheral: CBPeripheral) {
+        guard bluetoothManager.state == .poweredOn else { return }
+        setConnectionState(.connecting)
+        bluetoothManager.connect(peripheral)
+    }
+    
+    func disconnect(_ peripheral: CBPeripheral) {
+        guard bluetoothManager.state == .poweredOn else { return }
+        bluetoothManager.cancelPeripheralConnection(peripheral)
+        setConnectionState(.disconnected)
+    }
+    
+    // central manager delegate methods
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
             central.scanForPeripherals(withServices: nil)
+        } else {
+            setConnectionState(.disconnected)
         }
     }
     
@@ -69,4 +113,14 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             )
         }
     }
+    
+    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        setConnectionState(.preparing)
+    }
+    
+    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        setConnectionState(.disconnected)
+    }
+    
+    // peripheral delegate methods
 }
