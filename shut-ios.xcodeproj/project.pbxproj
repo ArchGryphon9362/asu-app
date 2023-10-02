@@ -25,6 +25,8 @@
 		FCA1AAE62AC1A4D1004578F4 /* DiscoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA1AAE52AC1A4D1004578F4 /* DiscoveryView.swift */; };
 		FCA1AAE82AC1A4D2004578F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCA1AAE72AC1A4D2004578F4 /* Assets.xcassets */; };
 		FCA1AAEC2AC1A4D2004578F4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCA1AAEB2AC1A4D2004578F4 /* Preview Assets.xcassets */; };
+		FCA328452ACB2B08004D39B6 /* MessageGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA328442ACB2B08004D39B6 /* MessageGlue.swift */; };
+		FCA328472ACB6B1F004D39B6 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA328462ACB6B1F004D39B6 /* Utilities.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +48,8 @@
 		FCA1AAE72AC1A4D2004578F4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FCA1AAE92AC1A4D2004578F4 /* shut_ios.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = shut_ios.entitlements; sourceTree = "<group>"; };
 		FCA1AAEB2AC1A4D2004578F4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		FCA328442ACB2B08004D39B6 /* MessageGlue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageGlue.swift; sourceTree = "<group>"; };
+		FCA328462ACB6B1F004D39B6 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +109,8 @@
 				FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */,
 				FC0579FF2ACA24BA004D8C1F /* Constants.swift */,
 				FC5F33852AC3391F006B4E0B /* NinebotCrypto.swift */,
+				FCA328442ACB2B08004D39B6 /* MessageGlue.swift */,
+				FCA328462ACB6B1F004D39B6 /* Utilities.swift */,
 			);
 			path = "shut-ios";
 			sourceTree = "<group>";
@@ -199,6 +205,7 @@
 				FC0579FE2AC9DCDD004D8C1F /* ConfigView.swift in Sources */,
 				FC5F33802AC213DE006B4E0B /* Scooter.swift in Sources */,
 				FC5F33822AC26F7B006B4E0B /* SHFW.swift in Sources */,
+				FCA328472ACB6B1F004D39B6 /* Utilities.swift in Sources */,
 				FCA1AAE62AC1A4D1004578F4 /* DiscoveryView.swift in Sources */,
 				FC5F337C2AC20BD6006B4E0B /* ScooterManager.swift in Sources */,
 				FC0579FA2AC9DCCC004D8C1F /* ToolsView.swift in Sources */,
@@ -206,6 +213,7 @@
 				FC057A002ACA24BA004D8C1F /* Constants.swift in Sources */,
 				FC5F337E2AC20BE1006B4E0B /* ScooterBluetooth.swift in Sources */,
 				FC5F33862AC3391F006B4E0B /* NinebotCrypto.swift in Sources */,
+				FCA328452ACB2B08004D39B6 /* MessageGlue.swift in Sources */,
 				FC5F338E2AC98ABC006B4E0B /* ScooterView.swift in Sources */,
 				FC0579F82AC9DCC0004D8C1F /* InfoView.swift in Sources */,
 				FCA1AAE42AC1A4D1004578F4 /* shut_iosApp.swift in Sources */,

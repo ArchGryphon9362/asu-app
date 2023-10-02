@@ -100,10 +100,13 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         guard let writeChar = self.writeChar, let peripheral = self.peripheral else {
             return
         }
+//        let maxSize = peripheral.maximumWriteValueLength(for: .withoutResponse)
         
-        let encryptedData = self.ninebotCrypto.Encrypt(msgHeader + data.bytes)
-        print("sending \(encryptedData)")
-        peripheral.writeValue(Data(encryptedData ?? []), for: writeChar, type: .withoutResponse)
+        let length = UInt8((data.count - 4) & 0xff)
+        let encryptedData = Data(self.ninebotCrypto.Encrypt(msgHeader.bytes + [length] + data.bytes) ?? [])
+//        let encryptedData = Data(hex: "5aa50031de6a25000045ff0000").bytes
+        print("writing \(dataToHex(data: Data(encryptedData)))")
+        peripheral.writeValue(Data(encryptedData), for: writeChar, type: .withoutResponse)
     }
     
     // central manager delegate methods
@@ -211,6 +214,10 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             return
         }
         
-        print(characteristic.value)
+        guard let rawMsg = characteristic.value else {
+            return
+        }
+        
+        print(dataToHex(data: rawMsg))
     }
 }

@@ -25,7 +25,7 @@ class ScooterManager : ObservableObject {
     func connectToScooter(scooter: DiscoveredScooter) {
         var name = scooter.name
         if name.count < 12 {
-            name = scooter.name.padding(toLength: 12, withPad: " ", startingAt: 0)
+            name = scooter.name.padding(toLength: 12, withPad: "\0", startingAt: 0)
         }
         
         scooterBluetooth.connect(scooter.peripheral, name: name)
