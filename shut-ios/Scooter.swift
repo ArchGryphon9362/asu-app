@@ -11,9 +11,15 @@ import Foundation
 enum ScooterModel {
     case XiaomiPro2
     
-    func getImage() -> ImageResource {
+    var image: ImageResource {
         switch(self) {
         case .XiaomiPro2: return .xiaomiPro2
+        }
+    }
+    
+    var name: String {
+        switch(self) {
+        case .XiaomiPro2: "Mi Electric Scooter Pro 2"
         }
     }
 }

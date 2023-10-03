@@ -23,18 +23,22 @@ struct ScooterView: View {
                 .tabItem {
                     Label("Info", systemImage: "info.circle")
                 }
+                .padding()
             ToolsView()
                 .tabItem {
                     Label("Tools", systemImage: "wrench.adjustable")
                 }
+                .padding()
             FlashView()
                 .tabItem {
                     Label("Flash", systemImage: "bolt")
                 }
+                .padding()
             ConfigView()
                 .tabItem {
                     Label("Config", systemImage: "gear")
                 }
+                .padding()
         }
         .onAppear {
             self.scooterManager.connectToScooter(scooter: discoveredScooter)
@@ -49,7 +53,8 @@ struct ScooterView: View {
             }
             
             if state == .pairing {
-                self.connectingMessage = "Toggle the headlight to complete pairing"
+                // totally not stolen line
+                self.connectingMessage = "Pairing with scooter...\n\nIf this does nothing after a few seconds, please toggle the headlight by pressing the power button."
             } else {
                 self.connectingMessage = "Please wait..."
             }
@@ -59,12 +64,13 @@ struct ScooterView: View {
         .alert(isPresented: self.$showConnectingPopup) {
             let message = Text(connectingMessage)
             return Alert(
-                title: Text("Connecting..."),
+                title: Text("Connecting..."), // TODO: allowing heading to change too
                 message: message,
                 dismissButton: .destructive(Text("Disconnect")) {
                     self.scooterManager.disconnectFromScooter(scooter: discoveredScooter)
                 }
             )
         }
+        .navigationTitle(discoveredScooter.name)
     }
 }

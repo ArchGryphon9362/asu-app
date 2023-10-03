@@ -14,8 +14,32 @@ struct InfoView: View {
     
     var body: some View {
         VStack {
-            Text("Info tab")
-            Text("\(scooter.connectionState.description)")
+            HStack {
+                Text("Model")
+                Spacer()
+                Text("\(scooter.model?.name ?? "N/A")")
+            }
+            HStack {
+                Text("BLE")
+                Spacer()
+                Text("\(scooter.ble ?? "N/A")")
+            }
+            HStack {
+                Text("DRV")
+                Spacer()
+                Text("\(scooter.esc ?? "N/A")")
+            }
+            HStack {
+                Text("BMS")
+                Spacer()
+                Text("\(scooter.bms ?? "N/A")")
+            }
+            HStack {
+                Text("Serial number")
+                Spacer()
+                Text("\(scooter.serial ?? "N/A")")
+            }
+            Spacer()
         }
     }
 }

@@ -53,6 +53,15 @@ class DiscoveredScooter : ObservableObject, Identifiable, Hashable {
     }
 }
 
+// thx: https://www.hackingwithswift.com/example-code/language/how-to-split-an-array-into-chunks
+extension Array {
+    func chunked(into size: Int) -> [[Element]] {
+        return stride(from: 0, to: count, by: size).map {
+            Array(self[$0 ..< Swift.min($0 + size, count)])
+        }
+    }
+}
+
 // TODO: clear scooter list when no more bluetooth (or something)
 // TODO: perhaps store current peripherals identifier to ensure double connections can't affect the intended connection
 class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, ObservableObject {
@@ -63,6 +72,9 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     private var writeChar: CBCharacteristic?
     private var peripheral: CBPeripheral?
     private var ninebotCrypto: NinebotCrypto
+    private var messageGlue: MessageGlue
+    
+    private var authTimer: Timer
     
     private func setConnectionState(_ connectionState: ConnectionState) {
         self.connectionState = connectionState
@@ -74,6 +86,9 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.bluetoothManager = CBCentralManager()
         self.connectionState = .disconnected
         self.ninebotCrypto = .init()
+        self.messageGlue = .init(selectedProtocol: .ninebotCrypto, payloadSize: 20) // setting to some random crap so compiler doesn't complain
+        
+        self.authTimer = Timer()
         
         super.init()
         
@@ -91,6 +106,7 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.writeChar = nil
         self.peripheral = nil
         self.ninebotCrypto.Reset()
+        self.authTimer.invalidate()
         setConnectionState(.disconnected)
         guard bluetoothManager.state == .poweredOn else { return }
         bluetoothManager.cancelPeripheralConnection(peripheral)
@@ -100,13 +116,16 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         guard let writeChar = self.writeChar, let peripheral = self.peripheral else {
             return
         }
-//        let maxSize = peripheral.maximumWriteValueLength(for: .withoutResponse)
+        let maxSize = peripheral.maximumWriteValueLength(for: .withoutResponse)
         
         let length = UInt8((data.count - 4) & 0xff)
-        let encryptedData = Data(self.ninebotCrypto.Encrypt(msgHeader.bytes + [length] + data.bytes) ?? [])
+        let encryptedData = self.ninebotCrypto.Encrypt(msgHeader.bytes + [length] + data.bytes) ?? []
 //        let encryptedData = Data(hex: "5aa50031de6a25000045ff0000").bytes
         print("writing \(dataToHex(data: Data(encryptedData)))")
-        peripheral.writeValue(Data(encryptedData), for: writeChar, type: .withoutResponse)
+        
+        for chunk in encryptedData.chunked(into: maxSize) {
+            peripheral.writeValue(Data(chunk), for: writeChar, type: .withoutResponse)
+        }
     }
     
     // central manager delegate methods
@@ -139,6 +158,8 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         setConnectionState(.preparing)
+        // TODO: set correct protocol
+        self.messageGlue = .init(selectedProtocol: .ninebotCrypto, payloadSize: peripheral.maximumWriteValueLength(for: .withoutResponse))
         
         peripheral.delegate = self
         
@@ -204,20 +225,91 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.writeChar = txChar
         self.peripheral = peripheral
         
-        // write starting data
-        write(Data(hex: "3e215b00"))
+        // start pairing request (repeats because xiaomi)
+        self.authTimer.invalidate()
+        self.authTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            self.write(Data(hex: "3e215b00"))
+        }
     }
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        print("e.")
         guard characteristic.uuid == serialRXCharUUID else {
+            // don't want foreign chars
             return
         }
         
         guard let rawMsg = characteristic.value else {
+            // don't want partial raw
             return
         }
         
-        print(dataToHex(data: rawMsg))
+        guard let fullRawMsg = self.messageGlue.put(data: rawMsg.bytes) else {
+            // don't want fully raw either
+            return
+        }
+        
+        guard let msg = self.ninebotCrypto.Decrypt(fullRawMsg) else {
+            // cryptic isn't good either
+            return
+        }
+        
+        guard msg.count > 6 else {
+            // just ignore all the invalid messages
+            return
+        }
+        
+        let src = msg[3]
+        let dst = msg[4]
+        let cmd = msg[5]
+        let arg = msg[6]
+        
+        // check auth (nbauth, will need to add others later)
+        if (src == 0x21 &&
+            dst == 0x3E &&
+            cmd == 0x5B) {
+            self.authTimer.invalidate()
+            self.authTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                self.write(Data(hex: "3e215c0000000000000000000000000000000000")) // <- final 16 bytes will be autofilled
+            }
+        }
+        
+        if (src == 0x21 &&
+            dst == 0x3E &&
+            cmd == 0x5C) {
+            if (arg == 0x00) {
+                setConnectionState(.pairing)
+            }
+            self.authTimer.invalidate()
+            self.authTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                self.write(Data(hex: "3e215d00"))
+            }
+        }
+        
+        if (src == 0x21 &&
+            dst == 0x3E &&
+            cmd == 0x5D &&
+            arg == 0x01) {
+            self.authTimer.invalidate()
+            setConnectionState(.connected)
+            
+            // TODO: list of "wants" (once satisfied a timer stop looping)
+            write(Data(hex: "3e2001100e"))
+        }
+        
+        // TODO: move this into scooter manager or sum
+        if (src == 0x23 &&
+            dst == 0x3E &&
+            cmd == 0x01) {
+            print(dataToHex(data: Data(msg)))
+            switch(arg) {
+            case 0x10:
+                guard msg.count == 0x15 else { return }
+                let serial = String(data: Data(msg[0x07...0x11]), encoding: .ascii)
+                scooterManager.scooter.serial = serial
+            default: return
+            }
+        }
+        
+        print(dataToHex(data: Data(msg)))
     }
 }
