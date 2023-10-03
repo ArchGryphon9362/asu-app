@@ -124,8 +124,6 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         
         let length = UInt8((data.count - 4) & 0xff)
         let encryptedData = self.ninebotCrypto.Encrypt(msgHeader.bytes + [length] + data.bytes) ?? []
-//        let encryptedData = Data(hex: "5aa50031de6a25000045ff0000").bytes
-        print("writing \(dataToHex(data: Data(encryptedData)))")
         
         for chunk in encryptedData.chunked(into: maxSize) {
             peripheral.writeValue(Data(chunk), for: writeChar, type: .withoutResponse)
@@ -266,9 +264,9 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         let dst = msg[4]
         let cmd = msg[5]
         let arg = msg[6]
-        let payloadLen = msg.count - 0x07
+        let payloadLength = msg.count - 0x07
         
-        // check auth (nbauth, will need to add others later)
+        // do auth (nbauth, will need to add others later)
         if (src == 0x21 &&
             dst == 0x3E &&
             cmd == 0x5B) {
@@ -319,50 +317,7 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             }
         }
         
-        // TODO: move this into scooter manager or sum, plus create some "read recv" function
-        if (src == 0x23 &&
-            dst == 0x3E &&
-            cmd == 0x01) {
-            print(dataToHex(data: Data(msg)))
-            
-            let scooter = scooterManager.scooter
-            
-            func parseVersion(_ versionMsg: [UInt8]) -> String? {
-                guard msg.count - 0x07 == 0x02 else { return nil }
-                var ver = dataToHex(data:
-                    Data(
-                        [
-                            versionMsg[0x07 + 0x01],
-                            versionMsg[0x07 + 0x00]
-                        ]
-                    )
-                )
-                ver = String(String(ver.reversed()).padding(toLength: 3, withPad: "0", startingAt: 0).reversed()) // remove/add from/to beginning to reach length of 3
-                ver.insert(".", at: ver.index(ver.startIndex, offsetBy: 2))
-                ver.insert(".", at: ver.index(ver.startIndex, offsetBy: 1))
-                return ver
-            }
-            
-            switch(arg) {
-            case 0x10:
-                guard msg.count - 0x07 == 0x0e else { return }
-                let serial = String(data: Data(msg[0x07 + 0x00...0x07 + 0x0e - 1]), encoding: .ascii)
-                scooter?.serial = serial
-            case 0x1a:
-                guard msg.count - 0x07 == 0x02 else { return }
-                guard let ver = parseVersion(msg) else { return }
-                scooter?.esc = ver
-            case 0x67:
-                guard msg.count - 0x07 == 0x02 else { return }
-                guard let ver = parseVersion(msg) else { return }
-                scooter?.bms = ver
-            case 0x68:
-                guard msg.count - 0x07 == 0x02 else { return }
-                guard let ver = parseVersion(msg) else { return }
-                scooter?.ble = ver
-            default: return
-            }
-        }
+        self.scooterManager.onRecv(msg: msg, src: src, dst: dst, cmd: cmd, arg: arg, payloadLength: payloadLength)
         
         print(dataToHex(data: Data(msg)))
     }
