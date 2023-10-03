@@ -19,9 +19,11 @@ struct DiscoveryView: View {
                     HStack {
                         VStack(alignment: .leading) {
                             NavigationLink(scooter.name, value: scooter).bold()
+                            Text(scooter.model.name)
                             Text("RSSI: \(scooter.rssi)dB")
                         }
-                        // shove an image in here somehow??
+                        Spacer()
+                        Image(scooter.model.image).resizable().aspectRatio(contentMode: .fit).frame(height: 80)
                     }.listRowSeparator(.visible)
                 }
                 .scrollContentBackground(.hidden).listStyle(.inset)

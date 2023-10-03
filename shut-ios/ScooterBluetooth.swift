@@ -145,17 +145,12 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             return
         }
         
-        if let scooter = scooterManager.discoveredScooters[peripheral.identifier] {
-            scooter.name = name
-            scooter.rssi = RSSI.intValue
-        } else {
-            scooterManager.discoveredScooters[peripheral.identifier] = DiscoveredScooter(
-                name: name,
-                model: .XiaomiPro2, // TODO: no it isn't (at least we don't know yet)
-                rssi: RSSI.intValue,
-                peripheral: peripheral
-            )
-        }
+        scooterManager.discoveredScooters[peripheral.identifier] = DiscoveredScooter(
+            name: name,
+            model: .XiaomiPro2, // TODO: no it isn't (at least we don't know yet)
+            rssi: RSSI.intValue,
+            peripheral: peripheral
+        )
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
@@ -250,75 +245,82 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             return
         }
         
-        guard let msg = self.ninebotCrypto.Decrypt(fullRawMsg) else {
-            // cryptic isn't good either
-            return
-        }
-        
-        guard msg.count > 6 else {
-            // just ignore all the invalid messages
-            return
-        }
-        
-        let src = msg[3]
-        let dst = msg[4]
-        let cmd = msg[5]
-        let arg = msg[6]
-        let payloadLength = msg.count - 0x07
-        
-        // do auth (nbauth, will need to add others later)
-        if (src == 0x21 &&
-            dst == 0x3E &&
-            cmd == 0x5B) {
-            self.requestScheduler.invalidate()
-            self.requestScheduler = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-                self.write(Data(hex: "3e215c0000000000000000000000000000000000")) // <- final 16 bytes will be autofilled
+        switch (scooterManager.scooter.model?.auth) {
+        case .ninebotCrypto:
+            guard let msg = self.ninebotCrypto.Decrypt(fullRawMsg) else {
+                // cryptic isn't good either
+                return
             }
-        }
-        
-        if (src == 0x21 &&
-            dst == 0x3E &&
-            cmd == 0x5C) {
-            if (arg == 0x00) {
-                setConnectionState(.pairing)
-            }
-            self.requestScheduler.invalidate()
-            self.requestScheduler = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-                self.write(Data(hex: "3e215d00"))
-            }
-        }
-        
-        if (src == 0x21 &&
-            dst == 0x3E &&
-            cmd == 0x5D &&
-            arg == 0x01) {
-            self.requestScheduler.invalidate()
-            setConnectionState(.connected)
             
-            // TODO: list of "wants" (once satisfied a timer stop looping)
-            self.requestScheduler = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-                let scooter = self.scooterManager.scooter
-                
-                if scooter?.serial == nil {
-                    self.write(Data(hex: "3e2001100e"))
-                }
-                
-                if scooter?.esc == nil {
-                    self.write(Data(hex: "3e20011a02"))
-                }
-                
-                if scooter?.bms == nil {
-                    self.write(Data(hex: "3e20016702"))
-                }
-                
-                if scooter?.ble == nil {
-                    self.write(Data(hex: "3e20016802"))
+            guard msg.count > 6 else {
+                // just ignore all the invalid messages
+                return
+            }
+            
+            let src = msg[3]
+            let dst = msg[4]
+            let cmd = msg[5]
+            let arg = msg[6]
+            let payloadLength = msg.count - 0x07
+            
+            // do auth (nbauth, will need to add others later)
+            if (src == 0x21 &&
+                dst == 0x3E &&
+                cmd == 0x5B) {
+                self.requestScheduler.invalidate()
+                self.requestScheduler = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                    self.write(Data(hex: "3e215c0000000000000000000000000000000000")) // <- final 16 bytes will be autofilled
                 }
             }
+            
+            if (src == 0x21 &&
+                dst == 0x3E &&
+                cmd == 0x5C) {
+                if (arg == 0x00) {
+                    setConnectionState(.pairing)
+                }
+                self.requestScheduler.invalidate()
+                self.requestScheduler = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                    self.write(Data(hex: "3e215d00"))
+                }
+            }
+            
+            if (src == 0x21 &&
+                dst == 0x3E &&
+                cmd == 0x5D &&
+                arg == 0x01) {
+                self.requestScheduler.invalidate()
+                setConnectionState(.connected)
+                
+                // TODO: list of "wants" (once satisfied a timer stop looping)
+                self.requestScheduler = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                    let scooter = self.scooterManager.scooter
+                    
+                    if scooter?.serial == nil {
+                        self.write(Data(hex: "3e2001100e"))
+                    }
+                    
+                    if scooter?.esc == nil {
+                        self.write(Data(hex: "3e20011a02"))
+                    }
+                    
+                    if scooter?.bms == nil {
+                        self.write(Data(hex: "3e20016702"))
+                    }
+                    
+                    if scooter?.ble == nil {
+                        self.write(Data(hex: "3e20016802"))
+                    }
+                }
+            }
+            
+            self.scooterManager.onRecv(msg: msg, src: src, dst: dst, cmd: cmd, arg: arg, payloadLength: payloadLength)
+        case .xiaomiCrypto:
+            print("oh boy oh fuck :/")
+            self.disconnect(peripheral)
+        default:
+            print("weird fuckery")
+            self.disconnect(peripheral)
         }
-        
-        self.scooterManager.onRecv(msg: msg, src: src, dst: dst, cmd: cmd, arg: arg, payloadLength: payloadLength)
-        
-        print(dataToHex(data: Data(msg)))
     }
 }

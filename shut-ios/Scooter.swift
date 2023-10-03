@@ -22,6 +22,12 @@ enum ScooterModel {
         case .XiaomiPro2: "Mi Electric Scooter Pro 2"
         }
     }
+    
+    var auth: SelectedProtocol {
+        switch(self) {
+        case .XiaomiPro2: .xiaomiCrypto
+        }
+    }
 }
 
 class Scooter : ObservableObject {
