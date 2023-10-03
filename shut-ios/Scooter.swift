@@ -43,6 +43,18 @@ class Scooter : ObservableObject {
         self.connectionState = .disconnected
     }
     
+    func reset() {
+        self.ble = nil
+        self.esc = nil
+        self.bms = nil
+        self.serial = nil
+        self.uuid = nil
+        self.model = nil
+        self.battery = nil
+        self.shfw = SHFW()
+        self.connectionState = .disconnected
+    }
+    
     func connect() {
         // TODO: implement
     }

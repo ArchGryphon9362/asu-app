@@ -41,7 +41,7 @@ struct ScooterView: View {
                 .padding()
         }
         .onAppear {
-            self.scooterManager.connectToScooter(scooter: discoveredScooter)
+            self.scooterManager.connectToScooter(discoveredScooter: discoveredScooter)
         }
         .onDisappear {
             self.scooterManager.disconnectFromScooter(scooter: discoveredScooter)
@@ -59,7 +59,7 @@ struct ScooterView: View {
                 self.connectingMessage = "Please wait..."
             }
             
-            self.showConnectingPopup = state != .connected
+            self.showConnectingPopup = state != .connected && state != .disconnected
         }
         .alert(isPresented: self.$showConnectingPopup) {
             let message = Text(connectingMessage)

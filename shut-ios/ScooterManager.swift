@@ -22,13 +22,14 @@ class ScooterManager : ObservableObject {
         self.scooterBluetooth = ScooterBluetooth(self)
     }
     
-    func connectToScooter(scooter: DiscoveredScooter) {
-        var name = scooter.name
+    func connectToScooter(discoveredScooter: DiscoveredScooter) {
+        var name = discoveredScooter.name
         if name.count < 12 {
-            name = scooter.name.padding(toLength: 12, withPad: "\0", startingAt: 0)
+            name = discoveredScooter.name.padding(toLength: 12, withPad: "\0", startingAt: 0)
         }
         
-        scooterBluetooth.connect(scooter.peripheral, name: name)
+        scooter.model = discoveredScooter.model
+        scooterBluetooth.connect(discoveredScooter.peripheral, name: name)
     }
     
     func disconnectFromScooter(scooter: DiscoveredScooter) {

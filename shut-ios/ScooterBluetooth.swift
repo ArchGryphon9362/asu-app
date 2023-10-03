@@ -74,11 +74,14 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     private var ninebotCrypto: NinebotCrypto
     private var messageGlue: MessageGlue
     
-    private var authTimer: Timer
+    private var requestScheduler: Timer
     
     private func setConnectionState(_ connectionState: ConnectionState) {
         self.connectionState = connectionState
         self.scooterManager.scooter.connectionState = connectionState
+        if (connectionState == .disconnected) {
+            scooterManager.scooter.reset()
+        }
     }
     
     init(_ scooterManager: ScooterManager) {
@@ -86,9 +89,10 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.bluetoothManager = CBCentralManager()
         self.connectionState = .disconnected
         self.ninebotCrypto = .init()
+        self.ninebotCrypto.Reset()
         self.messageGlue = .init(selectedProtocol: .ninebotCrypto, payloadSize: 20) // setting to some random crap so compiler doesn't complain
         
-        self.authTimer = Timer()
+        self.requestScheduler = Timer()
         
         super.init()
         
@@ -106,7 +110,7 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.writeChar = nil
         self.peripheral = nil
         self.ninebotCrypto.Reset()
-        self.authTimer.invalidate()
+        self.requestScheduler.invalidate()
         setConnectionState(.disconnected)
         guard bluetoothManager.state == .poweredOn else { return }
         bluetoothManager.cancelPeripheralConnection(peripheral)
@@ -226,8 +230,8 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.peripheral = peripheral
         
         // start pairing request (repeats because xiaomi)
-        self.authTimer.invalidate()
-        self.authTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+        self.requestScheduler.invalidate()
+        self.requestScheduler = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
             self.write(Data(hex: "3e215b00"))
         }
     }
@@ -262,13 +266,14 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         let dst = msg[4]
         let cmd = msg[5]
         let arg = msg[6]
+        let payloadLen = msg.count - 0x07
         
         // check auth (nbauth, will need to add others later)
         if (src == 0x21 &&
             dst == 0x3E &&
             cmd == 0x5B) {
-            self.authTimer.invalidate()
-            self.authTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            self.requestScheduler.invalidate()
+            self.requestScheduler = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
                 self.write(Data(hex: "3e215c0000000000000000000000000000000000")) // <- final 16 bytes will be autofilled
             }
         }
@@ -279,8 +284,8 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             if (arg == 0x00) {
                 setConnectionState(.pairing)
             }
-            self.authTimer.invalidate()
-            self.authTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            self.requestScheduler.invalidate()
+            self.requestScheduler = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
                 self.write(Data(hex: "3e215d00"))
             }
         }
@@ -289,23 +294,72 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             dst == 0x3E &&
             cmd == 0x5D &&
             arg == 0x01) {
-            self.authTimer.invalidate()
+            self.requestScheduler.invalidate()
             setConnectionState(.connected)
             
             // TODO: list of "wants" (once satisfied a timer stop looping)
-            write(Data(hex: "3e2001100e"))
+            self.requestScheduler = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                let scooter = self.scooterManager.scooter
+                
+                if scooter?.serial == nil {
+                    self.write(Data(hex: "3e2001100e"))
+                }
+                
+                if scooter?.esc == nil {
+                    self.write(Data(hex: "3e20011a02"))
+                }
+                
+                if scooter?.bms == nil {
+                    self.write(Data(hex: "3e20016702"))
+                }
+                
+                if scooter?.ble == nil {
+                    self.write(Data(hex: "3e20016802"))
+                }
+            }
         }
         
-        // TODO: move this into scooter manager or sum
+        // TODO: move this into scooter manager or sum, plus create some "read recv" function
         if (src == 0x23 &&
             dst == 0x3E &&
             cmd == 0x01) {
             print(dataToHex(data: Data(msg)))
+            
+            let scooter = scooterManager.scooter
+            
+            func parseVersion(_ versionMsg: [UInt8]) -> String? {
+                guard msg.count - 0x07 == 0x02 else { return nil }
+                var ver = dataToHex(data:
+                    Data(
+                        [
+                            versionMsg[0x07 + 0x01],
+                            versionMsg[0x07 + 0x00]
+                        ]
+                    )
+                )
+                ver = String(String(ver.reversed()).padding(toLength: 3, withPad: "0", startingAt: 0).reversed()) // remove/add from/to beginning to reach length of 3
+                ver.insert(".", at: ver.index(ver.startIndex, offsetBy: 2))
+                ver.insert(".", at: ver.index(ver.startIndex, offsetBy: 1))
+                return ver
+            }
+            
             switch(arg) {
             case 0x10:
-                guard msg.count == 0x15 else { return }
-                let serial = String(data: Data(msg[0x07...0x11]), encoding: .ascii)
-                scooterManager.scooter.serial = serial
+                guard msg.count - 0x07 == 0x0e else { return }
+                let serial = String(data: Data(msg[0x07 + 0x00...0x07 + 0x0e - 1]), encoding: .ascii)
+                scooter?.serial = serial
+            case 0x1a:
+                guard msg.count - 0x07 == 0x02 else { return }
+                guard let ver = parseVersion(msg) else { return }
+                scooter?.esc = ver
+            case 0x67:
+                guard msg.count - 0x07 == 0x02 else { return }
+                guard let ver = parseVersion(msg) else { return }
+                scooter?.bms = ver
+            case 0x68:
+                guard msg.count - 0x07 == 0x02 else { return }
+                guard let ver = parseVersion(msg) else { return }
+                scooter?.ble = ver
             default: return
             }
         }
