@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct shut_iosApp: App {
+struct SHUTApp: App {
     let scooterManager: ScooterManager
     
     init() {

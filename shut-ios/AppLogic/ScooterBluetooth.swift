@@ -72,6 +72,7 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     private var writeChar: CBCharacteristic?
     private var peripheral: CBPeripheral?
     private var ninebotCrypto: NinebotCrypto
+    private var xiaomiCrypto: XiaomiCrypto
     private var messageGlue: MessageGlue
     
     private var requestScheduler: Timer
@@ -90,6 +91,7 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.connectionState = .disconnected
         self.ninebotCrypto = .init()
         self.ninebotCrypto.Reset()
+        self.xiaomiCrypto = .init()
         self.messageGlue = .init(selectedProtocol: .ninebotCrypto, payloadSize: 20) // setting to some random crap so compiler doesn't complain
         
         self.requestScheduler = Timer()
@@ -123,10 +125,19 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         let maxSize = peripheral.maximumWriteValueLength(for: .withoutResponse)
         
         let length = UInt8((data.count - 4) & 0xff)
-        let encryptedData = self.ninebotCrypto.Encrypt(msgHeader.bytes + [length] + data.bytes) ?? []
         
-        for chunk in encryptedData.chunked(into: maxSize) {
-            peripheral.writeValue(Data(chunk), for: writeChar, type: .withoutResponse)
+        switch(self.scooterManager.scooter.model?.auth) {
+        case .ninebotCrypto:
+            let encryptedData = self.ninebotCrypto.Encrypt(msgHeader.bytes + [length] + data.bytes) ?? []
+            
+            for chunk in encryptedData.chunked(into: maxSize) {
+                peripheral.writeValue(Data(chunk), for: writeChar, type: .withoutResponse)
+            }
+        case .xiaomiCrypto:
+            print("oh fuck, we can't write")
+            return
+        default:
+            return
         }
     }
     

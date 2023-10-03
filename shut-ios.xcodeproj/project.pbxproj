@@ -21,10 +21,10 @@
 		FC5F338C2AC374DB006B4E0B /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = FC5F338B2AC374DB006B4E0B /* OrderedCollections */; };
 		FC5F338E2AC98ABC006B4E0B /* ScooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F338D2AC98ABC006B4E0B /* ScooterView.swift */; };
 		FC5F33902AC9D6B0006B4E0B /* ScooterIcons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC5F338F2AC9D6B0006B4E0B /* ScooterIcons.xcassets */; };
-		FCA1AAE42AC1A4D1004578F4 /* shut_iosApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA1AAE32AC1A4D1004578F4 /* shut_iosApp.swift */; };
+		FC8DE1B72ACCAE7300E92501 /* XiaomiCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC8DE1B62ACCAE7300E92501 /* XiaomiCrypto.swift */; };
+		FCA1AAE42AC1A4D1004578F4 /* SHUTApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA1AAE32AC1A4D1004578F4 /* SHUTApp.swift */; };
 		FCA1AAE62AC1A4D1004578F4 /* DiscoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA1AAE52AC1A4D1004578F4 /* DiscoveryView.swift */; };
 		FCA1AAE82AC1A4D2004578F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCA1AAE72AC1A4D2004578F4 /* Assets.xcassets */; };
-		FCA1AAEC2AC1A4D2004578F4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCA1AAEB2AC1A4D2004578F4 /* Preview Assets.xcassets */; };
 		FCA328452ACB2B08004D39B6 /* MessageGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA328442ACB2B08004D39B6 /* MessageGlue.swift */; };
 		FCA328472ACB6B1F004D39B6 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA328462ACB6B1F004D39B6 /* Utilities.swift */; };
 /* End PBXBuildFile section */
@@ -42,12 +42,12 @@
 		FC5F33852AC3391F006B4E0B /* NinebotCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NinebotCrypto.swift; sourceTree = "<group>"; };
 		FC5F338D2AC98ABC006B4E0B /* ScooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterView.swift; sourceTree = "<group>"; };
 		FC5F338F2AC9D6B0006B4E0B /* ScooterIcons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ScooterIcons.xcassets; sourceTree = "<group>"; };
+		FC8DE1B62ACCAE7300E92501 /* XiaomiCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiaomiCrypto.swift; sourceTree = "<group>"; };
 		FCA1AAE02AC1A4D1004578F4 /* shut-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "shut-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		FCA1AAE32AC1A4D1004578F4 /* shut_iosApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = shut_iosApp.swift; sourceTree = "<group>"; };
+		FCA1AAE32AC1A4D1004578F4 /* SHUTApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHUTApp.swift; sourceTree = "<group>"; };
 		FCA1AAE52AC1A4D1004578F4 /* DiscoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryView.swift; sourceTree = "<group>"; };
 		FCA1AAE72AC1A4D2004578F4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FCA1AAE92AC1A4D2004578F4 /* shut_ios.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = shut_ios.entitlements; sourceTree = "<group>"; };
-		FCA1AAEB2AC1A4D2004578F4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		FCA328442ACB2B08004D39B6 /* MessageGlue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageGlue.swift; sourceTree = "<group>"; };
 		FCA328462ACB6B1F004D39B6 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -78,6 +78,36 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		FC8DE1B82ACCAEB400E92501 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				FC5F338F2AC9D6B0006B4E0B /* ScooterIcons.xcassets */,
+				FCA1AAE72AC1A4D2004578F4 /* Assets.xcassets */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		FC8DE1B92ACCAEE000E92501 /* Crpyto */ = {
+			isa = PBXGroup;
+			children = (
+				FC8DE1B62ACCAE7300E92501 /* XiaomiCrypto.swift */,
+				FC5F33852AC3391F006B4E0B /* NinebotCrypto.swift */,
+			);
+			path = Crpyto;
+			sourceTree = "<group>";
+		};
+		FC8DE1BA2ACCAF3500E92501 /* AppLogic */ = {
+			isa = PBXGroup;
+			children = (
+				FC5F337F2AC213DE006B4E0B /* Scooter.swift */,
+				FC5F33812AC26F7B006B4E0B /* SHFW.swift */,
+				FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */,
+				FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */,
+				FCA328442ACB2B08004D39B6 /* MessageGlue.swift */,
+			);
+			path = AppLogic;
+			sourceTree = "<group>";
+		};
 		FCA1AAD72AC1A4D1004578F4 = {
 			isa = PBXGroup;
 			children = (
@@ -97,30 +127,16 @@
 		FCA1AAE22AC1A4D1004578F4 /* shut-ios */ = {
 			isa = PBXGroup;
 			children = (
-				FCA1AAE32AC1A4D1004578F4 /* shut_iosApp.swift */,
-				FC5F337F2AC213DE006B4E0B /* Scooter.swift */,
-				FC5F33812AC26F7B006B4E0B /* SHFW.swift */,
-				FC5F338F2AC9D6B0006B4E0B /* ScooterIcons.xcassets */,
 				FC0579F42AC9DC90004D8C1F /* Views */,
-				FCA1AAE72AC1A4D2004578F4 /* Assets.xcassets */,
-				FCA1AAE92AC1A4D2004578F4 /* shut_ios.entitlements */,
-				FCA1AAEA2AC1A4D2004578F4 /* Preview Content */,
-				FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */,
-				FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */,
+				FC8DE1B82ACCAEB400E92501 /* Assets */,
+				FC8DE1B92ACCAEE000E92501 /* Crpyto */,
+				FC8DE1BA2ACCAF3500E92501 /* AppLogic */,
 				FC0579FF2ACA24BA004D8C1F /* Constants.swift */,
-				FC5F33852AC3391F006B4E0B /* NinebotCrypto.swift */,
-				FCA328442ACB2B08004D39B6 /* MessageGlue.swift */,
 				FCA328462ACB6B1F004D39B6 /* Utilities.swift */,
+				FCA1AAE32AC1A4D1004578F4 /* SHUTApp.swift */,
+				FCA1AAE92AC1A4D2004578F4 /* shut_ios.entitlements */,
 			);
 			path = "shut-ios";
-			sourceTree = "<group>";
-		};
-		FCA1AAEA2AC1A4D2004578F4 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				FCA1AAEB2AC1A4D2004578F4 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -189,7 +205,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FCA1AAEC2AC1A4D2004578F4 /* Preview Assets.xcassets in Resources */,
 				FCA1AAE82AC1A4D2004578F4 /* Assets.xcassets in Resources */,
 				FC5F33902AC9D6B0006B4E0B /* ScooterIcons.xcassets in Resources */,
 			);
@@ -207,6 +222,7 @@
 				FC5F33822AC26F7B006B4E0B /* SHFW.swift in Sources */,
 				FCA328472ACB6B1F004D39B6 /* Utilities.swift in Sources */,
 				FCA1AAE62AC1A4D1004578F4 /* DiscoveryView.swift in Sources */,
+				FC8DE1B72ACCAE7300E92501 /* XiaomiCrypto.swift in Sources */,
 				FC5F337C2AC20BD6006B4E0B /* ScooterManager.swift in Sources */,
 				FC0579FA2AC9DCCC004D8C1F /* ToolsView.swift in Sources */,
 				FC0579FC2AC9DCD3004D8C1F /* FlashView.swift in Sources */,
@@ -216,7 +232,7 @@
 				FCA328452ACB2B08004D39B6 /* MessageGlue.swift in Sources */,
 				FC5F338E2AC98ABC006B4E0B /* ScooterView.swift in Sources */,
 				FC0579F82AC9DCC0004D8C1F /* InfoView.swift in Sources */,
-				FCA1AAE42AC1A4D1004578F4 /* shut_iosApp.swift in Sources */,
+				FCA1AAE42AC1A4D1004578F4 /* SHUTApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -345,7 +361,7 @@
 				CODE_SIGN_ENTITLEMENTS = "shut-ios/shut_ios.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"shut-ios/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 8GX54X43A7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -385,7 +401,7 @@
 				CODE_SIGN_ENTITLEMENTS = "shut-ios/shut_ios.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"shut-ios/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = 8GX54X43A7;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
