@@ -29,7 +29,7 @@ class ScooterManager : ObservableObject {
         }
         
         scooter.model = discoveredScooter.model
-        scooterBluetooth.connect(discoveredScooter.peripheral, name: name)
+        scooterBluetooth.connect(discoveredScooter.peripheral, name: name, selectedProtocol: discoveredScooter.model.auth)
     }
     
     func disconnectFromScooter(scooter: DiscoveredScooter) {
@@ -57,6 +57,7 @@ class ScooterManager : ObservableObject {
             }
             
             switch(arg) {
+            // TODO: rescan versions and serial when changed
             case 0x10:
                 guard payloadLength == 0x0e else { return }
                 let serial = String(data: Data(msg[0x07 + 0x00...0x07 + 0x0e - 1]), encoding: .ascii)
@@ -73,7 +74,6 @@ class ScooterManager : ObservableObject {
                 guard payloadLength == 0x02 else { return }
                 guard let ver = parseVersion(msg) else { return }
                 self.scooter.ble = ver
-                print("ble \(ver)")
             default: return
             }
         }

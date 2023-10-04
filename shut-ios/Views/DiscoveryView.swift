@@ -18,8 +18,11 @@ struct DiscoveryView: View {
                 List(Array(scooterManager.discoveredScooters.values)) { scooter in
                     HStack {
                         VStack(alignment: .leading) {
-                            NavigationLink(scooter.name, value: scooter).bold()
+                            NavigationLink(scooter.name, value: scooter).bold().font(.title2)
                             Text(scooter.model.name)
+                            if (scooter.mac != "") {
+                                Text(scooter.mac)
+                            }
                             Text("RSSI: \(scooter.rssi)dB")
                         }
                         Spacer()
