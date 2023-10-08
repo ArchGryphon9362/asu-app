@@ -1,18 +1,18 @@
 //
-//  FlashView.swift
-//  shut-ios
+//  ConfigView.swift
+//  asu-app
 //
 //  Created by ArchGryphon9362 on 01/10/2023.
 //
 
 import SwiftUI
 
-struct FlashView: View {
+struct ConfigView: View {
     var body: some View {
-        Text("Flash tab")
+        Text("Config tab")
     }
 }
 
 #Preview {
-    FlashView()
+    ConfigView()
 }

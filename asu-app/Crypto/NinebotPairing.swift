@@ -1,6 +1,6 @@
 //
 //  NinebotPairing.swift
-//  shut-ios
+//  asu-app
 //
 //  Created by ArchGryphon9362 on 08/10/2023.
 //

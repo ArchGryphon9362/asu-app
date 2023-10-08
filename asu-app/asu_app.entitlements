@@ -10,7 +10,7 @@
 	<true/>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)com.archgryphon.shut-ios</string>
+		<string>$(AppIdentifierPrefix)com.archgryphon.asu-app</string>
 	</array>
 </dict>
 </plist>

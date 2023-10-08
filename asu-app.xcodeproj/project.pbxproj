@@ -25,7 +25,7 @@
 		FC5F338E2AC98ABC006B4E0B /* ScooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F338D2AC98ABC006B4E0B /* ScooterView.swift */; };
 		FC5F33902AC9D6B0006B4E0B /* ScooterIcons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC5F338F2AC9D6B0006B4E0B /* ScooterIcons.xcassets */; };
 		FC8DE1B72ACCAE7300E92501 /* XiaomiCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC8DE1B62ACCAE7300E92501 /* XiaomiCrypto.swift */; };
-		FCA1AAE42AC1A4D1004578F4 /* SHUTApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA1AAE32AC1A4D1004578F4 /* SHUTApp.swift */; };
+		FCA1AAE42AC1A4D1004578F4 /* ASUApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA1AAE32AC1A4D1004578F4 /* ASUApp.swift */; };
 		FCA1AAE62AC1A4D1004578F4 /* DiscoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA1AAE52AC1A4D1004578F4 /* DiscoveryView.swift */; };
 		FCA1AAE82AC1A4D2004578F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCA1AAE72AC1A4D2004578F4 /* Assets.xcassets */; };
 		FCA328452ACB2B08004D39B6 /* MessageGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA328442ACB2B08004D39B6 /* MessageGlue.swift */; };
@@ -49,11 +49,11 @@
 		FC5F338D2AC98ABC006B4E0B /* ScooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterView.swift; sourceTree = "<group>"; };
 		FC5F338F2AC9D6B0006B4E0B /* ScooterIcons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ScooterIcons.xcassets; sourceTree = "<group>"; };
 		FC8DE1B62ACCAE7300E92501 /* XiaomiCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiaomiCrypto.swift; sourceTree = "<group>"; };
-		FCA1AAE02AC1A4D1004578F4 /* shut-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "shut-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		FCA1AAE32AC1A4D1004578F4 /* SHUTApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHUTApp.swift; sourceTree = "<group>"; };
+		FCA1AAE02AC1A4D1004578F4 /* asu-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "asu-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FCA1AAE32AC1A4D1004578F4 /* ASUApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASUApp.swift; sourceTree = "<group>"; };
 		FCA1AAE52AC1A4D1004578F4 /* DiscoveryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiscoveryView.swift; sourceTree = "<group>"; };
 		FCA1AAE72AC1A4D2004578F4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		FCA1AAE92AC1A4D2004578F4 /* shut_ios.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = shut_ios.entitlements; sourceTree = "<group>"; };
+		FCA1AAE92AC1A4D2004578F4 /* asu_app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = asu_app.entitlements; sourceTree = "<group>"; };
 		FCA328442ACB2B08004D39B6 /* MessageGlue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageGlue.swift; sourceTree = "<group>"; };
 		FCA328462ACB6B1F004D39B6 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -120,7 +120,7 @@
 		FCA1AAD72AC1A4D1004578F4 = {
 			isa = PBXGroup;
 			children = (
-				FCA1AAE22AC1A4D1004578F4 /* shut-ios */,
+				FCA1AAE22AC1A4D1004578F4 /* asu-app */,
 				FCA1AAE12AC1A4D1004578F4 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -128,12 +128,12 @@
 		FCA1AAE12AC1A4D1004578F4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				FCA1AAE02AC1A4D1004578F4 /* shut-ios.app */,
+				FCA1AAE02AC1A4D1004578F4 /* asu-app.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		FCA1AAE22AC1A4D1004578F4 /* shut-ios */ = {
+		FCA1AAE22AC1A4D1004578F4 /* asu-app */ = {
 			isa = PBXGroup;
 			children = (
 				FC0579F42AC9DC90004D8C1F /* Views */,
@@ -142,18 +142,18 @@
 				FC8DE1BA2ACCAF3500E92501 /* AppLogic */,
 				FC0579FF2ACA24BA004D8C1F /* Constants.swift */,
 				FCA328462ACB6B1F004D39B6 /* Utilities.swift */,
-				FCA1AAE32AC1A4D1004578F4 /* SHUTApp.swift */,
-				FCA1AAE92AC1A4D2004578F4 /* shut_ios.entitlements */,
+				FCA1AAE32AC1A4D1004578F4 /* ASUApp.swift */,
+				FCA1AAE92AC1A4D2004578F4 /* asu_app.entitlements */,
 			);
-			path = "shut-ios";
+			path = "asu-app";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		FCA1AADF2AC1A4D1004578F4 /* shut-ios */ = {
+		FCA1AADF2AC1A4D1004578F4 /* asu-app */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FCA1AAEF2AC1A4D2004578F4 /* Build configuration list for PBXNativeTarget "shut-ios" */;
+			buildConfigurationList = FCA1AAEF2AC1A4D2004578F4 /* Build configuration list for PBXNativeTarget "asu-app" */;
 			buildPhases = (
 				FCA1AADC2AC1A4D1004578F4 /* Sources */,
 				FCA1AADD2AC1A4D1004578F4 /* Frameworks */,
@@ -163,13 +163,13 @@
 			);
 			dependencies = (
 			);
-			name = "shut-ios";
+			name = "asu-app";
 			packageProductDependencies = (
 				FC5F33882AC33945006B4E0B /* CryptoSwift */,
 				FC5F338B2AC374DB006B4E0B /* OrderedCollections */,
 			);
 			productName = "shut-ios";
-			productReference = FCA1AAE02AC1A4D1004578F4 /* shut-ios.app */;
+			productReference = FCA1AAE02AC1A4D1004578F4 /* asu-app.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -187,7 +187,7 @@
 					};
 				};
 			};
-			buildConfigurationList = FCA1AADB2AC1A4D1004578F4 /* Build configuration list for PBXProject "shut-ios" */;
+			buildConfigurationList = FCA1AADB2AC1A4D1004578F4 /* Build configuration list for PBXProject "asu-app" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -204,7 +204,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				FCA1AADF2AC1A4D1004578F4 /* shut-ios */,
+				FCA1AADF2AC1A4D1004578F4 /* asu-app */,
 			);
 		};
 /* End PBXProject section */
@@ -244,7 +244,7 @@
 				FC0579F82AC9DCC0004D8C1F /* InfoView.swift in Sources */,
 				FC298CAF2AD25374000B9E55 /* NinebotPairing.swift in Sources */,
 				FC298CB12AD2588A000B9E55 /* XiaomiPairing.swift in Sources */,
-				FCA1AAE42AC1A4D1004578F4 /* SHUTApp.swift in Sources */,
+				FCA1AAE42AC1A4D1004578F4 /* ASUApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -370,7 +370,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "shut-ios/shut_ios.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "asu-app/asu_app.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -378,7 +378,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Archs Scooter Utility";
+				INFOPLIST_KEY_CFBundleDisplayName = "Arch's Scooter Utility";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Used to communicate with your electric scooter";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -390,12 +391,12 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 13.4;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.archgryphon.shut-ios";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.archgryphon.asu-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -410,7 +411,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "shut-ios/shut_ios.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "asu-app/asu_app.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
@@ -418,7 +419,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Archs Scooter Utility";
+				INFOPLIST_KEY_CFBundleDisplayName = "Arch's Scooter Utility";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Used to communicate with your electric scooter";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -430,12 +432,12 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 13.4;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.archgryphon.shut-ios";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.archgryphon.asu-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -448,7 +450,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		FCA1AADB2AC1A4D1004578F4 /* Build configuration list for PBXProject "shut-ios" */ = {
+		FCA1AADB2AC1A4D1004578F4 /* Build configuration list for PBXProject "asu-app" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				FCA1AAED2AC1A4D2004578F4 /* Debug */,
@@ -457,7 +459,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		FCA1AAEF2AC1A4D2004578F4 /* Build configuration list for PBXNativeTarget "shut-ios" */ = {
+		FCA1AAEF2AC1A4D2004578F4 /* Build configuration list for PBXNativeTarget "asu-app" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				FCA1AAF02AC1A4D2004578F4 /* Debug */,

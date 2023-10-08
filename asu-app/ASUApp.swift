@@ -1,6 +1,6 @@
 //
-//  shut_iosApp.swift
-//  shut-ios
+//  ASUApp.swift
+//  asu-app
 //
 //  Created by ArchGryphon9362 on 25/09/2023.
 //
@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct SHUTApp: App {
+struct ASUApp: App {
     let scooterManager: ScooterManager
     
     init() {
@@ -19,7 +19,7 @@ struct SHUTApp: App {
         WindowGroup {
             DiscoveryView()
                 .environmentObject(scooterManager)
-                .navigationTitle("Archs Scooter Utility")
+                .navigationTitle("Arch's Scooter Utility")
         }
     }
 }

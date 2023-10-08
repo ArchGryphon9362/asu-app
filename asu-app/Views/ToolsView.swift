@@ -1,18 +1,18 @@
 //
-//  ConfigView.swift
-//  shut-ios
+//  ToolsView.swift
+//  asu-app
 //
 //  Created by ArchGryphon9362 on 01/10/2023.
 //
 
 import SwiftUI
 
-struct ConfigView: View {
+struct ToolsView: View {
     var body: some View {
-        Text("Config tab")
+        Text("Tools tab")
     }
 }
 
 #Preview {
-    ConfigView()
+    ToolsView()
 }

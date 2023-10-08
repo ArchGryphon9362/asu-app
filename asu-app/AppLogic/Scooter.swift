@@ -1,7 +1,7 @@
 // Thanks to Basse for providing the beacon parsing code and all the models
 //
 //  Scooter.swift
-//  shut-ios
+//  asu-app
 //
 //  Created by ArchGryphon9362 on 25/09/2023.
 //
