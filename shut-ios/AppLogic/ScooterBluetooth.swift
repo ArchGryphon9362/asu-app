@@ -11,7 +11,7 @@ import CoreBluetooth
 enum ConnectionState {
     case disconnected
     case connecting
-    case preparing
+    case ready
     case pairing
     case connected
     
@@ -20,11 +20,17 @@ enum ConnectionState {
         // Use Internationalization, as appropriate.
         case .disconnected: return "dis"
         case .connecting: return "con.."
-        case .preparing: return "prep"
+        case .ready: return "ready"
         case .pairing: return "pair"
         case .connected: return "con!"
         }
     }
+}
+
+protocol ScooterBluetoothDelegate {
+    func scooterBluetooth(_ scooterBluetooth: ScooterBluetooth, didDiscover scooter: DiscoveredScooter, forIdentifier: UUID)
+    func scooterBluetoothDidUpdateState(_ scooterBluetooth: ScooterBluetooth)
+    func scooterBluetooth(_ scooterBluetooth: ScooterBluetooth, didReceive data: Data, forCharacteristic uuid: CBUUID)
 }
 
 class DiscoveredScooter : ObservableObject, Identifiable, Hashable {
@@ -48,9 +54,9 @@ class DiscoveredScooter : ObservableObject, Identifiable, Hashable {
     }
 
     static func == (lhs: DiscoveredScooter, rhs: DiscoveredScooter) -> Bool {
-        return lhs.name  == rhs.name &&
-               lhs.model == rhs.model &&
-               lhs.rssi  == rhs.rssi &&
+        return lhs.name        == rhs.name &&
+               lhs.model       == rhs.model &&
+               lhs.rssi        == rhs.rssi &&
                lhs.peripheral  == rhs.peripheral
     }
 }
@@ -65,60 +71,97 @@ extension Array {
 }
 
 // TODO: clear scooter list when no more bluetooth (or something)
-// TODO: perhaps store current peripherals identifier to ensure double connections can't affect the intended connection
+// TODO: perhaps store current peripheral's identifier to ensure double connections can't affect the intended connection
 class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, ObservableObject {
-    let scooterManager: ScooterManager
     let bluetoothManager: CBCentralManager
-    @Published var connectionState: ConnectionState
+    var connectionState: ConnectionState
     
-    private var writeChar: CBCharacteristic?
-    private var peripheral: CBPeripheral?
-    private var selectedProtocol: SelectedProtocol
-    private var ninebotCrypto: NinebotCrypto
-    private var xiaomiCrypto: XiaomiCrypto
+    private var scooterBluetoothDelegate: ScooterBluetoothDelegate?
+    private var scooterProtocol: ScooterProtocol
     private var messageGlue: MessageGlue
     
+    private var peripheral: CBPeripheral?
+    private var serialWriteChar: CBCharacteristic?
     private var upnpChar: CBCharacteristic?
     private var avdtpChar: CBCharacteristic?
     
-    private var requestScheduler: Timer
+    private var writeScheduler: Timer
+    private var scheduledWrites: [(_ serialWrite: (Data) -> (), _ upnpWrite: (Data) -> (), _ avdtpWrite: (Data) -> ()) -> (Bool)]
     
-    private func setConnectionState(_ connectionState: ConnectionState) {
-        self.connectionState = connectionState
-        self.scooterManager.scooter.connectionState = connectionState
-        if (connectionState == .disconnected) {
-            self.scooterManager.scooter.reset()
-            self.writeChar = nil
-            self.peripheral = nil
-            self.ninebotCrypto.Reset()
-            self.upnpChar = nil
-            self.avdtpChar = nil
-            self.requestScheduler.invalidate()
+    private func writeLoop() {
+        guard let peripheral = self.peripheral else {
+            return
         }
+        
+        let maxSize = peripheral.maximumWriteValueLength(for: .withoutResponse)
+        
+        var tempScheduledWrites: [(_ serialWrite: (Data) -> (), _ upnpWrite: (Data) -> (), _ avdtpWrite: (Data) -> ()) -> (Bool)] = []
+        for scheduledWrite in self.scheduledWrites {
+            let keepWriting = scheduledWrite({ data in
+                if let serialWriteChar = self.serialWriteChar {
+                    for chunk in data.bytes.chunked(into: maxSize) {
+                        peripheral.writeValue(Data(chunk), for: serialWriteChar, type: .withoutResponse)
+                    }
+                }
+            }, { data in
+                if let upnpChar = self.upnpChar {
+                    for chunk in data.bytes.chunked(into: maxSize) {
+                        peripheral.writeValue(Data(chunk), for: upnpChar, type: .withoutResponse)
+                    }
+                }
+            }, { data in
+                if let avdtpChar = self.avdtpChar {
+                    for chunk in data.bytes.chunked(into: maxSize) {
+                        peripheral.writeValue(Data(chunk), for: avdtpChar, type: .withoutResponse)
+                    }
+                }
+            })
+            if keepWriting {
+                tempScheduledWrites.append(scheduledWrite)
+            }
+        }
+        self.scheduledWrites = tempScheduledWrites
     }
     
-    init(_ scooterManager: ScooterManager) {
-        self.scooterManager = scooterManager
+    override init() {
         self.bluetoothManager = CBCentralManager()
         self.connectionState = .disconnected
-        self.selectedProtocol = .ninebotCrypto
-        self.ninebotCrypto = .init()
-        self.ninebotCrypto.Reset()
-        self.xiaomiCrypto = .init()
-        self.messageGlue = .init(selectedProtocol: selectedProtocol, payloadSize: 20) // setting to some random crap so compiler doesn't complain
+        self.scooterProtocol = .ninebot(true)
+        self.messageGlue = .init(scooterProtocol: scooterProtocol, payloadSize: 20) // setting to some random crap so compiler doesn't complain
         
-        self.requestScheduler = Timer()
+        self.writeScheduler = Timer()
+        self.scheduledWrites = []
         
         super.init()
         
         self.bluetoothManager.delegate = self
     }
     
-    func connect(_ peripheral: CBPeripheral, name: String, selectedProtocol: SelectedProtocol) {
+    func setConnectionState(_ connectionState: ConnectionState) {
+        guard self.connectionState != connectionState else {
+            return
+        }
+        
+        self.connectionState = connectionState
+        self.scooterBluetoothDelegate?.scooterBluetoothDidUpdateState(self)
+        if (connectionState == .disconnected) {
+            self.peripheral = nil
+            self.serialWriteChar = nil
+            self.upnpChar = nil
+            self.avdtpChar = nil
+            self.writeScheduler.invalidate()
+            self.scheduledWrites = []
+        }
+    }
+    
+    func setScooterBluetoothDelegate(_ scooterBluetoothDelegate: ScooterBluetoothDelegate) {
+        self.scooterBluetoothDelegate = scooterBluetoothDelegate
+    }
+    
+    func connect(_ peripheral: CBPeripheral, name: String, scooterProtocol: ScooterProtocol) {
         guard bluetoothManager.state == .poweredOn else { return }
-        self.ninebotCrypto.SetName(name)
         setConnectionState(.connecting)
-        self.selectedProtocol = selectedProtocol
+        self.scooterProtocol = scooterProtocol
         bluetoothManager.connect(peripheral)
     }
     
@@ -128,27 +171,11 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         bluetoothManager.cancelPeripheralConnection(peripheral)
     }
     
-    func write(_ data: Data) {
-        guard let writeChar = self.writeChar, let peripheral = self.peripheral else {
+    func write(writeLoop: @escaping (_ serialWrite: (Data) -> (), _ upnpWrite: (Data) -> (), _ avdtpWrite: (Data) -> ()) -> (Bool)) {
+        guard self.connectionState != .disconnected else {
             return
         }
-        let maxSize = peripheral.maximumWriteValueLength(for: .withoutResponse)
-        
-        let length = UInt8((data.count - 4) & 0xff)
-        
-        switch(selectedProtocol) {
-        case .ninebotCrypto:
-            let encryptedData = self.ninebotCrypto.Encrypt(ninebotHeader.bytes + [length] + data.bytes) ?? []
-            
-            for chunk in encryptedData.chunked(into: maxSize) {
-                peripheral.writeValue(Data(chunk), for: writeChar, type: .withoutResponse)
-            }
-        case .xiaomiCrypto:
-            print("oh fuck, we can't write")
-            return
-        default:
-            return
-        }
+        self.scheduledWrites.append(writeLoop)
     }
     
     // central manager delegate methods
@@ -162,11 +189,17 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     }
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        guard let name = advertisementData[CBAdvertisementDataLocalNameKey] as? String else {
-            return
-        }
+        let name = advertisementData[CBAdvertisementDataLocalNameKey] as? String ?? "" // weird asf if no name but :shrug:
         
         var mac = ""
+        guard let manufacturerData = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data else {
+            return // unsupported
+        }
+        guard let model = ScooterModel.fromAdvertisement(manufactuerData: manufacturerData) else {
+            print(dataToHex(data: manufacturerData))
+            return // unsupported
+        }
+        
         let serviceData = advertisementData[CBAdvertisementDataServiceDataKey] as? [CBUUID: NSData] ?? [:]
         if serviceData.count >= 1 {
             let data = Data(Array(serviceData.values)[0].reversed())
@@ -181,18 +214,17 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             }
         }
         
-        scooterManager.discoveredScooters[peripheral.identifier] = DiscoveredScooter(
+        scooterBluetoothDelegate?.scooterBluetooth(self, didDiscover: DiscoveredScooter(
             name: name,
-            model: .XiaomiPro2, // TODO: no it isn't (at least we don't know yet)
+            model: model, // TODO: no it isn't (at least we don't know yet)
             rssi: RSSI.intValue,
             mac: mac, // TODO: check if this mac stuff is done by nb!!
             peripheral: peripheral
-        )
+        ), forIdentifier: peripheral.identifier)
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        setConnectionState(.preparing)
-        self.messageGlue = .init(selectedProtocol: self.selectedProtocol, payloadSize: peripheral.maximumWriteValueLength(for: .withoutResponse))
+        self.messageGlue = .init(scooterProtocol: self.scooterProtocol, payloadSize: peripheral.maximumWriteValueLength(for: .withoutResponse))
         
         peripheral.delegate = self
         
@@ -230,8 +262,8 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         if let xiaoAuthService = xiaoAuthService {
             let xiaoAuthChars = [xiaoUPNPCharUUID, xiaoAVDTPCharUUID]
             peripheral.discoverCharacteristics(xiaoAuthChars, for: xiaoAuthService)
-        } else if self.selectedProtocol == .xiaomiCrypto {
-            print("Missing Xiaomi auth services")
+        } else if case let .xiaomi(crypto) = self.scooterProtocol, crypto {
+            print("Missing Xiaomi auth services!!") // TODO: fallback to nbauth??
             disconnect(peripheral)
             return
         }
@@ -265,17 +297,26 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             }
             
             peripheral.setNotifyValue(true, for: rxChar)
-            self.writeChar = txChar
+            self.serialWriteChar = txChar
             self.peripheral = peripheral
             
-            if (self.selectedProtocol == .ninebotCrypto) {
-                self.requestScheduler.invalidate()
-                self.requestScheduler = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-                    self.write(Data(hex: "3e215b00"))
+            var ready: Bool {
+                switch(self.scooterProtocol) {
+                case .ninebot: return true
+                case let .xiaomi(crypto): return crypto
                 }
             }
+            
+            // if ninebotCrypto
+            if ready {
+                self.writeScheduler.invalidate()
+                self.writeScheduler = Timer.scheduledTimer(withTimeInterval: messageFrequency, repeats: true) { _ in
+                    self.writeLoop()
+                }
+                setConnectionState(.ready)
+            }
         case xiaoAuthServiceUUID:
-            guard self.selectedProtocol == .xiaomiCrypto else {
+            guard case let .xiaomi(crypto) = self.scooterProtocol, crypto else {
                 return
             }
             
@@ -308,105 +349,23 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         default: break
         }
         
-        guard self.writeChar != nil, let upnpChar = self.upnpChar, self.avdtpChar != nil, self.selectedProtocol == .xiaomi else {
+        guard self.serialWriteChar != nil, let upnpChar = self.upnpChar, self.avdtpChar != nil, case let .xiaomi(crypto) = self.scooterProtocol, crypto else {
             return
         }
-        peripheral.writeValue(Data(hex: "A4"), for: upnpChar, type: .withoutResponse)
+        setConnectionState(.ready)
+//        peripheral.writeValue(Data(hex: "A4"), for: upnpChar, type: .withoutResponse)
     }
     
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        switch(characteristic.uuid) {
-        case serialRXCharUUID:
-            guard let rawMsg = characteristic.value else {
-                // don't want partial raw
-                return
-            }
-            
-            guard let fullRawMsg = self.messageGlue.put(data: rawMsg.bytes) else {
-                // don't want fully raw either
-                return
-            }
-            
-            switch (selectedProtocol) {
-            case .ninebotCrypto:
-                guard let msg = self.ninebotCrypto.Decrypt(fullRawMsg) else {
-                    // cryptic isn't good either
-                    return
-                }
-                
-                guard msg.count > 6 else {
-                    // just ignore all the invalid messages
-                    return
-                }
-                
-                let src = msg[3]
-                let dst = msg[4]
-                let cmd = msg[5]
-                let arg = msg[6]
-                let payloadLength = msg.count - 0x07
-                
-                // do auth (nbauth, will need to add others later)
-                if (src == 0x21 &&
-                    dst == 0x3E &&
-                    cmd == 0x5B) {
-                    self.requestScheduler.invalidate()
-                    self.requestScheduler = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-                        self.write(Data(hex: "3e215c0000000000000000000000000000000000")) // <- final 16 bytes will be autofilled
-                    }
-                }
-                
-                if (src == 0x21 &&
-                    dst == 0x3E &&
-                    cmd == 0x5C) {
-                    if (arg == 0x00) {
-                        setConnectionState(.pairing)
-                    }
-                    self.requestScheduler.invalidate()
-                    self.requestScheduler = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-                        self.write(Data(hex: "3e215d00"))
-                    }
-                }
-                
-                if (src == 0x21 &&
-                    dst == 0x3E &&
-                    cmd == 0x5D &&
-                    arg == 0x01) {
-                    self.requestScheduler.invalidate()
-                    setConnectionState(.connected)
-                    
-                    // TODO: list of "wants" (once satisfied a timer stop looping)
-                    self.requestScheduler = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-                        let scooter = self.scooterManager.scooter
-                        
-                        if scooter?.serial == nil {
-                            self.write(Data(hex: "3e2001100e"))
-                        }
-                        
-                        if scooter?.esc == nil {
-                            self.write(Data(hex: "3e20011a02"))
-                        }
-                        
-                        if scooter?.bms == nil {
-                            self.write(Data(hex: "3e20016702"))
-                        }
-                        
-                        if scooter?.ble == nil {
-                            self.write(Data(hex: "3e20016802"))
-                        }
-                    }
-                }
-                
-                self.scooterManager.onRecv(msg: msg, src: src, dst: dst, cmd: cmd, arg: arg, payloadLength: payloadLength)
-            case .xiaomiCrypto:
-                print("oh boy oh fuck :/")
-                self.disconnect(peripheral)
-            default:
-                print("weird fuckery")
-                self.disconnect(peripheral)
-            }
-        case xiaoAVDTPCharUUID:
-            print(dataToHex(data: characteristic.value ?? Data()))
-        default: break
+        guard var data = characteristic.value else {
+            return
         }
+        if (characteristic.uuid == serialRXCharUUID) {
+            guard let stitchedData = self.messageGlue.put(data: data.bytes) else {
+                return
+            }
+            data = Data(stitchedData)
+        }
+        self.scooterBluetoothDelegate?.scooterBluetooth(self, didReceive: data, forCharacteristic: characteristic.uuid)
     }
 }

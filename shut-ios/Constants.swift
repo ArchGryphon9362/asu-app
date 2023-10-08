@@ -18,4 +18,6 @@ let xiaoUPNPCharUUID    = CBUUID(string: "00000010-0000-1000-8000-00805f9b34fb")
 //let xiaoKeyCharUUID     = CBUUID(string: "00000014-0000-1000-8000-00805f9b34fb")
 let xiaoAVDTPCharUUID   = CBUUID(string: "00000019-0000-1000-8000-00805f9b34fb")
 
+let messageFrequency = 0.25
+
 let ninebotHeader = Data(hex: "5aa5")

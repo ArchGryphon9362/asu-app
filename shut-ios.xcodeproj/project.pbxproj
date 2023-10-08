@@ -12,6 +12,7 @@
 		FC0579FC2AC9DCD3004D8C1F /* FlashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579FB2AC9DCD3004D8C1F /* FlashView.swift */; };
 		FC0579FE2AC9DCDD004D8C1F /* ConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579FD2AC9DCDD004D8C1F /* ConfigView.swift */; };
 		FC057A002ACA24BA004D8C1F /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579FF2ACA24BA004D8C1F /* Constants.swift */; };
+		FC298CAD2AD214CE000B9E55 /* ScooterCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC298CAC2AD214CD000B9E55 /* ScooterCrypto.swift */; };
 		FC5F337C2AC20BD6006B4E0B /* ScooterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */; };
 		FC5F337E2AC20BE1006B4E0B /* ScooterBluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */; };
 		FC5F33802AC213DE006B4E0B /* Scooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337F2AC213DE006B4E0B /* Scooter.swift */; };
@@ -35,6 +36,7 @@
 		FC0579FB2AC9DCD3004D8C1F /* FlashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashView.swift; sourceTree = "<group>"; };
 		FC0579FD2AC9DCDD004D8C1F /* ConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigView.swift; sourceTree = "<group>"; };
 		FC0579FF2ACA24BA004D8C1F /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		FC298CAC2AD214CD000B9E55 /* ScooterCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterCrypto.swift; sourceTree = "<group>"; };
 		FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterManager.swift; sourceTree = "<group>"; };
 		FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterBluetooth.swift; sourceTree = "<group>"; };
 		FC5F337F2AC213DE006B4E0B /* Scooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scooter.swift; sourceTree = "<group>"; };
@@ -87,13 +89,14 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
-		FC8DE1B92ACCAEE000E92501 /* Crpyto */ = {
+		FC8DE1B92ACCAEE000E92501 /* Crypto */ = {
 			isa = PBXGroup;
 			children = (
 				FC8DE1B62ACCAE7300E92501 /* XiaomiCrypto.swift */,
 				FC5F33852AC3391F006B4E0B /* NinebotCrypto.swift */,
+				FC298CAC2AD214CD000B9E55 /* ScooterCrypto.swift */,
 			);
-			path = Crpyto;
+			path = Crypto;
 			sourceTree = "<group>";
 		};
 		FC8DE1BA2ACCAF3500E92501 /* AppLogic */ = {
@@ -129,7 +132,7 @@
 			children = (
 				FC0579F42AC9DC90004D8C1F /* Views */,
 				FC8DE1B82ACCAEB400E92501 /* Assets */,
-				FC8DE1B92ACCAEE000E92501 /* Crpyto */,
+				FC8DE1B92ACCAEE000E92501 /* Crypto */,
 				FC8DE1BA2ACCAF3500E92501 /* AppLogic */,
 				FC0579FF2ACA24BA004D8C1F /* Constants.swift */,
 				FCA328462ACB6B1F004D39B6 /* Utilities.swift */,
@@ -225,6 +228,7 @@
 				FC8DE1B72ACCAE7300E92501 /* XiaomiCrypto.swift in Sources */,
 				FC5F337C2AC20BD6006B4E0B /* ScooterManager.swift in Sources */,
 				FC0579FA2AC9DCCC004D8C1F /* ToolsView.swift in Sources */,
+				FC298CAD2AD214CE000B9E55 /* ScooterCrypto.swift in Sources */,
 				FC0579FC2AC9DCD3004D8C1F /* FlashView.swift in Sources */,
 				FC057A002ACA24BA004D8C1F /* Constants.swift in Sources */,
 				FC5F337E2AC20BE1006B4E0B /* ScooterBluetooth.swift in Sources */,

@@ -18,7 +18,9 @@ struct DiscoveryView: View {
                 List(Array(scooterManager.discoveredScooters.values)) { scooter in
                     HStack {
                         VStack(alignment: .leading) {
-                            NavigationLink(scooter.name, value: scooter).bold().font(.title2)
+                            NavigationLink(scooter.name, value: scooter)
+                                .bold()
+                                .font(.title2)
                             Text(scooter.model.name)
                             if (scooter.mac != "") {
                                 Text(scooter.mac)
@@ -26,7 +28,11 @@ struct DiscoveryView: View {
                             Text("RSSI: \(scooter.rssi)dB")
                         }
                         Spacer()
-                        Image(scooter.model.image).resizable().aspectRatio(contentMode: .fit).frame(height: 80)
+                        Image(scooter.model.image)
+                            .resizable()
+                            .interpolation(.high)
+                            .aspectRatio(contentMode: .fit)
+                            .frame(height: 80)
                     }.listRowSeparator(.visible)
                 }
                 .scrollContentBackground(.hidden).listStyle(.inset)
@@ -38,9 +44,4 @@ struct DiscoveryView: View {
             }
         }
     }
-}
-
-#Preview {
-    DiscoveryView()
-        .environmentObject(ScooterManager())
 }

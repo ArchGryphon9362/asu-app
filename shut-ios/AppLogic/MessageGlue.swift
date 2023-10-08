@@ -8,40 +8,43 @@
 
 import Foundation
 
-enum SelectedProtocol {
-    case ninebot
-    case ninebotCrypto
-    case xiaomi
-    case xiaomiCrypto
-}
-
 class MessageGlue {
-    private var preamble: [UInt8] = [UInt8](repeating: 0, count: 2)
-    private var readFromPayload: Int = 0
+    private var preamble: [UInt8] {
+        switch(self.scooterProtocol) {
+        case .ninebot:
+                return [0x5A, 0xA5]
+        case .xiaomi:
+            if self.scooterProtocol.crypto {
+                return [0x55, 0xAA]
+            } else {
+                return [0x55, 0xAB]
+            }
+        }
+    }
+    private var readFromPayload: Int {
+        switch(self.scooterProtocol) {
+        case let .ninebot(crypto):
+            if crypto {
+                return 13
+            } else {
+                return 9
+            }
+        case let .xiaomi(crypto):
+            if crypto {
+                return 16
+            } else {
+                return 6
+            }
+        }
+    }
     private var leftToRead: Int = 0
     private var fullMessage: [UInt8]?
     private var payloadSize: Int
+    private var scooterProtocol: ScooterProtocol
 
-    init(selectedProtocol: SelectedProtocol, payloadSize: Int) {
+    init(scooterProtocol: ScooterProtocol, payloadSize: Int) {
         self.payloadSize = payloadSize
-        switch selectedProtocol {
-        case .ninebot:
-            preamble[0] = 0x5A
-            preamble[1] = 0xA5
-            readFromPayload = 9
-        case .ninebotCrypto:
-            preamble[0] = 0x5A
-            preamble[1] = 0xA5
-            readFromPayload = 13
-        case .xiaomi:
-            preamble[0] = 0x55
-            preamble[1] = 0xAA
-            readFromPayload = 6
-        case .xiaomiCrypto:
-            preamble[0] = 0x55
-            preamble[1] = 0xAB
-            readFromPayload = 16
-        }
+        self.scooterProtocol = scooterProtocol
     }
 
     func put(data: [UInt8]) -> [UInt8]? {
