@@ -38,14 +38,16 @@ class DiscoveredScooter : ObservableObject, Identifiable, Hashable {
     let model: ScooterModel
     @Published var rssi: Int
     let mac: String
+    let serviceData: Data
     
     let peripheral: CBPeripheral
     
-    init(name: String, model: ScooterModel, rssi: Int, mac: String, peripheral: CBPeripheral) {
+    init(name: String, model: ScooterModel, rssi: Int, mac: String, serviceData: Data, peripheral: CBPeripheral) {
         self.name = name
         self.model = model
         self.rssi = rssi
         self.mac = mac
+        self.serviceData = serviceData
         self.peripheral = peripheral
     }
     
@@ -75,6 +77,7 @@ extension Array {
 class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, ObservableObject {
     let bluetoothManager: CBCentralManager
     var connectionState: ConnectionState
+    var blockDisconnectUpdates: Bool
     
     private var scooterBluetoothDelegate: ScooterBluetoothDelegate?
     private var scooterProtocol: ScooterProtocol
@@ -132,6 +135,7 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     override init() {
         self.bluetoothManager = CBCentralManager()
         self.connectionState = .disconnected
+        self.blockDisconnectUpdates = false
         self.scooterProtocol = .ninebot(true)
         self.messageGlue = .init(scooterProtocol: scooterProtocol, payloadSize: 20) // setting to some random crap so compiler doesn't complain
         
@@ -223,9 +227,10 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         
         scooterBluetoothDelegate?.scooterBluetooth(self, didDiscover: DiscoveredScooter(
             name: name,
-            model: model, // TODO: no it isn't (at least we don't know yet)
+            model: model,
             rssi: RSSI.intValue,
             mac: mac, // TODO: check if this mac stuff is done by nb!!
+            serviceData: Data(Array(serviceData.values)[0]),
             peripheral: peripheral
         ), forIdentifier: peripheral.identifier)
     }

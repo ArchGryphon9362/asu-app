@@ -36,7 +36,8 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         scooterBluetooth.connect(discoveredScooter.peripheral, name: name, scooterProtocol: discoveredScooter.model.scooterProtocol)
     }
     
-    func disconnectFromScooter() {
+    func disconnectFromScooter(updateUi: Bool) {
+        self.scooterBluetooth.blockDisconnectUpdates = !updateUi
         scooterBluetooth.disconnect(nil)
     }
     
@@ -99,22 +100,32 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     }
     
     func scooterBluetooth(_ scooterBluetooth: ScooterBluetooth, didDiscover scooter: DiscoveredScooter, forIdentifier: UUID) {
+        if let oldScooter = self.discoveredScooters[forIdentifier] {
+            if scooterCrypto.awaitingButtonPress && oldScooter.serviceData != scooter.serviceData {
+                self.connectToScooter(discoveredScooter: scooter)
+            }
+        }
+        
         self.discoveredScooters[forIdentifier] = scooter
     }
     
     func scooterBluetoothDidUpdateState(_ scooterBluetooth: ScooterBluetooth) {
         self.scooter.connectionState = scooterBluetooth.connectionState
+        self.scooter.pairing = self.scooter.pairing || (scooterBluetooth.connectionState == .pairing)
         
         switch(scooterBluetooth.connectionState) {
         case .disconnected:
-            self.scooter.reset()
-            self.scooterCrypto.reset()
+            if !self.scooterBluetooth.blockDisconnectUpdates {
+                self.scooter.reset()
+                self.scooterCrypto.reset()
+            }
         case .ready:
             if !self.scooterCrypto.paired {
                 self.scooterCrypto.startPairing(self)
             }
         case .connected:
             // collect infos
+            // TODO: cmd generator?
             self.write(Data(hex: "2001100e")) { self.scooter.serial == nil }
             self.write(Data(hex: "20011a02")) { self.scooter.esc == nil }
             self.write(Data(hex: "20016702")) { self.scooter.bms == nil }

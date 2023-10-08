@@ -22,6 +22,7 @@ class XiaomiPairing {
     var paired: Bool {
         self.authState == .paired
     }
+    var awaitingButtonPress: Bool
     
     private var authState: XiaomiAuthState
     private var gotKeyApproval: Bool
@@ -34,6 +35,7 @@ class XiaomiPairing {
     private var expectedFrames: Int
     init() {
         self.authState = .unpaired
+        self.awaitingButtonPress = false
         self.gotKeyApproval = false
         self.dataToSend = Data()
         self.remoteInfo = Data()
@@ -101,7 +103,9 @@ class XiaomiPairing {
                 }
                 
                 if data == xiaoRcvRdy {
+                    self.awaitingButtonPress = false
                     self.gotKeyApproval = true
+                    scooterManager.scooterBluetooth.blockDisconnectUpdates = false
                     scooterManager.scooterBluetooth.write { _, _, avdtpWrite in
                         avdtpWrite(self.dataToSend, true)
                         return false
@@ -141,10 +145,28 @@ class XiaomiPairing {
             
             self.authState = .sendKey
             self.dataToSend = scooterManager.scooterCrypto.getMiAuthPublicKey()[1...]
+            
+            var tryOnce = true
+            var waitedIterations = 0
             scooterManager.scooterBluetooth.write { _, upnpWrite, avdtpWrite in
-                upnpWrite(xiaoCmdSetKey)
-                avdtpWrite(xiaoCmdSendData, false)
-                return false
+                if tryOnce {
+                    tryOnce = false
+                    upnpWrite(xiaoCmdSetKey)
+                    avdtpWrite(xiaoCmdSendData, false)
+                    return true
+                }
+                if self.gotKeyApproval {
+                    return false
+                }
+                
+                waitedIterations += 1
+                if waitedIterations >= Int(1 / messageFrequency) {
+                    scooterManager.scooterBluetooth.setConnectionState(.pairing)
+                    self.awaitingButtonPress = true
+                    scooterManager.disconnectFromScooter(updateUi: false)
+                    return false
+                }
+                return true
             }
         case .sendKey:
             self.authState = .receiveKey
@@ -157,7 +179,7 @@ class XiaomiPairing {
             self.remoteKey = Data([0x04] + data.bytes)
             
             guard let did = self.calcDid(scooterManager) else {
-                scooterManager.disconnectFromScooter()
+                scooterManager.disconnectFromScooter(updateUi: true)
                 return
             }
             self.dataToSend = did.0

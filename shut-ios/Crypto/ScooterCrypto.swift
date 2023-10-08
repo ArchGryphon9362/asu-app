@@ -18,6 +18,12 @@ class ScooterCrypto {
         default: true
         }
     }
+    var awaitingButtonPress: Bool {
+        switch(self.scooterProtocol) {
+        case .xiaomi(true): self.xiaomiPairing.awaitingButtonPress
+        default: false
+        }
+    }
     
     // TODO: make the cryptos and pairings extend some generic maybe?
     private var ninebotCrypto: NinebotCrypto

@@ -44,19 +44,26 @@ struct ScooterView: View {
             self.scooterManager.connectToScooter(discoveredScooter: discoveredScooter)
         }
         .onDisappear {
-            self.scooterManager.disconnectFromScooter()
+            self.scooterManager.disconnectFromScooter(updateUi: true)
         }
         // TODO: replace onChange with non-deprecated version when is fine (bc not supported on macos <14 :/)
         .onChange(of: scooter.connectionState) { state in
-            if state == .disconnected {
-                self.presentation.wrappedValue.dismiss()
-            }
-            
-            if state == .pairing {
+            if scooter.pairing {
                 // totally not stolen line
-                self.connectingMessage = "Pairing with scooter...\n\nIf this does nothing after a few seconds, please toggle the headlight by pressing the power button."
+                switch(scooter.model?.scooterProtocol) {
+                case .xiaomi(true): self.connectingMessage = "Pairing with scooter...\n\nPlease toggle the headlight by pressing the power button."
+                default: self.connectingMessage = "Pairing with scooter...\n\nIf this does nothing after a few seconds, please toggle the headlight by pressing the power button."
+                }
             } else {
                 self.connectingMessage = "Please wait..."
+            }
+            
+            guard !self.scooterManager.scooterBluetooth.blockDisconnectUpdates else {
+                return
+            }
+            
+            if state == .disconnected {
+                self.presentation.wrappedValue.dismiss()
             }
             
             self.showConnectingPopup = state != .connected && state != .disconnected
@@ -67,7 +74,8 @@ struct ScooterView: View {
                 title: Text("Connecting..."), // TODO: allowing heading to change too
                 message: message,
                 dismissButton: .destructive(Text("Disconnect")) {
-                    self.scooterManager.disconnectFromScooter()
+                    self.scooterManager.disconnectFromScooter(updateUi: true)
+                    self.presentation.wrappedValue.dismiss()
                 }
             )
         }
