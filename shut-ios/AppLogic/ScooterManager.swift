@@ -9,26 +9,26 @@ import SwiftUI
 import Foundation
 import CoreBluetooth
 import OrderedCollections
+import CryptoKit
 
+// TODO: lower min ios version to 13 or 14
 class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     @Published var discoveredScooters: OrderedDictionary<UUID, DiscoveredScooter>
     @Published var scooter: Scooter
     @Published var scooterBluetooth: ScooterBluetooth
-    
-    private var scooterCrypto: ScooterCrypto
+    var scooterCrypto: ScooterCrypto
     
     init() {
         self.discoveredScooters = [:]
         self.scooter = Scooter()
         self.scooterBluetooth = ScooterBluetooth()
-        
         self.scooterCrypto = .init()
         
         self.scooterBluetooth.setScooterBluetoothDelegate(self)
     }
     
     func connectToScooter(discoveredScooter: DiscoveredScooter) {
-        var name = discoveredScooter.name
+        let name = discoveredScooter.name
         
         scooter.model = discoveredScooter.model
         self.scooterCrypto.setName(name)
@@ -36,22 +36,65 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         scooterBluetooth.connect(discoveredScooter.peripheral, name: name, scooterProtocol: discoveredScooter.model.scooterProtocol)
     }
     
-    func disconnectFromScooter(scooter: DiscoveredScooter) {
-        scooterBluetooth.disconnect(scooter.peripheral)
+    func disconnectFromScooter() {
+        scooterBluetooth.disconnect(nil)
     }
     
     func write(_ data: Data, keepTrying: @escaping () -> (Bool)) {
-        self.scooterBluetooth.write { serialWrite, upnpWrite, avdtpWrite in
-            guard keepTrying() else {
-                return false
+        switch (self.scooter.model?.scooterProtocol) {
+        case .ninebot(true):
+            self.scooterBluetooth.write { serialWrite, upnpWrite, avdtpWrite in
+                guard keepTrying() else {
+                    return false
+                }
+                
+                let length = UInt8((data.count - 3) & 0xff)
+                
+                let encryptedData = self.scooterCrypto.encrypt(ninebotHeader.bytes + [length, 0x3e] + data.bytes)
+                serialWrite(encryptedData)
+                
+                return true
             }
-            
-            let length = UInt8((data.count - 4) & 0xff)
-            
-            let encryptedData = self.scooterCrypto.encrypt(ninebotHeader.bytes + [length] + data.bytes)
-            serialWrite(encryptedData)
-            
-            return true
+        case .xiaomi(true):
+            self.scooterBluetooth.write { serialWrite, upnpWrite, avdtpWrite in
+                guard keepTrying() else {
+                    return false
+                }
+                
+                let length = UInt8((data.count - 3) & 0xff)
+                
+                let encryptedData = self.scooterCrypto.encrypt(xiaomiCryptHeader.bytes + [length] + data.bytes)
+                serialWrite(encryptedData)
+                
+                return true
+            }
+        case .ninebot(false):
+            self.scooterBluetooth.write { serialWrite, upnpWrite, avdtpWrite in
+                guard keepTrying() else {
+                    return false
+                }
+                
+                let length = UInt8((data.count - 3) & 0xff)
+                
+                let fullData = Data(ninebotHeader.bytes + [length, 0x3e] + data.bytes)
+                serialWrite(fullData)
+                
+                return true
+            }
+        case .xiaomi(false):
+            self.scooterBluetooth.write { serialWrite, upnpWrite, avdtpWrite in
+                guard keepTrying() else {
+                    return false
+                }
+                
+                let length = UInt8((data.count - 3) & 0xff)
+                
+                let fullData = Data(xiaomiHeader.bytes + [length] + data.bytes)
+                serialWrite(fullData)
+                
+                return true
+            }
+        default: return
         }
     }
     
@@ -72,17 +115,21 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             }
         case .connected:
             // collect infos
-            self.write(Data(hex: "3e2001100e")) { self.scooter.serial == nil }
-            self.write(Data(hex: "3e20011a02")) { self.scooter.esc == nil }
-            self.write(Data(hex: "3e20016702")) { self.scooter.bms == nil }
-            self.write(Data(hex: "3e20016802")) { self.scooter.ble == nil }
+            self.write(Data(hex: "2001100e")) { self.scooter.serial == nil }
+            self.write(Data(hex: "20011a02")) { self.scooter.esc == nil }
+            self.write(Data(hex: "20016702")) { self.scooter.bms == nil }
+            self.write(Data(hex: "20016802")) { self.scooter.ble == nil }
         default: return
         }
     }
     
     func scooterBluetooth(_ scooterBluetooth: ScooterBluetooth, didReceive data: Data, forCharacteristic uuid: CBUUID) {
-        guard let data = self.scooterCrypto.decrypt(data) else {
-            return
+        var data = data
+        if uuid == serialRXCharUUID {
+            guard let decryptedData = self.scooterCrypto.decrypt(data) else {
+                return
+            }
+            data = decryptedData
         }
         
         if !self.scooterCrypto.paired {

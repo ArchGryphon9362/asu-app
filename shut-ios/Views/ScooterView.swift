@@ -44,7 +44,7 @@ struct ScooterView: View {
             self.scooterManager.connectToScooter(discoveredScooter: discoveredScooter)
         }
         .onDisappear {
-            self.scooterManager.disconnectFromScooter(scooter: discoveredScooter)
+            self.scooterManager.disconnectFromScooter()
         }
         // TODO: replace onChange with non-deprecated version when is fine (bc not supported on macos <14 :/)
         .onChange(of: scooter.connectionState) { state in
@@ -67,7 +67,7 @@ struct ScooterView: View {
                 title: Text("Connecting..."), // TODO: allowing heading to change too
                 message: message,
                 dismissButton: .destructive(Text("Disconnect")) {
-                    self.scooterManager.disconnectFromScooter(scooter: discoveredScooter)
+                    self.scooterManager.disconnectFromScooter()
                 }
             )
         }

@@ -11,3 +11,4 @@ Thanks so much to the following people:
 
 - BX LR (aka Charles): For creating ScooterHacking and helping with the message stitching code
 - Basse: For giving me beacon parsing code for detecting scooter model
+- dnandha: For creating the Python miauth library

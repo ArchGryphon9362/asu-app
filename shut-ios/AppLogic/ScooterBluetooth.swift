@@ -86,7 +86,7 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     private var avdtpChar: CBCharacteristic?
     
     private var writeScheduler: Timer
-    private var scheduledWrites: [(_ serialWrite: (Data) -> (), _ upnpWrite: (Data) -> (), _ avdtpWrite: (Data) -> ()) -> (Bool)]
+    private var scheduledWrites: [(_ serialWrite: (Data) -> (), _ upnpWrite: (Data) -> (), _ avdtpWrite: (Data, Bool) -> ()) -> (Bool)]
     
     private func writeLoop() {
         guard let peripheral = self.peripheral else {
@@ -95,7 +95,7 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         
         let maxSize = peripheral.maximumWriteValueLength(for: .withoutResponse)
         
-        var tempScheduledWrites: [(_ serialWrite: (Data) -> (), _ upnpWrite: (Data) -> (), _ avdtpWrite: (Data) -> ()) -> (Bool)] = []
+        var tempScheduledWrites: [(_ serialWrite: (Data) -> (), _ upnpWrite: (Data) -> (), _ avdtpWrite: (Data, Bool) -> ()) -> (Bool)] = []
         for scheduledWrite in self.scheduledWrites {
             let keepWriting = scheduledWrite({ data in
                 if let serialWriteChar = self.serialWriteChar {
@@ -109,10 +109,16 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
                         peripheral.writeValue(Data(chunk), for: upnpChar, type: .withoutResponse)
                     }
                 }
-            }, { data in
+            }, { data, withLength in
                 if let avdtpChar = self.avdtpChar {
-                    for chunk in data.bytes.chunked(into: maxSize) {
-                        peripheral.writeValue(Data(chunk), for: avdtpChar, type: .withoutResponse)
+                    if withLength {
+                        for (index, chunk) in data.bytes.chunked(into: maxSize - 2).enumerated() {
+                            peripheral.writeValue(Data([UInt8(index + 1), 0] + chunk), for: avdtpChar, type: .withoutResponse)
+                        }
+                    } else {
+                        for chunk in data.bytes.chunked(into: maxSize) {
+                            peripheral.writeValue(Data(chunk), for: avdtpChar, type: .withoutResponse)
+                        }
                     }
                 }
             })
@@ -165,13 +171,14 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         bluetoothManager.connect(peripheral)
     }
     
-    func disconnect(_ peripheral: CBPeripheral) {
+    func disconnect(_ peripheral: CBPeripheral?) {
+        let peripheral = peripheral ?? self.peripheral
         setConnectionState(.disconnected)
-        guard bluetoothManager.state == .poweredOn else { return }
+        guard bluetoothManager.state == .poweredOn, let peripheral = peripheral else { return }
         bluetoothManager.cancelPeripheralConnection(peripheral)
     }
     
-    func write(writeLoop: @escaping (_ serialWrite: (Data) -> (), _ upnpWrite: (Data) -> (), _ avdtpWrite: (Data) -> ()) -> (Bool)) {
+    func write(writeLoop: @escaping (_ serialWrite: (Data) -> (), _ upnpWrite: (Data) -> (), _ avdtpWrite: (Data, Bool) -> ()) -> (Bool)) {
         guard self.connectionState != .disconnected else {
             return
         }
@@ -227,6 +234,7 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.messageGlue = .init(scooterProtocol: self.scooterProtocol, payloadSize: peripheral.maximumWriteValueLength(for: .withoutResponse))
         
         peripheral.delegate = self
+        self.peripheral = peripheral
         
         let services = [serialServiceUUID, xiaoAuthServiceUUID]
         peripheral.discoverServices(services)
@@ -298,7 +306,6 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             
             peripheral.setNotifyValue(true, for: rxChar)
             self.serialWriteChar = txChar
-            self.peripheral = peripheral
             
             var ready: Bool {
                 switch(self.scooterProtocol) {
@@ -349,7 +356,7 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         default: break
         }
         
-        guard self.serialWriteChar != nil, let upnpChar = self.upnpChar, self.avdtpChar != nil, case let .xiaomi(crypto) = self.scooterProtocol, crypto else {
+        guard self.serialWriteChar != nil, self.upnpChar != nil, self.avdtpChar != nil, case let .xiaomi(crypto) = self.scooterProtocol, crypto else {
             return
         }
         setConnectionState(.ready)
