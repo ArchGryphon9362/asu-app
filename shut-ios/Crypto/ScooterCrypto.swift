@@ -26,7 +26,7 @@ class ScooterCrypto {
     
     init() {
         self.paired = false
-        self.ninebotCrypto = .init()
+        self.ninebotCrypto = .init(false)
         self.ninebotAuthState = .unpaired
         self.xiaomiCrypto = .init()
         self.scooterProtocol = .ninebot(true)
@@ -49,7 +49,6 @@ class ScooterCrypto {
     
     func reset() {
         self.paired = false
-        self.ninebotCrypto = .init()
         self.ninebotCrypto.Reset()
         self.ninebotAuthState = .unpaired
         self.xiaomiCrypto = .init()

@@ -14,22 +14,31 @@ class NinebotCrypto {
     private var firmwareData: [UInt8] = [0x97, 0xCF, 0xB8, 0x02, 0x84, 0x41, 0x43, 0xDE, 0x56, 0x00, 0x2B, 0x3B, 0x34, 0x78, 0x0A, 0x5D]
     private var randomBLEData: [UInt8] = [] {
        didSet {
-           print("Set randomBLEData", randomBLEData)
+           if self.debug {
+               print("Set randomBLEData", randomBLEData)
+           }
        }
    } // 16
     private var randomAppData: [UInt8] = [UInt8]() {
         didSet {
-            print("Set randomAppData", randomAppData)
+            if self.debug {
+                print("Set randomAppData", randomAppData)
+            }
         }
     } // 16
     private var shaKey: [UInt8] = [UInt8]() // 16
     private var messageCount: UInt32 = 0
     private var deviceName: String!
     private var serialNumber: String?
+    
+    private var debug: Bool
 
-    public init() {}
+    public init(_ debug: Bool) {
+        self.debug = debug
+    }
 
-    public init(_ deviceName: String) {
+    public init(_ deviceName: String, _ debug: Bool) {
+        self.debug = debug
         self.SetName(deviceName)
     }
 
@@ -49,7 +58,9 @@ class NinebotCrypto {
 
     public func Decrypt(_ encryptedData: [UInt8]) -> [UInt8]? {
         if encryptedData[0] != 0x5A || encryptedData[1] != 0xA5 {
-            print("Refusing to attempt decryption of invalid payload!", encryptedData.toHexString())
+            if self.debug {
+                print("Refusing to attempt decryption of invalid payload!", encryptedData.toHexString())
+            }
             return nil
         }
         var decrypted: [UInt8] = [UInt8]()
@@ -64,15 +75,21 @@ class NinebotCrypto {
         payload = BlockCopy(encryptedData, 3, payload, 0, payloadLength)
         if newMessageCount == 0 {
             guard let decryptedPayload = CryptoFirst(payload) else {
-                print("Failed to encrypt payload to test equality during decryption of first message!")
+                if self.debug {
+                    print("Failed to encrypt payload to test equality during decryption of first message!")
+                }
                 return nil
             }
             guard let encryptedPayload = CryptoFirst(decryptedPayload) else {
-                print("Failed to encrypt decrypted payload to test equality during decryption of first message!")
+                if self.debug {
+                    print("Failed to encrypt decrypted payload to test equality during decryption of first message!")
+                }
                 return nil
             }
             if encryptedPayload != payload {
-                print("Decryption equality test failed during decryption of first message! Payload: \(payload.toHexString()), Decrypted Payload: \(decryptedPayload.toHexString()), Encrypted Payload: \(encryptedPayload.toHexString())")
+                if self.debug {
+                    print("Decryption equality test failed during decryption of first message! Payload: \(payload.toHexString()), Decrypted Payload: \(decryptedPayload.toHexString()), Encrypted Payload: \(encryptedPayload.toHexString())")
+                }
                 return nil
             }
             payload = decryptedPayload
@@ -84,22 +101,30 @@ class NinebotCrypto {
                 decrypted[4] == 0x3E &&
                 decrypted[5] == 0x5B ) {
                 self.serialNumber = String(data: Data(decrypted[decrypted.count - 15...decrypted.count - 1]), encoding: .ascii)
-                print("Found serial number", self.serialNumber ?? "NOT FOUND")
+                if self.debug {
+                    print("Found serial number", self.serialNumber ?? "NOT FOUND")
+                }
 
                 randomBLEData = BlockCopy(decrypted, 7, randomBLEData, 0, 16)
                 CalcSha1Key(Array<UInt8>(deviceName.utf8), randomBLEData)
             }
         } else if (newMessageCount > 0 && newMessageCount > messageCount) {
             guard let decryptedPayload = CryptoNext(payload, newMessageCount) else {
-                print("Failed to encrypt payload to test equality during decryption of after first message!")
+                if self.debug {
+                    print("Failed to encrypt payload to test equality during decryption of after first message!")
+                }
                 return nil
             }
             guard let encryptedPayload = CryptoNext(decryptedPayload, newMessageCount) else {
-                print("Failed to encrypt decrypted payload to test equality during decryption of after first message!")
+                if self.debug {
+                    print("Failed to encrypt decrypted payload to test equality during decryption of after first message!")
+                }
                 return nil
             }
             if encryptedPayload != payload {
-                print("Decryption equality test failed during decryption of after first message! Payload: \(payload.toHexString()), Decrypted Payload: \(decryptedPayload.toHexString()), Encrypted Payload: \(encryptedPayload.toHexString())")
+                if self.debug {
+                    print("Decryption equality test failed during decryption of after first message! Payload: \(payload.toHexString()), Decrypted Payload: \(decryptedPayload.toHexString()), Encrypted Payload: \(encryptedPayload.toHexString())")
+                }
                 return nil
             }
             payload = decryptedPayload
@@ -111,7 +136,9 @@ class NinebotCrypto {
                 decrypted[4] == 0x3E &&
                 decrypted[5] == 0x5C &&
                 decrypted[6] == 0x01) {
-                print("FILL TWO")
+                if self.debug {
+                    print("FILL TWO")
+                }
                 CalcSha1Key(Array<UInt8>(randomAppData.prefix(16)), randomBLEData)
             }
             messageCount = newMessageCount
@@ -121,7 +148,9 @@ class NinebotCrypto {
 
     public func Encrypt(_ decryptedData: [UInt8]) -> [UInt8]? {
         if decryptedData[0] != 0x5A || decryptedData[1] != 0xA5 {
-            print("Refusing to attempt encryption of invalid payload!", decryptedData.toHexString())
+            if self.debug {
+                print("Refusing to attempt encryption of invalid payload!", decryptedData.toHexString())
+            }
             return nil
         }
         var encrypted: [UInt8] = [UInt8](repeating: 0, count: 152) // 152
@@ -132,7 +161,9 @@ class NinebotCrypto {
         if messageCount == 0 {
             let crc = CalcCrcFirstMsg(payload)
             guard let firstPayload = CryptoFirst(payload) else {
-                print("Failed to encrypt payload to test equality during encryption of first message!")
+                if self.debug {
+                    print("Failed to encrypt payload to test equality during encryption of first message!")
+                }
                 return nil
             }
             payload = firstPayload
@@ -148,11 +179,15 @@ class NinebotCrypto {
         } else {
             messageCount += 1
             guard let crc = CalcCrcNextMsg(decryptedData, messageCount) else {
-                print("Failed to calculate CRC for next message")
+                if self.debug {
+                    print("Failed to calculate CRC for next message")
+                }
                 return nil
             }
             guard let nextPayload = CryptoNext(payload, messageCount) else {
-                print("Failed to encrypt decrypted payload to test equality during encryption of after first message!")
+                if self.debug {
+                    print("Failed to encrypt decrypted payload to test equality during encryption of after first message!")
+                }
                 return nil
             }
             payload = nextPayload
@@ -171,7 +206,9 @@ class NinebotCrypto {
                 decryptedData[4] == 0x21 &&
                 decryptedData[5] == 0x5C &&
                 decryptedData[6] == 0x00) {
-                print("FILL THREE")
+                if self.debug {
+                    print("FILL THREE")
+                }
                 randomAppData = BlockCopy(decryptedData, 7, randomAppData, 0, 16)
             }
         }
@@ -188,7 +225,9 @@ class NinebotCrypto {
             let tempLength = (payloadLength <= 16 ? payloadLength : 16)
             xorData1 = BlockCopy(inputData, byteIndex, xorData1, 0, tempLength)
             guard let aes_key = AesEcbEncrypt(firmwareData, shaKey) else {
-                print("Failed to get AES key during CryptoFirst!")
+                if self.debug {
+                    print("Failed to get AES key during CryptoFirst!")
+                }
                 return nil
             }
             xorData2 = BlockCopy(aes_key, 0, xorData2, 0, 16)
@@ -220,7 +259,9 @@ class NinebotCrypto {
             xorData1 = BlockCopy(inputData, byteIndex, xorData1, 0, tempLength)
             xorData1 = Array<UInt8>(xorData1.prefix(16))
             guard let aes_key = AesEcbEncrypt(encryptedData, shaKey) else {
-                print("Failed to get AES key during CryptoNext!")
+                if self.debug {
+                    print("Failed to get AES key during CryptoNext!")
+                }
                 return nil
             }
             xorData2 = BlockCopy(aes_key, 0, xorData2, 0, 16)
@@ -262,7 +303,9 @@ class NinebotCrypto {
         encryptedData.insert(UInt8(payloadLength), at: 15)
 
         guard var aesKey = AesEcbEncrypt(encryptedData, shaKey) else {
-            print("Failed to get first AES key during CalcCrcNextMsg!")
+            if self.debug {
+                print("Failed to get first AES key during CalcCrcNextMsg!")
+            }
             return nil
         }
 
@@ -271,7 +314,9 @@ class NinebotCrypto {
         xorData = xor(xorData1, xorData2)
 
         guard let encXorData = AesEcbEncrypt(xorData, shaKey) else {
-            print("Failed to get second AES key during CalcCrcNextMsg!")
+            if self.debug {
+                print("Failed to get second AES key during CalcCrcNextMsg!")
+            }
             return nil
         }
 
@@ -289,7 +334,9 @@ class NinebotCrypto {
             xorData = xor(xorData1, xorData2)
 
             guard let encXorData = AesEcbEncrypt(xorData, shaKey) else {
-                print("Failed to get AES key during rounds in CalcCrcNextMsg!")
+                if self.debug {
+                    print("Failed to get AES key during rounds in CalcCrcNextMsg!")
+                }
                 return nil
             }
 
@@ -303,15 +350,19 @@ class NinebotCrypto {
         encryptedData[0] = 1
         encryptedData[15] = 0
         guard let aesEncData = AesEcbEncrypt(encryptedData, shaKey) else {
-            print("Failed to AES encrypt payload in CalcCrcNextMsg!")
+            if self.debug {
+                print("Failed to AES encrypt payload in CalcCrcNextMsg!")
+            }
             return nil
         }
         aesKey = aesEncData
         xorData1 = BlockCopy(aesKey, 0, xorData1, 0, 4)
         xorData2 = BlockCopy(xorData2, 0, xorData2, 0, 4)
         let ret = xor(xorData1, xorData2)
-
-        print("CalcCrcNextMsg input = \"\(inputData.toHexString())\", output = \"\(ret.toHexString())\"")
+        
+        if self.debug {
+            print("CalcCrcNextMsg input = \"\(inputData.toHexString())\", output = \"\(ret.toHexString())\"")
+        }
         return ret
     }
 
@@ -328,7 +379,9 @@ class NinebotCrypto {
         do {
             return try AES(key: key, blockMode: ECB(), padding: .noPadding).encrypt(data)
         } catch {
-            print("Failed to encrypt!", error)
+            if self.debug {
+                print("Failed to encrypt!", error)
+            }
             return nil
         }
 
