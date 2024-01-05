@@ -27,7 +27,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         self.scooterBluetooth.setScooterBluetoothDelegate(self)
     }
     
-    func connectToScooter(discoveredScooter: DiscoveredScooter) {
+    func connectTo(discoveredScooter: DiscoveredScooter) {
         let name = discoveredScooter.name
         
         scooter.model = discoveredScooter.model
@@ -38,7 +38,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     
     func disconnectFromScooter(updateUi: Bool) {
         self.scooterBluetooth.blockDisconnectUpdates = !updateUi
-        scooterBluetooth.disconnect(nil)
+        scooterBluetooth.disconnect(nil, overridePairingMode: updateUi)
     }
     
     func write(_ data: Data, keepTrying: @escaping () -> (Bool)) {
@@ -51,7 +51,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
                 
                 let length = UInt8((data.count - 3) & 0xff)
                 
-                let encryptedData = self.scooterCrypto.encrypt(ninebotHeader.bytes + [length, 0x3e] + data.bytes)
+                let encryptedData = self.scooterCrypto.encrypt(Data(ninebotHeader.bytes + [length, 0x3e] + data.bytes))
                 serialWrite(encryptedData)
                 
                 return true
@@ -64,7 +64,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
                 
                 let length = UInt8((data.count - 3) & 0xff)
                 
-                let encryptedData = self.scooterCrypto.encrypt(xiaomiCryptHeader.bytes + [length] + data.bytes)
+                let encryptedData = self.scooterCrypto.encrypt(Data(xiaomiCryptHeader.bytes + [length] + data.bytes))
                 serialWrite(encryptedData)
                 
                 return true
@@ -102,7 +102,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     func scooterBluetooth(_ scooterBluetooth: ScooterBluetooth, didDiscover scooter: DiscoveredScooter, forIdentifier: UUID) {
         if let oldScooter = self.discoveredScooters[forIdentifier] {
             if scooterCrypto.awaitingButtonPress && oldScooter.serviceData != scooter.serviceData {
-                self.connectToScooter(discoveredScooter: scooter)
+                self.connectTo(discoveredScooter: scooter)
             }
         }
         
@@ -110,10 +110,11 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     }
     
     func scooterBluetoothDidUpdateState(_ scooterBluetooth: ScooterBluetooth) {
-        self.scooter.connectionState = scooterBluetooth.connectionState
-        self.scooter.pairing = self.scooter.pairing || (scooterBluetooth.connectionState == .pairing)
+        let connectionState = self.scooterBluetooth.connectionState
+        self.scooter.connectionState = connectionState
+        self.scooter.pairing = self.scooter.pairing || connectionState == .pairing
         
-        switch(scooterBluetooth.connectionState) {
+        switch(connectionState) {
         case .disconnected:
             if !self.scooterBluetooth.blockDisconnectUpdates {
                 self.scooter.reset()
@@ -121,7 +122,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             }
         case .ready:
             if !self.scooterCrypto.paired {
-                self.scooterCrypto.startPairing(self)
+                self.scooterCrypto.startPairing(withScooterManager: self)
             }
         case .connected:
             // collect infos
@@ -137,14 +138,12 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     func scooterBluetooth(_ scooterBluetooth: ScooterBluetooth, didReceive data: Data, forCharacteristic uuid: CBUUID) {
         var data = data
         if uuid == serialRXCharUUID {
-            guard let decryptedData = self.scooterCrypto.decrypt(data) else {
-                return
-            }
+            let decryptedData = self.scooterCrypto.decrypt(data)
             data = decryptedData
         }
         
         if !self.scooterCrypto.paired {
-            self.scooterCrypto.continuePairing(self, received: data, forCharacteristic: uuid)
+            self.scooterCrypto.continuePairing(withScooterManager: self, received: data, forCharacteristic: uuid)
         }
         
         guard data.count > 6 else {

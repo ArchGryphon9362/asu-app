@@ -27,9 +27,6 @@ class XiaomiPairing {
     private var authState: XiaomiAuthState
     private var gotKeyApproval: Bool
     private var dataToSend: Data
-    private var remoteInfo: Data
-    private var remoteKey: Data
-    private var token: Data
     
     private var authGlue: [UInt8]
     private var expectedFrames: Int
@@ -38,15 +35,12 @@ class XiaomiPairing {
         self.awaitingButtonPress = false
         self.gotKeyApproval = false
         self.dataToSend = Data()
-        self.remoteInfo = Data()
-        self.remoteKey = Data()
-        self.token = Data()
         
         self.authGlue = []
         self.expectedFrames = 0
     }
     
-    func startPairing(_ scooterManager: ScooterManager) {
+    func startPairing(withScooterManager scooterManager: ScooterManager) {
         guard !self.paired else {
             return
         }
@@ -60,7 +54,7 @@ class XiaomiPairing {
     }
     
     // TODO: if stuck any, disconnect
-    func continuePairing(_ scooterManager: ScooterManager, received data: Data, forCharacteristic uuid: CBUUID) {
+    func continuePairing(withScooterManager scooterManager: ScooterManager, received data: Data, forCharacteristic uuid: CBUUID) {
         if uuid != serialRXCharUUID {
             guard data.count >= 1 else {
                 return
@@ -94,7 +88,7 @@ class XiaomiPairing {
                         avdtpWrite(xiaoRcvOk, false)
                         return false
                     }
-                    self.handleState(scooterManager, received: Data(self.authGlue), forCharacteristic: uuid)
+                    self.handleState(withScooterManager: scooterManager, received: Data(self.authGlue), forCharacteristic: uuid)
                 }
             case .sendKey, .sendDid: // TODO: if stuck somewhere, disconnect!!
                 guard frame == 0 else {
@@ -116,17 +110,17 @@ class XiaomiPairing {
                     print("send data unknown error")
                 } else if data == xiaoRcvOk {
                     print("sent ok!!")
-                    self.handleState(scooterManager, received: data, forCharacteristic: uuid)
+                    self.handleState(withScooterManager: scooterManager, received: data, forCharacteristic: uuid)
                 }
             case .confirm:
-                self.handleState(scooterManager, received: data, forCharacteristic: uuid)
+                self.handleState(withScooterManager: scooterManager, received: data, forCharacteristic: uuid)
             default: return
             }
         }
     }
     
     // TODO: make this loop forever until user allows. when loop starts, switch to .pairing
-    func handleState(_ scooterManager: ScooterManager, received data: Data, forCharacteristic uuid: CBUUID) {
+    func handleState(withScooterManager scooterManager: ScooterManager, received data: Data, forCharacteristic uuid: CBUUID) {
         switch(self.authState) {
         case .receiveInfo:
             guard uuid == xiaoAVDTPCharUUID else {
@@ -136,15 +130,10 @@ class XiaomiPairing {
                 return
             }
             
-            self.remoteInfo = data[4...]
-            
-            guard self.remoteInfo.count == 20 else {
-                print("wrong length remote info")
-                return
-            }
+            let remoteInfo = data[4...]
             
             self.authState = .sendKey
-            self.dataToSend = scooterManager.scooterCrypto.getMiAuthPublicKey()[1...]
+            self.dataToSend = scooterManager.scooterCrypto.getPublicKey(withRemoteInfo: remoteInfo)[1...]
             
             var tryOnce = true
             var waitedIterations = 0
@@ -176,14 +165,13 @@ class XiaomiPairing {
                 return
             }
             
-            self.remoteKey = Data([0x04] + data.bytes)
+            let remoteKey = Data([0x04] + data.bytes)
             
-            guard let did = self.calcDid(scooterManager) else {
+            guard let did = scooterManager.scooterCrypto.calculateDid(withRemoteKey: remoteKey) else {
                 scooterManager.disconnectFromScooter(updateUi: true)
                 return
             }
-            self.dataToSend = did.0
-            self.token = did.1
+            self.dataToSend = did
             
             self.authState = .sendDid
             scooterManager.scooterBluetooth.write { _, _, avdtpWrite in
@@ -202,28 +190,5 @@ class XiaomiPairing {
             print("we're mi authenticated!!")
         default: return
         }
-    }
-    
-    func calcDid(_ scooterManager: ScooterManager) -> (Data, Data)? {
-        // return nil if exchange somehow failed :shrug:
-        guard let derivedKey = scooterManager.scooterCrypto.generateMiSecret(remoteKey: self.remoteKey, salt: nil) else {
-            return nil
-        }
-        let keyData = derivedKey.withUnsafeBytes {
-            return Data(Array($0))
-        }
-        guard keyData.count == 64 else {
-            print("symmetric key of wrong length")
-            return nil
-        }
-        
-        let token = keyData[0..<12]
-        let a = keyData[28..<44]
-        
-        let did = self.remoteInfo
-        guard let didCt = scooterManager.scooterCrypto.encryptDid(key: a, did: did) else {
-            return nil
-        }
-        return (didCt, token)
     }
 }

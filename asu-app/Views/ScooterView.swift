@@ -41,18 +41,21 @@ struct ScooterView: View {
                 .padding()
         }
         .onAppear {
-            self.scooterManager.connectToScooter(discoveredScooter: discoveredScooter)
+            self.scooterManager.connectTo(discoveredScooter: discoveredScooter)
         }
         .onDisappear {
             self.scooterManager.disconnectFromScooter(updateUi: true)
+            self.connectingMessage = "Please wait..."
         }
         // TODO: replace onChange with non-deprecated version when is fine (bc not supported on macos <14 :/)
         .onChange(of: scooter.connectionState) { state in
             if scooter.pairing {
-                // totally not stolen line
                 switch(scooter.model?.scooterProtocol) {
-                case .xiaomi(true): self.connectingMessage = "Pairing with scooter...\n\nPlease toggle the headlight by pressing the power button."
-                default: self.connectingMessage = "Pairing with scooter...\n\nIf this does nothing after a few seconds, please toggle the headlight by pressing the power button."
+                case .xiaomi(true):
+                    self.connectingMessage = "Pairing with scooter...\n\nPlease toggle the headlight by pressing the power button."
+                default:
+                    // totally not stolen line
+                    self.connectingMessage = "Pairing with scooter...\n\nIf this does nothing after a few seconds, please toggle the headlight by pressing the power button."
                 }
             } else {
                 self.connectingMessage = "Please wait..."
@@ -75,6 +78,7 @@ struct ScooterView: View {
                 message: message,
                 dismissButton: .destructive(Text("Disconnect")) {
                     self.scooterManager.disconnectFromScooter(updateUi: true)
+                    self.connectingMessage = "Please wait..."
                     self.presentation.wrappedValue.dismiss()
                 }
             )

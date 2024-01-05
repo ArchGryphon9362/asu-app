@@ -49,8 +49,6 @@ class ScooterCrypto {
 
         self.ninebotCrypto.SetName(name)
         self.ninebotCrypto.Reset()
-        
-        print("mi auth public key: \(dataToHex(data: self.getMiAuthPublicKey()))")
     }
     
     func setProtocol(_ scooterProtocol: ScooterProtocol) {
@@ -65,23 +63,45 @@ class ScooterCrypto {
         self.scooterProtocol = .ninebot(true)
     }
     
-    func getMiAuthPublicKey() -> Data {
-        self.xiaomiCrypto.getPublicKey()
+    // TODO: get rid of all of these single checks, and do some sort of catch-all
+    func getPublicKey(withRemoteInfo remoteInfo: Data) -> Data {
+        switch(self.scooterProtocol) {
+        case .xiaomi(true):
+            self.xiaomiCrypto.getPublicKey(withRemoteInfo: remoteInfo)
+        default: Data()
+        }
     }
     
-    func generateMiSecret(remoteKey: Data, salt: Data?) -> SymmetricKey? {
-        self.xiaomiCrypto.generateSecret(remoteKey: remoteKey, salt: salt)
+    func generateSecret(withRemoteKey remoteKey: Data) -> SharedKey? {
+        switch(self.scooterProtocol) {
+        case .xiaomi(true):
+            self.xiaomiCrypto.generateSecret(withRemoteKey: remoteKey)
+        default: nil
+        }
     }
     
-    func encryptDid(key: Data, did: Data) -> Data? {
-        self.xiaomiCrypto.encryptDid(key: key, did: did)
+    func calculateEncryptionKeys(keys: Data) -> (info: Data, expectedRemoteInfo: Data)? {
+        switch(self.scooterProtocol) {
+        case .xiaomi(true):
+            let validationInfo = self.xiaomiCrypto.calculateEncryptionKeys(keys: keys)
+            return validationInfo
+        default: return nil
+        }
     }
     
-    func encrypt(_ data: [UInt8]) -> Data {
+    func calculateDid(withRemoteKey remoteKey: Data) -> Data? {
+        switch(self.scooterProtocol) {
+        case .xiaomi(true):
+            self.xiaomiCrypto.calculateDid(withRemoteKey: remoteKey)
+        default: nil
+        }
+    }
+    
+    func encrypt(_ data: Data) -> Data {
         switch(self.scooterProtocol) {
         case .ninebot(true):
-            let encrypted = self.ninebotCrypto.Encrypt(data)
-            return Data(encrypted ?? [])
+            let encrypted = self.ninebotCrypto.Encrypt(data.bytes)
+            return Data(encrypted ?? data.bytes)
         case .xiaomi(true):
             print("encrypt fuck")
             fallthrough
@@ -90,13 +110,13 @@ class ScooterCrypto {
         }
     }
     
-    func decrypt(_ data: Data) -> Data? {
+    func decrypt(_ data: Data) -> Data {
         switch(self.scooterProtocol) {
         case .ninebot(true):
-            guard let encrypted = self.ninebotCrypto.Decrypt(data.bytes) else {
-                return nil
+            guard let decrypted = self.ninebotCrypto.Decrypt(data.bytes) else {
+                return Data(data)
             }
-            return Data(encrypted)
+            return Data(decrypted)
         case .xiaomi(true):
             print("decrypt fuck")
             fallthrough
@@ -105,30 +125,30 @@ class ScooterCrypto {
         }
     }
     
-    func startPairing(_ scooterManager: ScooterManager) {
+    func startPairing(withScooterManager scooterManager: ScooterManager) {
         switch(self.scooterProtocol) {
         case .ninebot(true):
             guard !self.ninebotPairing.paired else {
                 return
             }
             
-            self.ninebotPairing.startPairing(scooterManager)
+            self.ninebotPairing.startPairing(withScooterManager: scooterManager)
         case .xiaomi(true):
             guard !self.xiaomiPairing.paired else {
                 return
             }
             
-            self.xiaomiPairing.startPairing(scooterManager)
+            self.xiaomiPairing.startPairing(withScooterManager: scooterManager)
         default: return
         }
     }
     
-    func continuePairing(_ scooterManager: ScooterManager, received data: Data, forCharacteristic uuid: CBUUID) {
+    func continuePairing(withScooterManager scooterManager: ScooterManager, received data: Data, forCharacteristic uuid: CBUUID) {
         switch (self.scooterProtocol) {
         case .ninebot(true):
-            self.ninebotPairing.continuePairing(scooterManager, received: data, forCharacteristic: uuid)
+            self.ninebotPairing.continuePairing(withScooterManager: scooterManager, received: data, forCharacteristic: uuid)
         case .xiaomi(true):
-            self.xiaomiPairing.continuePairing(scooterManager, received: data, forCharacteristic: uuid)
+            self.xiaomiPairing.continuePairing(withScooterManager: scooterManager, received: data, forCharacteristic: uuid)
         default: return
         }
     }

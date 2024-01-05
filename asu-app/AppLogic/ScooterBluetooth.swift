@@ -72,7 +72,7 @@ extension Array {
     }
 }
 
-// TODO: clear scooter list when no more bluetooth (or something)
+// TODO: clear scooter list when no more bluetooth (or something) (maybe check if peripheral was invalidated or RSSI -100?)
 // TODO: perhaps store current peripheral's identifier to ensure double connections can't affect the intended connection
 class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, ObservableObject {
     let bluetoothManager: CBCentralManager
@@ -147,14 +147,16 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.bluetoothManager.delegate = self
     }
     
-    func setConnectionState(_ connectionState: ConnectionState) {
-        guard self.connectionState != connectionState else {
+    func setConnectionState(_ connectionState: ConnectionState, overridePairingMode: Bool = false) {
+        guard self.connectionState != connectionState || overridePairingMode else {
             return
         }
         
         self.connectionState = connectionState
-        self.scooterBluetoothDelegate?.scooterBluetoothDidUpdateState(self)
         if (connectionState == .disconnected) {
+            if overridePairingMode {
+                self.blockDisconnectUpdates = false
+            }
             self.peripheral = nil
             self.serialWriteChar = nil
             self.upnpChar = nil
@@ -162,6 +164,7 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             self.writeScheduler.invalidate()
             self.scheduledWrites = []
         }
+        self.scooterBluetoothDelegate?.scooterBluetoothDidUpdateState(self)
     }
     
     func setScooterBluetoothDelegate(_ scooterBluetoothDelegate: ScooterBluetoothDelegate) {
@@ -175,9 +178,9 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         bluetoothManager.connect(peripheral)
     }
     
-    func disconnect(_ peripheral: CBPeripheral?) {
+    func disconnect(_ peripheral: CBPeripheral?, overridePairingMode: Bool = false) {
         let peripheral = peripheral ?? self.peripheral
-        setConnectionState(.disconnected)
+        setConnectionState(.disconnected, overridePairingMode: overridePairingMode)
         guard bluetoothManager.state == .poweredOn, let peripheral = peripheral else { return }
         bluetoothManager.cancelPeripheralConnection(peripheral)
     }

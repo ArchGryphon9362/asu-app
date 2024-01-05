@@ -22,12 +22,24 @@ class NinebotPairing {
     }
     
     private var authState: NinebotAuthState
+    private var randomPairingData: Data
     
     init() {
         self.authState = .unpaired
+        
+        var bytes = [UInt8](repeating: 0, count: 16)
+        let status = SecRandomCopyBytes(kSecRandomDefault, bytes.count, &bytes)
+
+
+        if status == errSecSuccess {
+            self.randomPairingData = Data(bytes)
+        } else {
+            print("Failed to generate random Ninebot pairing data, falling back to array of 0's")
+            self.randomPairingData = Data(count: 16)
+        }
     }
     
-    func startPairing(_ scooterManager: ScooterManager) {
+    func startPairing(withScooterManager scooterManager: ScooterManager) {
         guard !self.paired else {
             return
         }
@@ -36,7 +48,7 @@ class NinebotPairing {
         scooterManager.write(Data(hex: "215b00")) { self.authState == .start }
     }
     
-    func continuePairing(_ scooterManager: ScooterManager, received data: Data, forCharacteristic uuid: CBUUID) {
+    func continuePairing(withScooterManager scooterManager: ScooterManager, received data: Data, forCharacteristic uuid: CBUUID) {
         guard uuid == serialRXCharUUID else {
             return
         }
@@ -59,7 +71,7 @@ class NinebotPairing {
             dst == 0x3E &&
             cmd == 0x5B) {
             self.authState = .buttonPress
-            scooterManager.write(Data(hex: "215c0000000000000000000000000000000000")) { self.authState == .buttonPress }
+            scooterManager.write(Data(hex: "215c00") + self.randomPairingData) { self.authState == .buttonPress }
         }
         
         if (src == 0x21 &&
