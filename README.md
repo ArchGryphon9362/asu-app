@@ -10,4 +10,5 @@ Thanks so much to the following people:
 - Basse: For giving me beacon parsing code for detecting scooter model
 - dnandha: For creating the Python miauth library
 - Majsi: For reversing and creating the original (C#) implementation of NinebotCrypto
-- robbiet480 (aka Robbie): For creating the Swift implementation of NinebotCrypto
+- robbiet480 (aka Robbie): For creating the original Swift implementation of NinebotCrypto
+- Lex Nastin: For creating a much improved Swift implementation of NinebotCrypto

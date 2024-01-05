@@ -9,7 +9,7 @@ import Foundation
 import CoreBluetooth
 import CryptoKit
 
-fileprivate let debugnbcrypto = false
+fileprivate let debugnbcrypto = true
 class ScooterCrypto {
     var paired: Bool {
         switch(self.scooterProtocol) {
@@ -33,7 +33,7 @@ class ScooterCrypto {
     private var scooterProtocol: ScooterProtocol
     
     init() {
-        self.ninebotCrypto = .init(debugnbcrypto)
+        self.ninebotCrypto = .init(debug: debugnbcrypto)
         self.ninebotPairing = .init()
         self.xiaomiCrypto = .init()
         self.xiaomiPairing = .init()
@@ -47,8 +47,7 @@ class ScooterCrypto {
             name = name.padding(toLength: 12, withPad: "\0", startingAt: 0)
         }
 
-        self.ninebotCrypto.SetName(name)
-        self.ninebotCrypto.Reset()
+        self.ninebotCrypto.setName(name)
     }
     
     func setProtocol(_ scooterProtocol: ScooterProtocol) {
@@ -56,8 +55,9 @@ class ScooterCrypto {
     }
     
     func reset() {
-        self.ninebotCrypto.Reset()
+        self.ninebotCrypto.reset()
         self.ninebotPairing = .init()
+        // TODO: why is mi crypto being reset multiple times
         self.xiaomiCrypto = .init() // TODO: replace with a reset (in case fallback key was used, we don't want to be regenerating it every reconnect)
         self.xiaomiPairing = .init()
         self.scooterProtocol = .ninebot(true)
@@ -100,8 +100,8 @@ class ScooterCrypto {
     func encrypt(_ data: Data) -> Data {
         switch(self.scooterProtocol) {
         case .ninebot(true):
-            let encrypted = self.ninebotCrypto.Encrypt(data.bytes)
-            return Data(encrypted ?? data.bytes)
+            let encrypted = self.ninebotCrypto.encrypt(data)
+            return encrypted ?? data
         case .xiaomi(true):
             print("encrypt fuck")
             fallthrough
@@ -113,7 +113,7 @@ class ScooterCrypto {
     func decrypt(_ data: Data) -> Data {
         switch(self.scooterProtocol) {
         case .ninebot(true):
-            guard let decrypted = self.ninebotCrypto.Decrypt(data.bytes) else {
+            guard let decrypted = self.ninebotCrypto.decrypt(data) else {
                 return Data(data)
             }
             return Data(decrypted)

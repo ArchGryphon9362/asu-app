@@ -18,7 +18,7 @@ let xiaomiHeader = Data(hex: "55aa")
 
 let messageFrequency = 0.25
 
-let forceNbCrypto = true
+let forceNbCrypto = false
 
 // don't ask me what upnp or avdtp means. got those names from the miauth python library
 let xiaoAuthServiceUUID = CBUUID(string: "0000fe95-0000-1000-8000-00805f9b34fb")
