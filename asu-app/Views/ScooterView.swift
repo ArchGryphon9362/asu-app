@@ -13,6 +13,7 @@ struct ScooterView: View {
     @EnvironmentObject var scooterManager: ScooterManager
     @StateObject var scooter: Scooter
     var discoveredScooter: DiscoveredScooter
+    var forceNbCrypto: Bool
     
     @State private var showConnectingPopup = false
     @State private var connectingMessage = "Please wait..."
@@ -41,7 +42,7 @@ struct ScooterView: View {
                 .padding()
         }
         .onAppear {
-            self.scooterManager.connectTo(discoveredScooter: discoveredScooter)
+            self.scooterManager.connectTo(discoveredScooter: discoveredScooter, forceNbCrypto: self.forceNbCrypto)
         }
         .onDisappear {
             self.scooterManager.disconnectFromScooter(updateUi: true)
@@ -50,7 +51,7 @@ struct ScooterView: View {
         // TODO: replace onChange with non-deprecated version when is fine (bc not supported on macos <14 :/)
         .onChange(of: scooter.connectionState) { state in
             if scooter.pairing {
-                switch(scooter.model?.scooterProtocol) {
+                switch(scooter.model?.scooterProtocol(forceNbCrypto: self.forceNbCrypto)) {
                 case .xiaomi(true):
                     self.connectingMessage = "Pairing with scooter...\n\nPlease toggle the headlight by pressing the power button."
                 default:

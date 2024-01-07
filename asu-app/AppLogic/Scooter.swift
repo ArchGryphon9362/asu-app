@@ -123,34 +123,41 @@ enum ScooterModel : Equatable {
         }
     }
     
-    var scooterProtocol: ScooterProtocol {
-        
+    private var _scooterProtocol: ScooterProtocol {
         switch(self) {
-        case let .XiaomiM365(crypto):       return forceNbCrypto ? .ninebot(crypto) : .xiaomi(crypto)
-        case let .NinebotESx(crypto):       return                                    .ninebot(crypto)
-        case let .XiaomiPro(crypto):        return forceNbCrypto ? .ninebot(crypto) : .xiaomi(crypto)
-        case let .NinebotAirT15(crypto):    return                                    .ninebot(crypto)
-        case let .NinebotMaxG30(crypto):    return                                    .ninebot(crypto)
-        case let .NinebotMaxG65(crypto):    return                                    .ninebot(crypto)
-        case let .NinebotMaxG2(crypto):     return                                    .ninebot(crypto)
-        case let .NinebotE(crypto):         return                                    .ninebot(crypto)
-        case let .NinebotE2(crypto):        return                                    .ninebot(crypto)
-        case let .Xiaomi1S(crypto):         return forceNbCrypto ? .ninebot(crypto) : .xiaomi(crypto)
-        case let .XiaomiPro2(crypto):       return forceNbCrypto ? .ninebot(crypto) : .xiaomi(crypto)
-        case let .XiaomiLite(crypto):       return forceNbCrypto ? .ninebot(crypto) : .xiaomi(crypto)
-        case let .Xiaomi3(crypto):          return forceNbCrypto ? .ninebot(crypto) : .xiaomi(crypto)
-        case let .NinebotF2(crypto):        return                                    .ninebot(crypto)
-        case let .NinebotF(crypto):         return                                    .ninebot(crypto)
-        case let .NinebotF65(crypto):       return                                    .ninebot(crypto)
-        case let .NinebotGT1(crypto):       return                                    .ninebot(crypto)
-        case let .NinebotGT2(crypto):       return                                    .ninebot(crypto)
-        case let .NinebotD28(crypto):       return                                    .ninebot(crypto)
-        case let .NinebotD38(crypto):       return                                    .ninebot(crypto)
-        case let .NinebotD18(crypto):       return                                    .ninebot(crypto)
-        case let .NinebotP65(crypto):       return                                    .ninebot(crypto)
-        case let .NinebotP100(crypto):      return                                    .ninebot(crypto)
-        case let .NinebotX160(crypto):      return                                    .ninebot(crypto)
+        case let .XiaomiM365(crypto):       return .xiaomi(crypto)
+        case let .NinebotESx(crypto):       return .ninebot(crypto)
+        case let .XiaomiPro(crypto):        return .xiaomi(crypto)
+        case let .NinebotAirT15(crypto):    return .ninebot(crypto)
+        case let .NinebotMaxG30(crypto):    return .ninebot(crypto)
+        case let .NinebotMaxG65(crypto):    return .ninebot(crypto)
+        case let .NinebotMaxG2(crypto):     return .ninebot(crypto)
+        case let .NinebotE(crypto):         return .ninebot(crypto)
+        case let .NinebotE2(crypto):        return .ninebot(crypto)
+        case let .Xiaomi1S(crypto):         return .xiaomi(crypto)
+        case let .XiaomiPro2(crypto):       return .xiaomi(crypto)
+        case let .XiaomiLite(crypto):       return .xiaomi(crypto)
+        case let .Xiaomi3(crypto):          return .xiaomi(crypto)
+        case let .NinebotF2(crypto):        return .ninebot(crypto)
+        case let .NinebotF(crypto):         return .ninebot(crypto)
+        case let .NinebotF65(crypto):       return .ninebot(crypto)
+        case let .NinebotGT1(crypto):       return .ninebot(crypto)
+        case let .NinebotGT2(crypto):       return .ninebot(crypto)
+        case let .NinebotD28(crypto):       return .ninebot(crypto)
+        case let .NinebotD38(crypto):       return .ninebot(crypto)
+        case let .NinebotD18(crypto):       return .ninebot(crypto)
+        case let .NinebotP65(crypto):       return .ninebot(crypto)
+        case let .NinebotP100(crypto):      return .ninebot(crypto)
+        case let .NinebotX160(crypto):      return .ninebot(crypto)
         }
+    }
+    
+    func scooterProtocol(forceNbCrypto: Bool) -> ScooterProtocol {
+        if forceNbCrypto {
+            return .ninebot(self._scooterProtocol.crypto)
+        }
+        
+        return self._scooterProtocol
     }
     
     static func fromAdvertisement(manufactuerData: Data) -> Self? {

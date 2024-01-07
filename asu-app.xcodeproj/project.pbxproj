@@ -41,6 +41,10 @@
 		FC298CAC2AD214CD000B9E55 /* ScooterCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterCrypto.swift; sourceTree = "<group>"; };
 		FC298CAE2AD25374000B9E55 /* NinebotPairing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NinebotPairing.swift; sourceTree = "<group>"; };
 		FC298CB02AD2588A000B9E55 /* XiaomiPairing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiaomiPairing.swift; sourceTree = "<group>"; };
+		FC5DE3D82B4AED97003DE7AB /* asu-app-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "asu-app-Bridging-Header.h"; sourceTree = "<group>"; };
+		FC5DE3D92B4AED97003DE7AB /* CBCentralManagerHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CBCentralManagerHandler.m; sourceTree = "<group>"; };
+		FC5DE3DB2B4AF8C8003DE7AB /* CBCentralManagerHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CBCentralManagerHandler.h; sourceTree = "<group>"; };
+		FC5DE3DC2B4B04AE003DE7AB /* CBCentralManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CBCentralManager.h; sourceTree = "<group>"; };
 		FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterManager.swift; sourceTree = "<group>"; };
 		FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterBluetooth.swift; sourceTree = "<group>"; };
 		FC5F337F2AC213DE006B4E0B /* Scooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scooter.swift; sourceTree = "<group>"; };
@@ -82,6 +86,17 @@
 				FC0579FD2AC9DCDD004D8C1F /* ConfigView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		FC5DE3D72B4AED67003DE7AB /* ApplePrivate */ = {
+			isa = PBXGroup;
+			children = (
+				FC5DE3D92B4AED97003DE7AB /* CBCentralManagerHandler.m */,
+				FC5DE3D82B4AED97003DE7AB /* asu-app-Bridging-Header.h */,
+				FC5DE3DB2B4AF8C8003DE7AB /* CBCentralManagerHandler.h */,
+				FC5DE3DC2B4B04AE003DE7AB /* CBCentralManager.h */,
+			);
+			path = ApplePrivate;
 			sourceTree = "<group>";
 		};
 		FC8DE1B82ACCAEB400E92501 /* Assets */ = {
@@ -136,6 +151,7 @@
 		FCA1AAE22AC1A4D1004578F4 /* asu-app */ = {
 			isa = PBXGroup;
 			children = (
+				FC5DE3D72B4AED67003DE7AB /* ApplePrivate */,
 				FC0579F42AC9DC90004D8C1F /* Views */,
 				FC8DE1B82ACCAEB400E92501 /* Assets */,
 				FC8DE1B92ACCAEE000E92501 /* Crypto */,
@@ -184,6 +200,7 @@
 				TargetAttributes = {
 					FCA1AADF2AC1A4D1004578F4 = {
 						CreatedOnToolsVersion = 15.0;
+						LastSwiftMigration = 1500;
 					};
 				};
 			};
@@ -370,6 +387,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "asu-app/asu_app.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -401,6 +419,8 @@
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "asu-app/ApplePrivate/asu-app-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -411,6 +431,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "asu-app/asu_app.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -442,6 +463,7 @@
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "asu-app/ApplePrivate/asu-app-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

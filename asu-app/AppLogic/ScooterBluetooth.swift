@@ -27,6 +27,18 @@ enum ConnectionState {
     }
 }
 
+//extension CBCentralManager {
+////    + (id) retrieveAddressForPeripheral: (id) arg0
+//    func retrieveAddressForPeripheral_() -> ( (_: CBPeripheral) -> (String?) )? {
+//        print(#selector(CBCentralManager.cancelPeripheralConnection))
+//        let privateMethodSelector = Selector(("retrieveAddressForPeripheral:"))
+//        if let privateMethod = CBCentralManager.perform(privateMethodSelector, with: self).takeUnretainedValue() as? (_: CBPeripheral) -> (String?) {
+//                return privateMethod
+//            }
+//        return nil
+//    }
+//}
+
 protocol ScooterBluetoothDelegate {
     func scooterBluetooth(_ scooterBluetooth: ScooterBluetooth, didDiscover scooter: DiscoveredScooter, forIdentifier: UUID)
     func scooterBluetoothDidUpdateState(_ scooterBluetooth: ScooterBluetooth)
@@ -194,8 +206,11 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     
     // central manager delegate methods
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
+//        print(central.retrieveAddressForPeripheral_())
         if central.state == .poweredOn {
             let services = [xiaoAuthServiceUUID, serialServiceUUID]
+            // TODO: DON'T publish use_bdaddr to App Store!!!
+//            central.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true, "use_bdaddr": true])
             central.scanForPeripherals(withServices: services, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
         } else {
             setConnectionState(.disconnected)
@@ -209,16 +224,20 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         guard let manufacturerData = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data else {
             return // unsupported
         }
-        guard let model = ScooterModel.fromAdvertisement(manufactuerData: manufacturerData) else {
-            print(dataToHex(data: manufacturerData))
-            return // unsupported
-        }
+//        guard let model = ScooterModel.fromAdvertisement(manufactuerData: manufacturerData) else {
+//            print(dataToHex(data: manufacturerData))
+//            return // unsupported
+//        }
+        // TODO: DO NOT push this to app store either
+//        print(central.retrieveAddressForPeripheral(peripheral))
+        let model = ScooterModel.XiaomiPro2(true)
         
-        let serviceData = advertisementData[CBAdvertisementDataServiceDataKey] as? [CBUUID: NSData] ?? [:]
-        if serviceData.count >= 1 {
-            let data = Data(Array(serviceData.values)[0].reversed())
+        let serviceDataList = advertisementData[CBAdvertisementDataServiceDataKey] as? [CBUUID: NSData] ?? [:]
+        var serviceData = Data()
+        if let data = serviceDataList[xiaoAuthServiceUUID] {
+            serviceData = Data(data.reversed())
             if data.count >= 7 {
-                let macData = data[0x01...0x06]
+                let macData = serviceData[0x01...0x06]
                 mac = dataToHex(data: macData).uppercased()
                 mac.insert(":", at: mac.index(mac.startIndex, offsetBy: 10))
                 mac.insert(":", at: mac.index(mac.startIndex, offsetBy: 8))
@@ -232,8 +251,8 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
             name: name,
             model: model,
             rssi: RSSI.intValue,
-            mac: mac, // TODO: check if this mac stuff is done by nb!!
-            serviceData: Data(Array(serviceData.values)[0]),
+            mac: mac, // TODO: check if this mac stuff is done by nb!! **Edit:** no.
+            serviceData: serviceData,
             peripheral: peripheral
         ), forIdentifier: peripheral.identifier)
     }

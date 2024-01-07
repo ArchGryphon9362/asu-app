@@ -13,12 +13,15 @@ import CryptoKit
 
 // TODO: lower min ios version to 13 or 14
 class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
+    private var forceNbCrypto: Bool
+    
     @Published var discoveredScooters: OrderedDictionary<UUID, DiscoveredScooter>
     @Published var scooter: Scooter
     @Published var scooterBluetooth: ScooterBluetooth
     var scooterCrypto: ScooterCrypto
     
     init() {
+        self.forceNbCrypto = false
         self.discoveredScooters = [:]
         self.scooter = Scooter()
         self.scooterBluetooth = ScooterBluetooth()
@@ -27,13 +30,14 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         self.scooterBluetooth.setScooterBluetoothDelegate(self)
     }
     
-    func connectTo(discoveredScooter: DiscoveredScooter) {
+    func connectTo(discoveredScooter: DiscoveredScooter, forceNbCrypto: Bool = false) {
         let name = discoveredScooter.name
         
         scooter.model = discoveredScooter.model
+        self.forceNbCrypto = forceNbCrypto
         self.scooterCrypto.setName(name)
-        self.scooterCrypto.setProtocol(discoveredScooter.model.scooterProtocol)
-        scooterBluetooth.connect(discoveredScooter.peripheral, name: name, scooterProtocol: discoveredScooter.model.scooterProtocol)
+        self.scooterCrypto.setProtocol(discoveredScooter.model.scooterProtocol(forceNbCrypto: self.forceNbCrypto))
+        scooterBluetooth.connect(discoveredScooter.peripheral, name: name, scooterProtocol: discoveredScooter.model.scooterProtocol(forceNbCrypto: self.forceNbCrypto))
     }
     
     func disconnectFromScooter(updateUi: Bool) {
@@ -42,7 +46,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     }
     
     func write(_ data: Data, keepTrying: @escaping () -> (Bool)) {
-        switch (self.scooter.model?.scooterProtocol) {
+        switch (self.scooter.model?.scooterProtocol(forceNbCrypto: self.forceNbCrypto)) {
         case .ninebot(true):
             self.scooterBluetooth.write { serialWrite, upnpWrite, avdtpWrite in
                 guard keepTrying() else {

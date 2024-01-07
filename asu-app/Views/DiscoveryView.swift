@@ -10,6 +10,7 @@ import CoreBluetooth
 
 struct DiscoveryView: View {
     @EnvironmentObject var scooterManager: ScooterManager
+    @State var forceNbCrypto: [UUID: Bool] = [:]
     
     var body: some View {
         VStack {
@@ -33,13 +34,25 @@ struct DiscoveryView: View {
                             .interpolation(.high)
                             .aspectRatio(contentMode: .fit)
                             .frame(height: 80)
-                    }.listRowSeparator(.visible)
+                    }.listRowSeparator(.visible).background().contextMenu(menuItems: {
+                        var forceValue = forceNbCrypto[scooter.peripheral.identifier] ?? false
+                        
+                        Button {
+                            forceValue.toggle()
+                            forceNbCrypto[scooter.peripheral.identifier] = forceValue
+                        } label: {
+                            Label("Force NinebotCrypto", systemImage: forceValue ? "checkmark.circle.fill" : "x.circle")
+                        }
+                    })
                 }
                 .scrollContentBackground(.hidden).listStyle(.inset)
                 .navigationTitle("Pick your scooter")
                 .navigationDestination(for: DiscoveredScooter.self) { scooter in
-                    ScooterView(scooter: scooterManager.scooter, discoveredScooter: scooter)
-                        .navigationTitle(scooter.name)
+                    ScooterView(
+                        scooter: scooterManager.scooter,
+                        discoveredScooter: scooter,
+                        forceNbCrypto: forceNbCrypto[scooter.peripheral.identifier] ?? false
+                    ).navigationTitle(scooter.name)
                 }
             }
         }
