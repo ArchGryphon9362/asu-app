@@ -104,6 +104,9 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     }
     
     func scooterBluetooth(_ scooterBluetooth: ScooterBluetooth, didDiscover scooter: DiscoveredScooter, forIdentifier: UUID) {
+//        if let _ = self.discoveredScooters[forIdentifier] {
+//            return
+//        }
         if let oldScooter = self.discoveredScooters[forIdentifier] {
             if scooterCrypto.awaitingButtonPress && oldScooter.serviceData != scooter.serviceData {
                 self.connectTo(discoveredScooter: scooter)

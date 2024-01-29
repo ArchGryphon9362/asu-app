@@ -24,6 +24,7 @@
 		FC5F338C2AC374DB006B4E0B /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = FC5F338B2AC374DB006B4E0B /* OrderedCollections */; };
 		FC5F338E2AC98ABC006B4E0B /* ScooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F338D2AC98ABC006B4E0B /* ScooterView.swift */; };
 		FC5F33902AC9D6B0006B4E0B /* ScooterIcons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC5F338F2AC9D6B0006B4E0B /* ScooterIcons.xcassets */; };
+		FC8BECF82B67559B006DCBD8 /* NavigationBackport in Frameworks */ = {isa = PBXBuildFile; productRef = FC8BECF72B67559B006DCBD8 /* NavigationBackport */; };
 		FC8DE1B72ACCAE7300E92501 /* XiaomiCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC8DE1B62ACCAE7300E92501 /* XiaomiCrypto.swift */; };
 		FCA1AAE42AC1A4D1004578F4 /* ASUApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA1AAE32AC1A4D1004578F4 /* ASUApp.swift */; };
 		FCA1AAE62AC1A4D1004578F4 /* DiscoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA1AAE52AC1A4D1004578F4 /* DiscoveryView.swift */; };
@@ -70,6 +71,7 @@
 			files = (
 				FC5F338C2AC374DB006B4E0B /* OrderedCollections in Frameworks */,
 				FC5F33892AC33945006B4E0B /* CryptoSwift in Frameworks */,
+				FC8BECF82B67559B006DCBD8 /* NavigationBackport in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,6 +187,7 @@
 			packageProductDependencies = (
 				FC5F33882AC33945006B4E0B /* CryptoSwift */,
 				FC5F338B2AC374DB006B4E0B /* OrderedCollections */,
+				FC8BECF72B67559B006DCBD8 /* NavigationBackport */,
 			);
 			productName = "shut-ios";
 			productReference = FCA1AAE02AC1A4D1004578F4 /* asu-app.app */;
@@ -219,6 +222,7 @@
 			packageReferences = (
 				FC5F33872AC33945006B4E0B /* XCRemoteSwiftPackageReference "CryptoSwift" */,
 				FC5F338A2AC374DB006B4E0B /* XCRemoteSwiftPackageReference "swift-collections" */,
+				FC8BECF62B67559B006DCBD8 /* XCRemoteSwiftPackageReference "NavigationBackport" */,
 			);
 			productRefGroup = FCA1AAE12AC1A4D1004578F4 /* Products */;
 			projectDirPath = "";
@@ -412,7 +416,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
@@ -456,7 +460,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
@@ -512,6 +516,14 @@
 				minimumVersion = 1.0.4;
 			};
 		};
+		FC8BECF62B67559B006DCBD8 /* XCRemoteSwiftPackageReference "NavigationBackport" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/johnpatrickmorgan/NavigationBackport";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -524,6 +536,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = FC5F338A2AC374DB006B4E0B /* XCRemoteSwiftPackageReference "swift-collections" */;
 			productName = OrderedCollections;
+		};
+		FC8BECF72B67559B006DCBD8 /* NavigationBackport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FC8BECF62B67559B006DCBD8 /* XCRemoteSwiftPackageReference "NavigationBackport" */;
+			productName = NavigationBackport;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
