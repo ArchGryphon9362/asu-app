@@ -12,7 +12,7 @@ enum ConnectionState {
     case disconnected
     case connecting
     case ready
-    case pairing
+    case authenticating
     case connected
     
     var description : String {
@@ -21,7 +21,7 @@ enum ConnectionState {
         case .disconnected: return "dis"
         case .connecting: return "con.."
         case .ready: return "ready"
-        case .pairing: return "pair"
+        case .authenticating: return "auth"
         case .connected: return "con!"
         }
     }
@@ -159,14 +159,14 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.bluetoothManager.delegate = self
     }
     
-    func setConnectionState(_ connectionState: ConnectionState, overridePairingMode: Bool = false) {
-        guard self.connectionState != connectionState || overridePairingMode else {
+    func setConnectionState(_ connectionState: ConnectionState, overrideAuthMode: Bool = false) {
+        guard self.connectionState != connectionState || overrideAuthMode else {
             return
         }
         
         self.connectionState = connectionState
         if (connectionState == .disconnected) {
-            if overridePairingMode {
+            if overrideAuthMode {
                 self.blockDisconnectUpdates = false
             }
             self.peripheral = nil
@@ -190,9 +190,9 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         bluetoothManager.connect(peripheral)
     }
     
-    func disconnect(_ peripheral: CBPeripheral?, overridePairingMode: Bool = false) {
+    func disconnect(_ peripheral: CBPeripheral?, overrideAuthMode: Bool = false) {
         let peripheral = peripheral ?? self.peripheral
-        setConnectionState(.disconnected, overridePairingMode: overridePairingMode)
+        setConnectionState(.disconnected, overrideAuthMode: overrideAuthMode)
         guard bluetoothManager.state == .poweredOn, let peripheral = peripheral else { return }
         bluetoothManager.cancelPeripheralConnection(peripheral)
     }

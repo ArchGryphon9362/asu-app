@@ -13,8 +13,8 @@
 		FC0579FE2AC9DCDD004D8C1F /* ConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579FD2AC9DCDD004D8C1F /* ConfigView.swift */; };
 		FC057A002ACA24BA004D8C1F /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579FF2ACA24BA004D8C1F /* Constants.swift */; };
 		FC298CAD2AD214CE000B9E55 /* ScooterCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC298CAC2AD214CD000B9E55 /* ScooterCrypto.swift */; };
-		FC298CAF2AD25374000B9E55 /* NinebotPairing.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC298CAE2AD25374000B9E55 /* NinebotPairing.swift */; };
-		FC298CB12AD2588A000B9E55 /* XiaomiPairing.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC298CB02AD2588A000B9E55 /* XiaomiPairing.swift */; };
+		FC298CAF2AD25374000B9E55 /* NinebotAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC298CAE2AD25374000B9E55 /* NinebotAuth.swift */; };
+		FC5DE3D62B49983A003DE7AB /* XiaomiAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5DE3D52B49983A003DE7AB /* XiaomiAuth.swift */; };
 		FC5F337C2AC20BD6006B4E0B /* ScooterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */; };
 		FC5F337E2AC20BE1006B4E0B /* ScooterBluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */; };
 		FC5F33802AC213DE006B4E0B /* Scooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337F2AC213DE006B4E0B /* Scooter.swift */; };
@@ -39,8 +39,9 @@
 		FC0579FD2AC9DCDD004D8C1F /* ConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigView.swift; sourceTree = "<group>"; };
 		FC0579FF2ACA24BA004D8C1F /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		FC298CAC2AD214CD000B9E55 /* ScooterCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterCrypto.swift; sourceTree = "<group>"; };
-		FC298CAE2AD25374000B9E55 /* NinebotPairing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NinebotPairing.swift; sourceTree = "<group>"; };
-		FC298CB02AD2588A000B9E55 /* XiaomiPairing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiaomiPairing.swift; sourceTree = "<group>"; };
+		FC298CAE2AD25374000B9E55 /* NinebotAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NinebotAuth.swift; sourceTree = "<group>"; };
+		FC298CB02AD2588A000B9E55 /* OldXiaomiAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldXiaomiAuth.swift; sourceTree = "<group>"; };
+		FC5DE3D52B49983A003DE7AB /* XiaomiAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiaomiAuth.swift; sourceTree = "<group>"; wrapsLines = 0; };
 		FC5DE3D82B4AED97003DE7AB /* asu-app-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "asu-app-Bridging-Header.h"; sourceTree = "<group>"; };
 		FC5DE3D92B4AED97003DE7AB /* CBCentralManagerHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CBCentralManagerHandler.m; sourceTree = "<group>"; };
 		FC5DE3DB2B4AF8C8003DE7AB /* CBCentralManagerHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CBCentralManagerHandler.h; sourceTree = "<group>"; };
@@ -112,9 +113,10 @@
 			isa = PBXGroup;
 			children = (
 				FC5F33852AC3391F006B4E0B /* NinebotCrypto.swift */,
-				FC298CAE2AD25374000B9E55 /* NinebotPairing.swift */,
+				FC298CAE2AD25374000B9E55 /* NinebotAuth.swift */,
 				FC8DE1B62ACCAE7300E92501 /* XiaomiCrypto.swift */,
-				FC298CB02AD2588A000B9E55 /* XiaomiPairing.swift */,
+				FC298CB02AD2588A000B9E55 /* OldXiaomiAuth.swift */,
+				FC5DE3D52B49983A003DE7AB /* XiaomiAuth.swift */,
 				FC298CAC2AD214CD000B9E55 /* ScooterCrypto.swift */,
 			);
 			path = Crypto;
@@ -197,6 +199,7 @@
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
+				ORGANIZATIONNAME = "";
 				TargetAttributes = {
 					FCA1AADF2AC1A4D1004578F4 = {
 						CreatedOnToolsVersion = 15.0;
@@ -259,8 +262,8 @@
 				FCA328452ACB2B08004D39B6 /* MessageGlue.swift in Sources */,
 				FC5F338E2AC98ABC006B4E0B /* ScooterView.swift in Sources */,
 				FC0579F82AC9DCC0004D8C1F /* InfoView.swift in Sources */,
-				FC298CAF2AD25374000B9E55 /* NinebotPairing.swift in Sources */,
-				FC298CB12AD2588A000B9E55 /* XiaomiPairing.swift in Sources */,
+				FC5DE3D62B49983A003DE7AB /* XiaomiAuth.swift in Sources */,
+				FC298CAF2AD25374000B9E55 /* NinebotAuth.swift in Sources */,
 				FCA1AAE42AC1A4D1004578F4 /* ASUApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

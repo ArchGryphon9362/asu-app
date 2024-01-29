@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// TODO: asu fox theme ;)
 @main
 struct ASUApp: App {
     let scooterManager: ScooterManager

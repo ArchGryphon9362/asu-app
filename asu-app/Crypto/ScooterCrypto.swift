@@ -11,32 +11,32 @@ import CryptoKit
 
 fileprivate let debugnbcrypto = true
 class ScooterCrypto {
-    var paired: Bool {
+    var authenticated: Bool {
         switch(self.scooterProtocol) {
-        case .ninebot(true): self.ninebotPairing.paired
-        case .xiaomi(true): self.xiaomiPairing.paired
+        case .ninebot(true): self.ninebotAuth.authenticated
+        case .xiaomi(true): self.xiaomiAuth.authenticated
         default: true
         }
     }
     var awaitingButtonPress: Bool {
         switch(self.scooterProtocol) {
-        case .xiaomi(true): self.xiaomiPairing.awaitingButtonPress
+        case .xiaomi(true): self.xiaomiAuth.awaitingButtonPress
         default: false
         }
     }
     
-    // TODO: make the cryptos and pairings extend some generic maybe?
+    // TODO: make the cryptos and auths extend some generic maybe?
     private var ninebotCrypto: NinebotCrypto
-    private var ninebotPairing: NinebotPairing
+    private var ninebotAuth: NinebotAuth
     private var xiaomiCrypto: XiaomiCrypto
-    private var xiaomiPairing: XiaomiPairing
+    private var xiaomiAuth: XiaomiAuth
     private var scooterProtocol: ScooterProtocol
     
     init() {
         self.ninebotCrypto = .init(debug: debugnbcrypto)
-        self.ninebotPairing = .init()
+        self.ninebotAuth = .init()
         self.xiaomiCrypto = .init()
-        self.xiaomiPairing = .init()
+        self.xiaomiAuth = .init(xiaomiCrypto: self.xiaomiCrypto)
         self.scooterProtocol = .ninebot(true)
     }
     
@@ -56,61 +56,29 @@ class ScooterCrypto {
     
     func reset() {
         self.ninebotCrypto.reset()
-        self.ninebotPairing = .init()
-        // TODO: why is mi crypto being reset multiple times
-        self.xiaomiCrypto = .init() // TODO: replace with a reset (in case fallback key was used, we don't want to be regenerating it every reconnect)
-        self.xiaomiPairing = .init()
+        self.ninebotAuth = .init()
+        // TODO: why is mi crypto being reset multiple times??
+        self.xiaomiCrypto.reset()
+        self.xiaomiAuth = .init(xiaomiCrypto: self.xiaomiCrypto)
         self.scooterProtocol = .ninebot(true)
     }
     
-    // TODO: get rid of all of these single checks, and do some sort of catch-all
-    func getPublicKey(withRemoteInfo remoteInfo: Data) -> Data {
-        switch(self.scooterProtocol) {
-        case .xiaomi(true):
-            self.xiaomiCrypto.getPublicKey(withRemoteInfo: remoteInfo)
-        default: Data()
-        }
-    }
-    
-    func generateSecret(withRemoteKey remoteKey: Data) -> SharedKey? {
-        switch(self.scooterProtocol) {
-        case .xiaomi(true):
-            self.xiaomiCrypto.generateSecret(withRemoteKey: remoteKey)
-        default: nil
-        }
-    }
-    
-    func calculateEncryptionKeys(keys: Data) -> (info: Data, expectedRemoteInfo: Data)? {
-        switch(self.scooterProtocol) {
-        case .xiaomi(true):
-            let validationInfo = self.xiaomiCrypto.calculateEncryptionKeys(keys: keys)
-            return validationInfo
-        default: return nil
-        }
-    }
-    
-    func calculateDid(withRemoteKey remoteKey: Data) -> Data? {
-        switch(self.scooterProtocol) {
-        case .xiaomi(true):
-            self.xiaomiCrypto.calculateDid(withRemoteKey: remoteKey)
-        default: nil
-        }
-    }
-    
+    // TODO: make encrypt and decrypt return nil if failed and discard message if that's the result
     func encrypt(_ data: Data) -> Data {
         switch(self.scooterProtocol) {
         case .ninebot(true):
             let encrypted = self.ninebotCrypto.encrypt(data)
             return encrypted ?? data
         case .xiaomi(true):
-            print("encrypt fuck")
-            fallthrough
+            let encrypted = self.xiaomiCrypto.encrypt(data)
+            return encrypted ?? data
         default:
             return Data(data)
         }
     }
     
-    func decrypt(_ data: Data) -> Data {
+    // TODO: return nil on failed decrypt
+    func decrypt(_ data: Data) -> Data? {
         switch(self.scooterProtocol) {
         case .ninebot(true):
             guard let decrypted = self.ninebotCrypto.decrypt(data) else {
@@ -118,37 +86,39 @@ class ScooterCrypto {
             }
             return Data(decrypted)
         case .xiaomi(true):
-            print("decrypt fuck")
-            fallthrough
+            guard let decrypted = self.xiaomiCrypto.decrypt(data) else {
+                return Data(data)
+            }
+            return Data(decrypted)
         default:
             return Data(data)
         }
     }
     
-    func startPairing(withScooterManager scooterManager: ScooterManager) {
+    func startAuthenticating(withScooterManager scooterManager: ScooterManager) {
         switch(self.scooterProtocol) {
         case .ninebot(true):
-            guard !self.ninebotPairing.paired else {
+            guard !self.ninebotAuth.authenticated else {
                 return
             }
             
-            self.ninebotPairing.startPairing(withScooterManager: scooterManager)
+            self.ninebotAuth.startAuthenticating(withScooterManager: scooterManager)
         case .xiaomi(true):
-            guard !self.xiaomiPairing.paired else {
+            guard !self.xiaomiAuth.authenticated else {
                 return
             }
             
-            self.xiaomiPairing.startPairing(withScooterManager: scooterManager)
+            self.xiaomiAuth.startAuthenticating(withScooterManager: scooterManager)
         default: return
         }
     }
     
-    func continuePairing(withScooterManager scooterManager: ScooterManager, received data: Data, forCharacteristic uuid: CBUUID) {
+    func continueAuthenticating(withScooterManager scooterManager: ScooterManager, received data: Data, forCharacteristic uuid: CBUUID) {
         switch (self.scooterProtocol) {
         case .ninebot(true):
-            self.ninebotPairing.continuePairing(withScooterManager: scooterManager, received: data, forCharacteristic: uuid)
+            self.ninebotAuth.continueAuthenticating(withScooterManager: scooterManager, received: data, forCharacteristic: uuid)
         case .xiaomi(true):
-            self.xiaomiPairing.continuePairing(withScooterManager: scooterManager, received: data, forCharacteristic: uuid)
+            self.xiaomiAuth.continueAuthenticating(withScooterManager: scooterManager, received: data, forCharacteristic: uuid)
         default: return
         }
     }

@@ -42,7 +42,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     
     func disconnectFromScooter(updateUi: Bool) {
         self.scooterBluetooth.blockDisconnectUpdates = !updateUi
-        scooterBluetooth.disconnect(nil, overridePairingMode: updateUi)
+        scooterBluetooth.disconnect(nil, overrideAuthMode: updateUi)
     }
     
     func write(_ data: Data, keepTrying: @escaping () -> (Bool)) {
@@ -68,7 +68,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
                 
                 let length = UInt8((data.count - 3) & 0xff)
                 
-                let encryptedData = self.scooterCrypto.encrypt(Data(xiaomiCryptHeader.bytes + [length] + data.bytes))
+                let encryptedData = self.scooterCrypto.encrypt(Data(xiaomiHeader.bytes + [length] + data.bytes))
                 serialWrite(encryptedData)
                 
                 return true
@@ -116,7 +116,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     func scooterBluetoothDidUpdateState(_ scooterBluetooth: ScooterBluetooth) {
         let connectionState = self.scooterBluetooth.connectionState
         self.scooter.connectionState = connectionState
-        self.scooter.pairing = self.scooter.pairing || connectionState == .pairing
+        self.scooter.authenticating = self.scooter.authenticating || connectionState == .authenticating
         
         switch(connectionState) {
         case .disconnected:
@@ -125,12 +125,12 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
                 self.scooterCrypto.reset()
             }
         case .ready:
-            if !self.scooterCrypto.paired {
-                self.scooterCrypto.startPairing(withScooterManager: self)
+            if !self.scooterCrypto.authenticated {
+                self.scooterCrypto.startAuthenticating(withScooterManager: self)
             }
         case .connected:
             // collect infos
-            // TODO: cmd generator?
+            // TODO: cmd generator.
             self.write(Data(hex: "2001100e")) { self.scooter.serial == nil }
             self.write(Data(hex: "20011a02")) { self.scooter.esc == nil }
             self.write(Data(hex: "20016702")) { self.scooter.bms == nil }
@@ -139,15 +139,19 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         }
     }
     
+    // TODO: make a proper handler for this stuff perhaps? or maybe a decoder class that extracts and gives all related info
     func scooterBluetooth(_ scooterBluetooth: ScooterBluetooth, didReceive data: Data, forCharacteristic uuid: CBUUID) {
         var data = data
         if uuid == serialRXCharUUID {
-            let decryptedData = self.scooterCrypto.decrypt(data)
+            guard let decryptedData = self.scooterCrypto.decrypt(data) else {
+                return
+            }
             data = decryptedData
         }
         
-        if !self.scooterCrypto.paired {
-            self.scooterCrypto.continuePairing(withScooterManager: self, received: data, forCharacteristic: uuid)
+        if !self.scooterCrypto.authenticated {
+            self.scooterCrypto.continueAuthenticating(withScooterManager: self, received: data, forCharacteristic: uuid)
+            return
         }
         
         guard data.count > 6 else {
@@ -169,18 +173,19 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             cmd == 0x01) {
             func parseVersion(_ versionMsg: [UInt8]) -> String? {
                 guard versionMsg.count - 0x07 == 0x02 else { return nil }
-                var ver = dataToHex(data:
-                    Data(
-                        [
-                            versionMsg[0x07 + 0x01],
-                            versionMsg[0x07 + 0x00]
-                        ]
-                    )
-                )
-                ver = String(String(ver.reversed()).padding(toLength: 3, withPad: "0", startingAt: 0).reversed()) // remove/add from/to beginning to reach length of 3
-                ver.insert(".", at: ver.index(ver.startIndex, offsetBy: 2))
-                ver.insert(".", at: ver.index(ver.startIndex, offsetBy: 1))
-                return ver
+                var ver = Data([
+                    versionMsg[0x07 + 0x01],
+                    versionMsg[0x07 + 0x00]
+                ])
+                
+                let first  = (ver[0] & 0xF0) >> 4
+                let second = (ver[0] & 0x0F) >> 0
+                let third  = (ver[1] & 0xF0) >> 4
+                let forth  = (ver[1] & 0x0F) >> 0
+                
+                let firstPart = first != 0 ? "\(first)." : ""
+                let result = "\(second).\(third).\(forth)"
+                return firstPart + result
             }
             
             switch(arg) {

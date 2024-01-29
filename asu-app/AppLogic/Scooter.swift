@@ -210,7 +210,7 @@ enum ScooterProtocol {
 }
 
 class Scooter : ObservableObject {
-    var pairing: Bool
+    var authenticating: Bool
     
     @Published var ble: String?
     @Published var esc: String?
@@ -223,14 +223,14 @@ class Scooter : ObservableObject {
     @Published var connectionState: ConnectionState
     
     init() {
-        self.pairing = false
+        self.authenticating = false
         
         self.shfw = SHFW()
         self.connectionState = .disconnected
     }
     
     func reset() {
-        self.pairing = false
+        self.authenticating = false
         
         self.ble = nil
         self.esc = nil

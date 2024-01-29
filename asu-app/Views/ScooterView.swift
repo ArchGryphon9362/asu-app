@@ -50,13 +50,13 @@ struct ScooterView: View {
         }
         // TODO: replace onChange with non-deprecated version when is fine (bc not supported on macos <14 :/)
         .onChange(of: scooter.connectionState) { state in
-            if scooter.pairing {
+            if scooter.authenticating {
                 switch(scooter.model?.scooterProtocol(forceNbCrypto: self.forceNbCrypto)) {
                 case .xiaomi(true):
-                    self.connectingMessage = "Pairing with scooter...\n\nPlease toggle the headlight by pressing the power button."
+                    self.connectingMessage = "Authenticating with scooter...\n\nPlease toggle the headlight by pressing the power button."
                 default:
                     // totally not stolen line
-                    self.connectingMessage = "Pairing with scooter...\n\nIf this does nothing after a few seconds, please toggle the headlight by pressing the power button."
+                    self.connectingMessage = "Authenticating with scooter...\n\nIf this does nothing after a few seconds, please toggle the headlight by pressing the power button."
                 }
             } else {
                 self.connectingMessage = "Please wait..."

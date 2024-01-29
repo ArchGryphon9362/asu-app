@@ -17,7 +17,9 @@ let xiaomiCryptHeader = Data(hex: "55ab")
 let xiaomiHeader = Data(hex: "55aa")
 
 let messageFrequency = 0.25
+let xiaomiAuthButtonTimeout = 1
 
+// TODO: convert to context menu option
 let forceNbCrypto = false
 
 // don't ask me what upnp or avdtp means. got those names from the miauth python library

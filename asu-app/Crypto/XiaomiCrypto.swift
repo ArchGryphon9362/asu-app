@@ -16,11 +16,11 @@ fileprivate enum Keypair {
 }
 
 fileprivate struct EncryptionKeys {
-    let deviceKey: Data?
-    let appKey: Data?
+    let deviceKey: Data
+    let appKey: Data
     
-    let deviceIv: Data?
-    let appIv: Data?
+    let deviceIv: Data
+    let appIv: Data
 }
 
 enum SharedKey {
@@ -35,6 +35,8 @@ class XiaomiCrypto {
     private var remoteInfo: Data
     private var remoteKey: Data
     private var token: Data
+    
+    private var counter: UInt32
     
     private static func generateKeypair() -> SecKey? {
         var error: Unmanaged<CFError>?
@@ -83,6 +85,8 @@ class XiaomiCrypto {
         self.remoteKey = Data()
         self.token = Data()
         
+        self.counter = 0
+        
         var privateKey: SecKey?
         var publicKey: Data?
         
@@ -125,11 +129,22 @@ class XiaomiCrypto {
         self.keypair = .secKey(privateKey, publicKey)
     }
     
+    func reset() {
+        // TODO: remove this log
+        print("micrypto reset")
+        self.encryptionKeys = nil
+        self.remoteInfo = Data()
+        self.remoteKey = Data()
+        self.token = Data()
+        self.counter = 0
+    }
+    
     func getPublicKey(withRemoteInfo remoteInfo: Data) -> Data {            
-        if self.remoteInfo.count != 20 {
-            print("wrong length remote info")
+        if remoteInfo.count != 20 {
+            print("wrong length remote info: \(remoteInfo.bytes)")
         } else {
             self.remoteInfo = remoteInfo
+            print("beep :)")
         }
         
         switch(self.keypair) {
@@ -227,16 +242,14 @@ class XiaomiCrypto {
         let a = keyData[28..<44]
         
         let did = self.remoteInfo
-        let ccm = CryptoSwift.CCM(iv: [16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27], tagLength: 4, messageLength: 20, additionalAuthenticatedData: "devID".bytes)
-        guard let aes = try? CryptoSwift.AES(key: a.bytes, blockMode: ccm) else {
+        let ccm = CryptoSwift.CCM(iv: Array(16..<28), tagLength: 4, messageLength: did.count, additionalAuthenticatedData: "devID".bytes)
+        guard let didEncrypted = try? CryptoSwift.AES(key: a.bytes, blockMode: ccm).encrypt(did.bytes) else {
             return nil
         }
-        guard let didEncrypted = try? Data(aes.encrypt(did.bytes)) else {
-            return nil
-        }
-        return didEncrypted
+        return Data(didEncrypted)
     }
     
+    // TODO: this is bork. (missing half the logic, fik)
     func calculateEncryptionKeys(keys: Data) -> (info: Data, expectedRemoteInfo: Data)? {
         guard keys.count >= 40 else {
             return nil
@@ -252,20 +265,99 @@ class XiaomiCrypto {
         return nil // TODO: oof
     }
     
-//    func encrypt(data: Data) -> Data? {
-//        guard data.count >= 3 else {
-//            return nil
-//        }
-//        
-//        guard data[0] == 0x55, data[1] == 0xAB else {
-//            return nil
-//        }
-//        
-//        let length = data[2]
-//        let data = data[3...]
-//    }
-//    
-//    func decrypt(data: Data) -> Data? {
-//        
-//    }
+    func crc16(_ data: Data) -> Data {
+        var crc = 0
+        for value in data {
+            crc += Int(value)
+        }
+        crc = ~crc
+        var final = Data()
+        final.append(UInt8((crc & 0x00ff) >> 0))
+        final.append(UInt8((crc & 0xff00) >> 8))
+        return final
+    }
+    
+    func encrypt(_ data: Data) -> Data? {
+        guard let encryptionKeys = self.encryptionKeys else {
+            // encryption keys not derived yet :)
+            print(1)
+            return nil
+        }
+        
+        guard data.count >= 3 else {
+            print(2)
+            return nil
+        }
+        
+        guard data.starts(with: xiaomiHeader) else {
+            print(3)
+            return nil
+        }
+        
+        let length = data[2]
+        let payload = data[3...] + generateRandom(count: 4)
+        
+        let counter = Data(bytes: &self.counter, count: 4)
+        let nonce = encryptionKeys.appIv
+        let iv = nonce + Data(count: 4) + counter
+        
+        let blockMode = CCM(iv: iv.bytes, tagLength: 4, messageLength: payload.count)
+        guard let encryptedPayload = try? AES(key: encryptionKeys.appKey.bytes, blockMode: blockMode, padding: .noPadding).encrypt(payload.bytes) else {
+            // encrypt or init aes failed
+            print(5)
+            return nil
+        }
+        
+        var newData = Data()
+        newData.append(length)
+        newData.append(contentsOf: counter.prefix(2))
+        newData.append(contentsOf: encryptedPayload)
+        
+        var result = Data()
+        result.append(contentsOf: xiaomiCryptHeader)
+        result.append(contentsOf: newData)
+        result.append(contentsOf: self.crc16(newData))
+        
+        print("[XiaomiCrypto] Encrypted - \(dataToHex(data: result))")
+        return result
+    }
+    
+    func decrypt(_ data: Data) -> Data? {
+        guard let encryptionKeys = self.encryptionKeys else {
+            // encryption keys not derived yet :)
+            print(6)
+            return nil
+        }
+        
+        guard data.count >= 8 else {
+            print(7)
+            return nil
+        }
+        
+        guard data.starts(with: xiaomiCryptHeader) else {
+            print(8)
+            return nil
+        }
+        
+        let counter = data[3..<5]
+        let encryptedPayload = data[3..<data.count - 2]
+        
+        let nonce = encryptionKeys.appIv
+        let iv = nonce + Data(count: 4) + counter + Data(count: 2)
+        
+        let blockMode = CCM(iv: iv.bytes, tagLength: 4, messageLength: encryptedPayload.count)
+        guard let decryptedPayload = try? AES(key: encryptionKeys.appKey.bytes, blockMode: blockMode, padding: .noPadding).decrypt(encryptedPayload.bytes) else {
+            // encrypt or init aes failed
+            print(9)
+            return nil
+        }
+        
+        var result = Data()
+        result.append(contentsOf: xiaomiHeader)
+        result.append(data[2])
+        result.append(contentsOf: decryptedPayload)
+
+        print("[XiaomiCrypto] Decrypted - \(dataToHex(data: result))")
+        return result
+    }
 }

@@ -1,5 +1,5 @@
 //
-//  XiaomiPairing.swift
+//  XiaomiAuth.swift
 //  asu-app
 //
 //  Created by ArchGryphon9362 on 08/10/2023.
@@ -8,30 +8,50 @@
 import Foundation
 import CoreBluetooth
 
-private enum XiaomiAuthState {
-    case unpaired
+private enum OldXiaomiRegisterState {
+    case unregistered
     case receiveInfo
     case sendKey
     case receiveKey
     case sendDid
     case confirm
-    case paired
+    case registered
+}
+    
+private enum OldXiaomiLoginState {
+    case unregistered
+    case sendKey
+    case receiveKey
+    case receiveInfo
+    case sendDid
+    case confirm
+    case registered
 }
 
-class XiaomiPairing {
-    var paired: Bool {
-        self.authState == .paired
+private enum OldXiaomiAuthState {
+    case unauthenticated
+    case registering(OldXiaomiRegisterState)
+    case loggingIn(OldXiaomiLoginState)
+    case authenticated
+}
+
+class OldXiaomiAuth {
+    var authenticated: Bool {
+        if case .authenticated = self.authState {
+            return true
+        }
+        return false
     }
     var awaitingButtonPress: Bool
     
-    private var authState: XiaomiAuthState
+    private var authState: OldXiaomiAuthState
     private var gotKeyApproval: Bool
     private var dataToSend: Data
     
     private var authGlue: [UInt8]
     private var expectedFrames: Int
     init() {
-        self.authState = .unpaired
+        self.authState = .unauthenticated
         self.awaitingButtonPress = false
         self.gotKeyApproval = false
         self.dataToSend = Data()
@@ -41,7 +61,7 @@ class XiaomiPairing {
     }
     
     func startPairing(withScooterManager scooterManager: ScooterManager) {
-        guard !self.paired else {
+        guard !self.authenticated else {
             return
         }
         
@@ -149,7 +169,7 @@ class XiaomiPairing {
                 }
                 
                 waitedIterations += 1
-                if waitedIterations >= Int(1 / messageFrequency) {
+                if waitedIterations >= Int(xiaomiAuthButtonTimeout / messageFrequency) {
                     scooterManager.scooterBluetooth.setConnectionState(.pairing)
                     self.awaitingButtonPress = true
                     scooterManager.disconnectFromScooter(updateUi: false)
