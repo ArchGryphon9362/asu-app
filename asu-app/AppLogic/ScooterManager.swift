@@ -19,6 +19,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     @Published var scooter: Scooter
     @Published var scooterBluetooth: ScooterBluetooth
     var scooterCrypto: ScooterCrypto
+    var scooterRemover: [UUID: Timer]
     
     init() {
         self.forceNbCrypto = false
@@ -26,6 +27,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         self.scooter = Scooter()
         self.scooterBluetooth = ScooterBluetooth()
         self.scooterCrypto = .init()
+        self.scooterRemover = [:]
         
         self.scooterBluetooth.setScooterBluetoothDelegate(self)
     }
@@ -103,17 +105,21 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         }
     }
     
-    func scooterBluetooth(_ scooterBluetooth: ScooterBluetooth, didDiscover scooter: DiscoveredScooter, forIdentifier: UUID) {
+    func scooterBluetooth(_ scooterBluetooth: ScooterBluetooth, didDiscover scooter: DiscoveredScooter, forIdentifier identifier: UUID) {
 //        if let _ = self.discoveredScooters[forIdentifier] {
 //            return
 //        }
-        if let oldScooter = self.discoveredScooters[forIdentifier] {
+        if let oldScooter = self.discoveredScooters[identifier] {
             if scooterCrypto.awaitingButtonPress && oldScooter.serviceData != scooter.serviceData {
                 self.connectTo(discoveredScooter: scooter)
             }
         }
         
-        self.discoveredScooters[forIdentifier] = scooter
+        self.discoveredScooters[identifier] = scooter
+        self.scooterRemover[identifier]?.invalidate()
+        self.scooterRemover[identifier] = Timer.scheduledTimer(withTimeInterval: advertisementTimeout, repeats: false) { _ in
+            self.discoveredScooters.removeValue(forKey: identifier)
+        }
     }
     
     func scooterBluetoothDidUpdateState(_ scooterBluetooth: ScooterBluetooth) {

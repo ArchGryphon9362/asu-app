@@ -25,12 +25,15 @@
 		FC5F338E2AC98ABC006B4E0B /* ScooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F338D2AC98ABC006B4E0B /* ScooterView.swift */; };
 		FC5F33902AC9D6B0006B4E0B /* ScooterIcons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC5F338F2AC9D6B0006B4E0B /* ScooterIcons.xcassets */; };
 		FC8BECF82B67559B006DCBD8 /* NavigationBackport in Frameworks */ = {isa = PBXBuildFile; productRef = FC8BECF72B67559B006DCBD8 /* NavigationBackport */; };
+		FC8D43482B6AC2E1004177BE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC8D43472B6AC2E1004177BE /* SettingsView.swift */; };
+		FC8D434A2B6AE89C004177BE /* SecretView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC8D43492B6AE89C004177BE /* SecretView.swift */; };
 		FC8DE1B72ACCAE7300E92501 /* XiaomiCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC8DE1B62ACCAE7300E92501 /* XiaomiCrypto.swift */; };
 		FCA1AAE42AC1A4D1004578F4 /* ASUApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA1AAE32AC1A4D1004578F4 /* ASUApp.swift */; };
 		FCA1AAE62AC1A4D1004578F4 /* DiscoveryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA1AAE52AC1A4D1004578F4 /* DiscoveryView.swift */; };
 		FCA1AAE82AC1A4D2004578F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCA1AAE72AC1A4D2004578F4 /* Assets.xcassets */; };
 		FCA328452ACB2B08004D39B6 /* MessageGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA328442ACB2B08004D39B6 /* MessageGlue.swift */; };
 		FCA328472ACB6B1F004D39B6 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA328462ACB6B1F004D39B6 /* Utilities.swift */; };
+		FCF4CC8A2B6AF01900F0310B /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4CC892B6AF01900F0310B /* Settings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +57,8 @@
 		FC5F33852AC3391F006B4E0B /* NinebotCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NinebotCrypto.swift; sourceTree = "<group>"; };
 		FC5F338D2AC98ABC006B4E0B /* ScooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterView.swift; sourceTree = "<group>"; };
 		FC5F338F2AC9D6B0006B4E0B /* ScooterIcons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ScooterIcons.xcassets; sourceTree = "<group>"; };
+		FC8D43472B6AC2E1004177BE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		FC8D43492B6AE89C004177BE /* SecretView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretView.swift; sourceTree = "<group>"; };
 		FC8DE1B62ACCAE7300E92501 /* XiaomiCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiaomiCrypto.swift; sourceTree = "<group>"; };
 		FCA1AAE02AC1A4D1004578F4 /* asu-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "asu-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCA1AAE32AC1A4D1004578F4 /* ASUApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASUApp.swift; sourceTree = "<group>"; };
@@ -62,6 +67,7 @@
 		FCA1AAE92AC1A4D2004578F4 /* asu_app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = asu_app.entitlements; sourceTree = "<group>"; };
 		FCA328442ACB2B08004D39B6 /* MessageGlue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageGlue.swift; sourceTree = "<group>"; };
 		FCA328462ACB6B1F004D39B6 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		FCF4CC892B6AF01900F0310B /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +93,8 @@
 				FC0579F92AC9DCCC004D8C1F /* ToolsView.swift */,
 				FC0579FB2AC9DCD3004D8C1F /* FlashView.swift */,
 				FC0579FD2AC9DCDD004D8C1F /* ConfigView.swift */,
+				FC8D43472B6AC2E1004177BE /* SettingsView.swift */,
+				FC8D43492B6AE89C004177BE /* SecretView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -132,6 +140,7 @@
 				FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */,
 				FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */,
 				FCA328442ACB2B08004D39B6 /* MessageGlue.swift */,
+				FCF4CC892B6AF01900F0310B /* Settings.swift */,
 			);
 			path = AppLogic;
 			sourceTree = "<group>";
@@ -255,6 +264,8 @@
 				FC5F33822AC26F7B006B4E0B /* SHFW.swift in Sources */,
 				FCA328472ACB6B1F004D39B6 /* Utilities.swift in Sources */,
 				FCA1AAE62AC1A4D1004578F4 /* DiscoveryView.swift in Sources */,
+				FC8D43482B6AC2E1004177BE /* SettingsView.swift in Sources */,
+				FC8D434A2B6AE89C004177BE /* SecretView.swift in Sources */,
 				FC8DE1B72ACCAE7300E92501 /* XiaomiCrypto.swift in Sources */,
 				FC5F337C2AC20BD6006B4E0B /* ScooterManager.swift in Sources */,
 				FC0579FA2AC9DCCC004D8C1F /* ToolsView.swift in Sources */,
@@ -268,6 +279,7 @@
 				FC0579F82AC9DCC0004D8C1F /* InfoView.swift in Sources */,
 				FC5DE3D62B49983A003DE7AB /* XiaomiAuth.swift in Sources */,
 				FC298CAF2AD25374000B9E55 /* NinebotAuth.swift in Sources */,
+				FCF4CC8A2B6AF01900F0310B /* Settings.swift in Sources */,
 				FCA1AAE42AC1A4D1004578F4 /* ASUApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

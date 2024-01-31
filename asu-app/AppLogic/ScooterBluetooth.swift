@@ -224,13 +224,13 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         guard let manufacturerData = advertisementData[CBAdvertisementDataManufacturerDataKey] as? Data else {
             return // unsupported
         }
-//        guard let model = ScooterModel.fromAdvertisement(manufactuerData: manufacturerData) else {
-//            print(dataToHex(data: manufacturerData))
-//            return // unsupported
-//        }
+        guard let model = ScooterModel.fromAdvertisement(manufactuerData: manufacturerData) else {
+            print(dataToHex(data: manufacturerData))
+            return // unsupported
+        }
         // TODO: DO NOT push this to app store either
 //        print(central.retrieveAddressForPeripheral(peripheral))
-        let model = ScooterModel.XiaomiPro2(true)
+//        let model = ScooterModel.XiaomiPro2(true)
         
         let serviceDataList = advertisementData[CBAdvertisementDataServiceDataKey] as? [CBUUID: NSData] ?? [:]
         var serviceData = Data()

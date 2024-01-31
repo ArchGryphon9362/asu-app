@@ -18,9 +18,9 @@ let xiaomiHeader = Data(hex: "55aa")
 
 let messageFrequency = 0.25
 let xiaomiAuthButtonTimeout = 1
+let advertisementTimeout: TimeInterval = 15
 
-// TODO: convert to context menu option
-let forceNbCrypto = false
+let secretMenuHash = Data(hex: "dd0ceacc3e0c49c64f80864165e50567629332fcee3bbe537c7def1d453e9a53")
 
 // don't ask me what upnp or avdtp means. got those names from the miauth python library
 let xiaoAuthServiceUUID = CBUUID(string: "0000fe95-0000-1000-8000-00805f9b34fb")
