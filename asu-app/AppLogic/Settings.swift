@@ -12,7 +12,7 @@ let appSettings = Settings()
 
 class Settings: ObservableObject {
     // main
-    @AppStorage("correctSpeedUnits") var correctSpeedUnits = true
+    @AppStorage("correctSpeedUnits") var correctSpeedUnits = Locale.current.usesMetricSystem
     
     // advanced
     @AppStorage("mismatchedFirmware") var mismatchedFirmware = false
