@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 // for debugging purposes :)
 internal func dataToHex(data: Data) -> String {
@@ -19,4 +20,14 @@ internal func generateRandom(count: Int) -> Data {
     }
     
     return Data(randomData)
+}
+
+internal func openUrl(url: String) {
+    if let url = URL(string: url) {
+        #if os(macOS)
+        NSWorkspace.shared.open(url)
+        #else
+        UIApplication.shared.open(url)
+        #endif
+    }
 }

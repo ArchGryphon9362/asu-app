@@ -22,5 +22,14 @@ struct ASUApp: App {
                 .environmentObject(scooterManager)
                 .navigationTitle("Arch's Scooter Utility")
         }
+        #if os(macOS)
+        .commands {
+            CommandGroup(after: .appInfo) {
+                Button("Settings") {
+                    SettingsWindowController.shared.showWindow(nil)
+                }.keyboardShortcut(",", modifiers: .command)
+            }
+        }
+        #endif
     }
 }

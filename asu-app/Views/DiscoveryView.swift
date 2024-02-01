@@ -62,7 +62,9 @@ struct DiscoveryView: View {
                 })
             }
             .listStyle(.inset)
-            .navigationTitle("Pick your scooter")
+            .navigationTitle("Pick your scooter" + (appSettings.foxMode ? " 🦊" : ""))
+            .background(Text(appSettings.foxMode.description).hidden()) // fix fox mode not changing title
+            #if !os(macOS)
             .toolbar {
                 Button("Settings") {
                     self.isSettingsOpen = true
@@ -71,6 +73,7 @@ struct DiscoveryView: View {
             .sheet(isPresented: $isSettingsOpen, content: {
                 SettingsView()
             })
+            #endif
         }
     }
 }

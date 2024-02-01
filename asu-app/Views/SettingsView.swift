@@ -27,6 +27,14 @@ struct SettingsToggle: View {
     }
 }
 
+struct FooterText: View {
+    var text: String
+    
+    var body: some View {
+        Text(text).font(.callout).bold().foregroundColor(.gray)
+    }
+}
+
 struct AdvancedSettings: View {
     var body: some View {
         List {
@@ -37,10 +45,9 @@ struct AdvancedSettings: View {
             Section {
                 SettingsToggle(text: "Increased amperages", setting: appSettings.$increasedAmps)
                 SettingsToggle(text: "Enable advanced settings", setting: appSettings.$shfwAdvanced)
+                FooterText(text: "In SHFW, advanced settings consist of:\n  - PWM\n  - ADC resistor calibration\n  - BMS emulation")
             } header: {
                 Text("SHFW")
-            } footer: {
-                Text("In SHFW, advanced settings consist of:\n- PWM\n- ADC resistor calibration\n- BMS emulation")
             }
         }
     }
@@ -73,47 +80,52 @@ struct SettingsView: View {
                             appSettings.correctSpeedUnits = newValue
                         }
                     }
-                    NavigationLink("Edit dashboard UI", destination: Text("we don't have this yet 😔").navigationTitle("Edit dashboard UI"))
+                    NavigationLink("Edit dashboard UI", destination: List { Text("we don't have this yet 😔") }.navigationTitle("Edit dashboard UI"))
                     NavigationLink("Advanced settings", destination: AdvancedSettings().navigationTitle("Advanced settings"))
                 }
                 Section {
                     Button("GitHub") {
-                        if let url = URL(string: "https://github.com/ArchGryphon9362/asu-app") {
-                            UIApplication.shared.open(url)
-                        }
+                        openUrl(url: "https://github.com/ArchGryphon9362/asu-app")
                     }
                     Button("Donate") {
-                        if let url = URL(string: "https://ko-fi.com/archgryphon9362") {
-                            UIApplication.shared.open(url)
-                        }
+                        openUrl(url: "https://ko-fi.com/archgryphon9362")
                     }
+                    FooterText(text: "Developing an app like this (especially a free one) takes lots of time and effort, any contribution is valued. This includes both code contributions through GitHub, and monetary contributions. Thanks for the consideration!")
                 } header: {
                     Text("Contributing")
-                } footer: {
-                    Text("Developing an app like this (especially a free one) takes lots of time and effort, any contribution is valued. This includes both code contributions through GitHub, and monetary contributions. Thanks for the consideration!")
                 }
             }
             .navigationTitle("Settings")
+            #if !os(macOS)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 Button("Close") {
                     self.presentation.wrappedValue.dismiss()
                 }
             }
-            NavigationLink("", destination: VStack {
-//                var hasher = SHA256().update(data: self.secretValue.bytes)
-                if (!self.doubleSecretMenu) {
-                    List {
-                        TextField("you look lost...", text: self.$secretValue).onChange(of: self.secretValue) { newValue in
-                            var hasher = SHA256()
-                            hasher.update(data: newValue.bytes)
-                            self.doubleSecretMenu = Data(hasher.finalize()) == secretMenuHash
+            #endif
+            .background(
+                NavigationLink("", destination: VStack {
+    //                var hasher = SHA256().update(data: self.secretValue.bytes)
+                    if (!self.doubleSecretMenu) {
+                        List {
+                            TextField("you look lost...", text: self.$secretValue).onChange(of: self.secretValue) { newValue in
+                                var hasher = SHA256()
+                                hasher.update(data: newValue.bytes)
+                                self.doubleSecretMenu = Data(hasher.finalize()) == secretMenuHash
+                            }
                         }
+                    } else {
+                        SecretView()
                     }
-                } else {
-                    SecretView()
                 }
-            }.navigationTitle(!self.doubleSecretMenu ? "You saw nothing..." : "heyy :3").navigationBarTitleDisplayMode(.inline), isActive: self.$secretMenu).hidden()
+                    .navigationTitle(!self.doubleSecretMenu ? "You saw nothing..." : "heyy :3")
+                    #if !os(macOS)
+                    .navigationBarTitleDisplayMode(.inline)
+                    #endif
+                , isActive: self.$secretMenu
+                ).hidden()
+            )
         }
     }
     
@@ -121,3 +133,25 @@ struct SettingsView: View {
         print(self.secretValue)
     }
 }
+
+#if os(macOS)
+class SettingsWindowController: NSWindowController {
+    static let shared = SettingsWindowController()
+    
+    init() {
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 400, height: 300),
+            styleMask: [.titled, .closable, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.contentView = NSHostingView(rootView: SettingsView())
+        window.center()
+        super.init(window: window)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+#endif
