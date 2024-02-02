@@ -19,6 +19,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     @Published var scooter: Scooter
     @Published var scooterBluetooth: ScooterBluetooth
     var scooterCrypto: ScooterCrypto
+    var messageManager: MessageManager
     var scooterRemover: [UUID: Timer]
     
     init() {
@@ -27,6 +28,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         self.scooter = Scooter()
         self.scooterBluetooth = ScooterBluetooth()
         self.scooterCrypto = .init()
+        self.messageManager = .init(scooterProtocol: .ninebot(true))
         self.scooterRemover = [:]
         
         self.scooterBluetooth.setScooterBluetoothDelegate(self)
@@ -34,12 +36,14 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     
     func connectTo(discoveredScooter: DiscoveredScooter, forceNbCrypto: Bool = false) {
         let name = discoveredScooter.name
+        let scooterProtocol = discoveredScooter.model.scooterProtocol(forceNbCrypto: self.forceNbCrypto)
         
         scooter.model = discoveredScooter.model
         self.forceNbCrypto = forceNbCrypto
         self.scooterCrypto.setName(name)
-        self.scooterCrypto.setProtocol(discoveredScooter.model.scooterProtocol(forceNbCrypto: self.forceNbCrypto))
-        scooterBluetooth.connect(discoveredScooter.peripheral, name: name, scooterProtocol: discoveredScooter.model.scooterProtocol(forceNbCrypto: self.forceNbCrypto))
+        self.scooterCrypto.setProtocol(scooterProtocol)
+        self.messageManager = .init(scooterProtocol: scooterProtocol)
+        scooterBluetooth.connect(discoveredScooter.peripheral, name: name, scooterProtocol: scooterProtocol)
     }
     
     func disconnectFromScooter(updateUi: Bool) {
@@ -48,57 +52,24 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     }
     
     func write(_ data: Data, keepTrying: @escaping () -> (Bool)) {
-        switch (self.scooter.model?.scooterProtocol(forceNbCrypto: self.forceNbCrypto)) {
-        case .ninebot(true):
+        switch (self.scooter.model?.scooterProtocol(forceNbCrypto: self.forceNbCrypto).crypto) {
+        case true:
             self.scooterBluetooth.write { serialWrite, upnpWrite, avdtpWrite in
                 guard keepTrying() else {
                     return false
                 }
                 
-                let length = UInt8((data.count - 3) & 0xff)
-                
-                let encryptedData = self.scooterCrypto.encrypt(Data(ninebotHeader.bytes + [length, 0x3e] + data.bytes))
+                let encryptedData = self.scooterCrypto.encrypt(data)
                 serialWrite(encryptedData)
-                
                 return true
             }
-        case .xiaomi(true):
+        case false:
             self.scooterBluetooth.write { serialWrite, upnpWrite, avdtpWrite in
                 guard keepTrying() else {
                     return false
                 }
                 
-                let length = UInt8((data.count - 3) & 0xff)
-                
-                let encryptedData = self.scooterCrypto.encrypt(Data(xiaomiHeader.bytes + [length] + data.bytes))
-                serialWrite(encryptedData)
-                
-                return true
-            }
-        case .ninebot(false):
-            self.scooterBluetooth.write { serialWrite, upnpWrite, avdtpWrite in
-                guard keepTrying() else {
-                    return false
-                }
-                
-                let length = UInt8((data.count - 3) & 0xff)
-                
-                let fullData = Data(ninebotHeader.bytes + [length, 0x3e] + data.bytes)
-                serialWrite(fullData)
-                
-                return true
-            }
-        case .xiaomi(false):
-            self.scooterBluetooth.write { serialWrite, upnpWrite, avdtpWrite in
-                guard keepTrying() else {
-                    return false
-                }
-                
-                let length = UInt8((data.count - 3) & 0xff)
-                
-                let fullData = Data(xiaomiHeader.bytes + [length] + data.bytes)
-                serialWrite(fullData)
-                
+                serialWrite(data)
                 return true
             }
         default: return
@@ -139,11 +110,11 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             }
         case .connected:
             // collect infos
-            // TODO: cmd generator.
-            self.write(Data(hex: "2001100e")) { self.scooter.serial == nil }
-            self.write(Data(hex: "20011a02")) { self.scooter.esc == nil }
-            self.write(Data(hex: "20016702")) { self.scooter.bms == nil }
-            self.write(Data(hex: "20016802")) { self.scooter.ble == nil }
+            self.write(self.messageManager.ninebotRead(.serialNumber())) { self.scooter.serial == nil }
+            self.write(self.messageManager.ninebotRead(.escVersion())) { self.scooter.esc == nil }
+            self.write(self.messageManager.ninebotRead(.bmsVersion())) { self.scooter.bms == nil }
+            self.write(self.messageManager.ninebotRead(.bleVersion())) { self.scooter.ble == nil }
+            self.write(self.messageManager.ninebotRead(.infoDump())) { true }
         default: return
         }
     }
@@ -163,60 +134,74 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             return
         }
         
-        guard data.count > 6 else {
-            return
-        }
-        
-        let payloadLength = data[2 + 0x00]
-        let src = data[2 + 0x01]
-        let dst = data[2 + 0x02]
-        let cmd = data[2 + 0x03]
-        let arg = data[2 + 0x04]
-        
-        guard data.count - 0x07 >= payloadLength else {
-            return
-        }
-        
-        if (src == 0x23 &&
-            dst == 0x3E &&
-            cmd == 0x01) {
-            func parseVersion(_ versionMsg: [UInt8]) -> String? {
-                guard versionMsg.count - 0x07 == 0x02 else { return nil }
-                var ver = Data([
-                    versionMsg[0x07 + 0x01],
-                    versionMsg[0x07 + 0x00]
-                ])
-                
-                let first  = (ver[0] & 0xF0) >> 4
-                let second = (ver[0] & 0x0F) >> 0
-                let third  = (ver[1] & 0xF0) >> 4
-                let forth  = (ver[1] & 0x0F) >> 0
-                
-                let firstPart = first != 0 ? "\(first)." : ""
-                let result = "\(second).\(third).\(forth)"
-                return firstPart + result
+        let parsedData = self.messageManager.ninebotParse(data)
+        switch parsedData {
+        case let .ninebotMessage(ninebotMessage):
+            switch ninebotMessage {
+            case let .serialNumber(serial): self.scooter.serial = serial
+            case let .escVersion(version): self.scooter.esc = version.parsed
+            case let .bmsVersion(version): self.scooter.bms = version.parsed
+            case let .bleVersion(version): self.scooter.ble = version.parsed
+            case let .infoDump(infoDump): print(infoDump)
+            default: break
             }
-            
-            switch(arg) {
-            // TODO: rescan versions and serial when changed
-            case 0x10:
-                guard payloadLength == 0x0e else { return }
-                let serial = String(data: Data(data[0x07 + 0x00...0x07 + 0x0e - 1]), encoding: .ascii)
-                self.scooter.serial = serial
-            case 0x1a:
-                guard payloadLength == 0x02 else { return }
-                guard let ver = parseVersion(data.bytes) else { return }
-                self.scooter.esc = ver
-            case 0x67:
-                guard payloadLength == 0x02 else { return }
-                guard let ver = parseVersion(data.bytes) else { return }
-                self.scooter.bms = ver
-            case 0x68:
-                guard payloadLength == 0x02 else { return }
-                guard let ver = parseVersion(data.bytes) else { return }
-                self.scooter.ble = ver
-            default: return
-            }
+        default: break
         }
+        
+//        guard data.count > 6 else {
+//            return
+//        }
+//        
+//        let payloadLength = data[2 + 0x00]
+//        let src = data[2 + 0x01]
+//        let dst = data[2 + 0x02]
+//        let cmd = data[2 + 0x03]
+//        let arg = data[2 + 0x04]
+//        
+//        guard data.count - 0x07 >= payloadLength else {
+//            return
+//        }
+//        
+//        if (src == 0x23 &&
+//            dst == 0x3E &&
+//            cmd == 0x01) {
+//            func parseVersion(_ versionMsg: [UInt8]) -> String? {
+//                guard versionMsg.count - 0x07 == 0x02 else { return nil }
+//                var ver = Data([
+//                    versionMsg[0x07 + 0x01],
+//                    versionMsg[0x07 + 0x00]
+//                ])
+//                
+//                let first  = (ver[0] & 0xF0) >> 4
+//                let second = (ver[0] & 0x0F) >> 0
+//                let third  = (ver[1] & 0xF0) >> 4
+//                let forth  = (ver[1] & 0x0F) >> 0
+//                
+//                let firstPart = first != 0 ? "\(first)." : ""
+//                let result = "\(second).\(third).\(forth)"
+//                return firstPart + result
+//            }
+//            
+//            switch(arg) {
+//            // TODO: rescan versions and serial when changed
+//            case 0x10:
+//                guard payloadLength == 0x0e else { return }
+//                let serial = String(data: Data(data[0x07 + 0x00...0x07 + 0x0e - 1]), encoding: .ascii)
+//                self.scooter.serial = serial
+//            case 0x1a:
+//                guard payloadLength == 0x02 else { return }
+//                guard let ver = parseVersion(data.bytes) else { return }
+//                self.scooter.esc = ver
+//            case 0x67:
+//                guard payloadLength == 0x02 else { return }
+//                guard let ver = parseVersion(data.bytes) else { return }
+//                self.scooter.bms = ver
+//            case 0x68:
+//                guard payloadLength == 0x02 else { return }
+//                guard let ver = parseVersion(data.bytes) else { return }
+//                self.scooter.ble = ver
+//            default: return
+//            }
+//        }
     }
 }

@@ -37,7 +37,7 @@ class NinebotAuth {
         }
         
         self.authState = .start
-        scooterManager.write(Data(hex: "215b00")) { self.authState == .start }
+        scooterManager.write(Data(hex: "5aa5003e215b00")) { self.authState == .start }
     }
     
     func continueAuthenticating(withScooterManager scooterManager: ScooterManager, received data: Data, forCharacteristic uuid: CBUUID) {
@@ -63,7 +63,7 @@ class NinebotAuth {
             dst == 0x3E &&
             cmd == 0x5B) {
             self.authState = .buttonPress
-            scooterManager.write(Data(hex: "215c00") + self.randomAuthData) { self.authState == .buttonPress }
+            scooterManager.write(Data(hex: "5aa5103e215c00") + self.randomAuthData) { self.authState == .buttonPress }
         }
         
         if (src == 0x21 &&
@@ -73,7 +73,7 @@ class NinebotAuth {
             if (arg == 0x00) {
                 scooterManager.scooterBluetooth.setConnectionState(.authenticating)
             }
-            scooterManager.write(Data(hex: "215d00")) { self.authState == .finish }
+            scooterManager.write(Data(hex: "5aa5003e215d00")) { self.authState == .finish }
         }
         
         if (src == 0x21 &&
