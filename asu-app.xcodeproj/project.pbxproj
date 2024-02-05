@@ -8,9 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		FC0579F82AC9DCC0004D8C1F /* InfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579F72AC9DCC0004D8C1F /* InfoView.swift */; };
-		FC0579FA2AC9DCCC004D8C1F /* ToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579F92AC9DCCC004D8C1F /* ToolsView.swift */; };
+		FC0579FA2AC9DCCC004D8C1F /* MainConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579F92AC9DCCC004D8C1F /* MainConfigView.swift */; };
 		FC0579FC2AC9DCD3004D8C1F /* FlashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579FB2AC9DCD3004D8C1F /* FlashView.swift */; };
-		FC0579FE2AC9DCDD004D8C1F /* ConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579FD2AC9DCDD004D8C1F /* ConfigView.swift */; };
+		FC0579FE2AC9DCDD004D8C1F /* SHFWConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579FD2AC9DCDD004D8C1F /* SHFWConfigView.swift */; };
 		FC057A002ACA24BA004D8C1F /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579FF2ACA24BA004D8C1F /* Constants.swift */; };
 		FC298CAD2AD214CE000B9E55 /* ScooterCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC298CAC2AD214CD000B9E55 /* ScooterCrypto.swift */; };
 		FC298CAF2AD25374000B9E55 /* NinebotAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC298CAE2AD25374000B9E55 /* NinebotAuth.swift */; };
@@ -24,6 +24,9 @@
 		FC5F338C2AC374DB006B4E0B /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = FC5F338B2AC374DB006B4E0B /* OrderedCollections */; };
 		FC5F338E2AC98ABC006B4E0B /* ScooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F338D2AC98ABC006B4E0B /* ScooterView.swift */; };
 		FC5F33902AC9D6B0006B4E0B /* ScooterIcons.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC5F338F2AC9D6B0006B4E0B /* ScooterIcons.xcassets */; };
+		FC6F69B92B6E926800928CF0 /* ScooterConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC6F69B82B6E926800928CF0 /* ScooterConfigView.swift */; };
+		FC6F69BB2B6E933B00928CF0 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC6F69BA2B6E933B00928CF0 /* DashboardView.swift */; };
+		FC6F69BF2B6EE0C000928CF0 /* TripsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC6F69BE2B6EE0C000928CF0 /* TripsView.swift */; };
 		FC8BECF82B67559B006DCBD8 /* NavigationBackport in Frameworks */ = {isa = PBXBuildFile; productRef = FC8BECF72B67559B006DCBD8 /* NavigationBackport */; };
 		FC8D43482B6AC2E1004177BE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC8D43472B6AC2E1004177BE /* SettingsView.swift */; };
 		FC8D434A2B6AE89C004177BE /* SecretView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC8D43492B6AE89C004177BE /* SecretView.swift */; };
@@ -40,9 +43,9 @@
 
 /* Begin PBXFileReference section */
 		FC0579F72AC9DCC0004D8C1F /* InfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoView.swift; sourceTree = "<group>"; };
-		FC0579F92AC9DCCC004D8C1F /* ToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolsView.swift; sourceTree = "<group>"; };
+		FC0579F92AC9DCCC004D8C1F /* MainConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainConfigView.swift; sourceTree = "<group>"; };
 		FC0579FB2AC9DCD3004D8C1F /* FlashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashView.swift; sourceTree = "<group>"; };
-		FC0579FD2AC9DCDD004D8C1F /* ConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigView.swift; sourceTree = "<group>"; };
+		FC0579FD2AC9DCDD004D8C1F /* SHFWConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHFWConfigView.swift; sourceTree = "<group>"; };
 		FC0579FF2ACA24BA004D8C1F /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		FC298CAC2AD214CD000B9E55 /* ScooterCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterCrypto.swift; sourceTree = "<group>"; };
 		FC298CAE2AD25374000B9E55 /* NinebotAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NinebotAuth.swift; sourceTree = "<group>"; };
@@ -59,6 +62,9 @@
 		FC5F33852AC3391F006B4E0B /* NinebotCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NinebotCrypto.swift; sourceTree = "<group>"; };
 		FC5F338D2AC98ABC006B4E0B /* ScooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterView.swift; sourceTree = "<group>"; };
 		FC5F338F2AC9D6B0006B4E0B /* ScooterIcons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ScooterIcons.xcassets; sourceTree = "<group>"; };
+		FC6F69B82B6E926800928CF0 /* ScooterConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterConfigView.swift; sourceTree = "<group>"; };
+		FC6F69BA2B6E933B00928CF0 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		FC6F69BE2B6EE0C000928CF0 /* TripsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripsView.swift; sourceTree = "<group>"; };
 		FC8D43472B6AC2E1004177BE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		FC8D43492B6AE89C004177BE /* SecretView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretView.swift; sourceTree = "<group>"; };
 		FC8DE1B62ACCAE7300E92501 /* XiaomiCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiaomiCrypto.swift; sourceTree = "<group>"; };
@@ -92,11 +98,8 @@
 			isa = PBXGroup;
 			children = (
 				FCA1AAE52AC1A4D1004578F4 /* DiscoveryView.swift */,
-				FC5F338D2AC98ABC006B4E0B /* ScooterView.swift */,
-				FC0579F72AC9DCC0004D8C1F /* InfoView.swift */,
-				FC0579F92AC9DCCC004D8C1F /* ToolsView.swift */,
-				FC0579FB2AC9DCD3004D8C1F /* FlashView.swift */,
-				FC0579FD2AC9DCDD004D8C1F /* ConfigView.swift */,
+				FC6F69BC2B6EE05900928CF0 /* ScooterView */,
+				FC6F69BD2B6EE07F00928CF0 /* ScooterConfigView */,
 				FC8D43472B6AC2E1004177BE /* SettingsView.swift */,
 				FC8D43492B6AE89C004177BE /* SecretView.swift */,
 			);
@@ -112,6 +115,28 @@
 				FC5DE3DC2B4B04AE003DE7AB /* CBCentralManager.h */,
 			);
 			path = ApplePrivate;
+			sourceTree = "<group>";
+		};
+		FC6F69BC2B6EE05900928CF0 /* ScooterView */ = {
+			isa = PBXGroup;
+			children = (
+				FC5F338D2AC98ABC006B4E0B /* ScooterView.swift */,
+				FC6F69BA2B6E933B00928CF0 /* DashboardView.swift */,
+				FC6F69BE2B6EE0C000928CF0 /* TripsView.swift */,
+				FC0579F72AC9DCC0004D8C1F /* InfoView.swift */,
+			);
+			path = ScooterView;
+			sourceTree = "<group>";
+		};
+		FC6F69BD2B6EE07F00928CF0 /* ScooterConfigView */ = {
+			isa = PBXGroup;
+			children = (
+				FC6F69B82B6E926800928CF0 /* ScooterConfigView.swift */,
+				FC0579F92AC9DCCC004D8C1F /* MainConfigView.swift */,
+				FC0579FB2AC9DCD3004D8C1F /* FlashView.swift */,
+				FC0579FD2AC9DCDD004D8C1F /* SHFWConfigView.swift */,
+			);
+			path = ScooterConfigView;
 			sourceTree = "<group>";
 		};
 		FC8DE1B82ACCAEB400E92501 /* Assets */ = {
@@ -274,16 +299,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				FCF4CC8C2B6BD7B200F0310B /* MessageManager.swift in Sources */,
-				FC0579FE2AC9DCDD004D8C1F /* ConfigView.swift in Sources */,
+				FC0579FE2AC9DCDD004D8C1F /* SHFWConfigView.swift in Sources */,
 				FC5F33802AC213DE006B4E0B /* Scooter.swift in Sources */,
 				FC5F33822AC26F7B006B4E0B /* SHFW.swift in Sources */,
 				FCA328472ACB6B1F004D39B6 /* Utilities.swift in Sources */,
 				FCA1AAE62AC1A4D1004578F4 /* DiscoveryView.swift in Sources */,
 				FC8D43482B6AC2E1004177BE /* SettingsView.swift in Sources */,
+				FC6F69B92B6E926800928CF0 /* ScooterConfigView.swift in Sources */,
 				FC8D434A2B6AE89C004177BE /* SecretView.swift in Sources */,
+				FC6F69BF2B6EE0C000928CF0 /* TripsView.swift in Sources */,
 				FC8DE1B72ACCAE7300E92501 /* XiaomiCrypto.swift in Sources */,
 				FC5F337C2AC20BD6006B4E0B /* ScooterManager.swift in Sources */,
-				FC0579FA2AC9DCCC004D8C1F /* ToolsView.swift in Sources */,
+				FC6F69BB2B6E933B00928CF0 /* DashboardView.swift in Sources */,
+				FC0579FA2AC9DCCC004D8C1F /* MainConfigView.swift in Sources */,
 				FC298CAD2AD214CE000B9E55 /* ScooterCrypto.swift in Sources */,
 				FC0579FC2AC9DCD3004D8C1F /* FlashView.swift in Sources */,
 				FC057A002ACA24BA004D8C1F /* Constants.swift in Sources */,

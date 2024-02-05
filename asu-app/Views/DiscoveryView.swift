@@ -12,8 +12,8 @@ import NavigationBackport
 struct DiscoveryView: View {
     @EnvironmentObject var scooterManager: ScooterManager
     @State var forceNbCrypto: [UUID: Bool] = [:]
-    @State var isSettingsOpen: Bool = false
     #if !os(macOS)
+    @State var isSettingsOpen: Bool = false
     let haptics = UINotificationFeedbackGenerator()
     #endif
     
@@ -27,8 +27,19 @@ struct DiscoveryView: View {
                                 scooter: scooterManager.scooter,
                                 discoveredScooter: scooter,
                                 forceNbCrypto: forceNbCrypto[scooter.peripheral.identifier] ?? false
-                            ).navigationTitle(scooter.name)).opacity(0)
-                        )
+                            )
+                                .navigationTitle(scooter.name)
+                                #if !os(macOS)
+                                .toolbar {
+                                    Button("Settings") {
+                                        self.isSettingsOpen = true
+                                    }
+                                }
+                                .sheet(isPresented: $isSettingsOpen, content: {
+                                    SettingsView()
+                                })
+                                #endif
+                        ).opacity(0))
                         Text(scooter.model.name)
                         if (scooter.mac != "") {
                             Text(scooter.mac)

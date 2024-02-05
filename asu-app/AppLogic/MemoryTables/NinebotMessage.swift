@@ -127,6 +127,22 @@ enum NinebotMessage: CaseIterable {
     struct FunctionSetup {
         var taillightAlwaysOn: Bool = false
         var wrongUnits: Bool = false
+        
+        var int: UInt8 {
+            let taillight = self.taillightAlwaysOn ? 0x02 : 0x00
+            let wrongUnit = self.wrongUnits        ? 0x10 : 0x00
+            
+            return UInt8(taillight + wrongUnit)
+        }
+        
+        static func fromInt(_ int: UInt8) -> Self {
+            let taillight = int & 0x02 > 0
+            let wrongUnit = int & 0x10 > 0
+            return .init(
+                taillightAlwaysOn: taillight,
+                wrongUnits: wrongUnit
+            )
+        }
     }
     
     struct InfoDump {
@@ -144,6 +160,28 @@ enum NinebotMessage: CaseIterable {
         var speedLimit: Float = 0
         var wattage: Int = 0
         var predictedDistance: Float = 0
+    }
+    
+    enum DriveMode: CaseIterable {
+        case eco
+        case drive
+        case sport
+        
+        var int: UInt8 {
+            switch self {
+            case .eco: 1
+            case .drive: 0
+            case .sport: 2
+            }
+        }
+        
+        static func fromInt(_ int: UInt8) -> Self {
+            switch int {
+            case 0x01: .eco
+            case 0x02: .sport
+            default: .drive
+            }
+        }
     }
     
     case serialNumber(String = "")
@@ -171,7 +209,7 @@ enum NinebotMessage: CaseIterable {
     case bleVersion(NinebotVersion = .init(raw: Data()))
     case lock(Bool = false)
     case speedLimit(Float = 0)
-    case driveMode(Int = 0) // 0: Eco, 1: Drive, 2: Sport
+    case driveMode(DriveMode = .drive)
     case powerOff(Bool = false) // plus reboot
     case cruiseControl(Bool = false)
     case functionSetup(FunctionSetup = .init())
@@ -233,23 +271,9 @@ enum NinebotMessage: CaseIterable {
         case .bleVersion(_): return .bleVersion(.init(raw: Data([data[1], data[0]])))
         case .lock(_): return .lock(data[0] == 1)
         case .speedLimit(_): return .speedLimit(Float(dataToUInt16(data)) / 10)
-        case .driveMode(_):
-            let driveMode = switch dataToInt16(data) {
-            case 0: 1
-            case 1: 0
-            case 2: 2
-            default: 1
-            }
-            return .driveMode(driveMode)
-        case .cruiseControl(_):
-            return .cruiseControl(data[0] == 1)
-        case .functionSetup(_):
-            let taillight = data[0] & 0x02 > 0
-            let wrongUnit = data[0] & 0x10 > 0
-            return .functionSetup(.init(
-                taillightAlwaysOn: taillight,
-                wrongUnits: wrongUnit
-            ))
+        case .driveMode(_): return .driveMode(.fromInt(data[0]))
+        case .cruiseControl(_): return .cruiseControl(data[0] == 1)
+        case .functionSetup(_): return .functionSetup(.fromInt(data[0]))
         case .infoDump(_):
             let errorCode = ErrorCode(code: dataToUInt16(data[(0x00 * 2)...].prefix(2)))
             let alarmCode = AlarmCode.parse(dataToUInt16(data[(0x01 * 2)...].prefix(2)))
@@ -285,14 +309,32 @@ enum NinebotMessage: CaseIterable {
         }
     }
     
-    func read() -> Data {
+    func read() -> Data? {
         let address = self.registerInfo.address
         let amount = self.registerInfo.amount
         
-        return Data([0x01, address, amount])
+        switch self {
+        case .powerOff: return nil
+        default: return Data([0x01, address, amount])
+        }
     }
     
-    func write() -> Data? {
-        fatalError("screw you, we can't write yet")
+    func write(ack: Bool) -> Data? {
+        let address = self.registerInfo.address
+        let cmd: UInt8 = ack ? 0x02 : 0x03
+        
+        switch self {
+        case let .lock(lock): return Data([cmd, address + (lock ? 0 : 1), 0x01, 0x00])
+        case let .speedLimit(speed):
+            let speed = Int(speed * 10)
+            let speedLower = UInt8((speed & 0x00ff) >> 0)
+            let speedUpper = UInt8((speed & 0xff00) >> 8)
+            return Data([cmd, address, speedLower, speedUpper])
+        case let .driveMode(driveMode): return Data([cmd, address, driveMode.int, 0x00])
+        case let .powerOff(reboot): return Data([cmd, address - (reboot ? 1 : 0), 0x01, 0x00])
+        case let .cruiseControl(cruise): return Data([cmd, address, cruise ? 1 : 0, 0x00])
+        case let .functionSetup(functions): return Data([cmd, address, functions.int, 0x00])
+        default: return nil
+        }
     }
 }

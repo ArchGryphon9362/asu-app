@@ -20,26 +20,14 @@ struct ScooterView: View {
     
     var body: some View {
         TabView {
+            DashboardView()
+                .tabItem {
+                    Label("Dashboard", systemImage: "scooter")
+                }
             InfoView(scooter: self.scooter, discoveredScooter: self.discoveredScooter)
                 .tabItem {
                     Label("Info", systemImage: "info.circle")
                 }
-                .padding()
-            ToolsView()
-                .tabItem {
-                    Label("Tools", systemImage: "wrench.adjustable")
-                }
-                .padding()
-            FlashView()
-                .tabItem {
-                    Label("Flash", systemImage: "bolt")
-                }
-                .padding()
-            ConfigView()
-                .tabItem {
-                    Label("Config", systemImage: "gear")
-                }
-                .padding()
         }
         .onAppear {
             self.scooterManager.connectTo(discoveredScooter: discoveredScooter, forceNbCrypto: self.forceNbCrypto)
@@ -48,7 +36,6 @@ struct ScooterView: View {
             self.scooterManager.disconnectFromScooter(updateUi: true)
             self.connectingMessage = "Please wait..."
         }
-        // TODO: replace onChange with non-deprecated version when is fine (bc not supported on macos <14 :/)
         .onChange(of: scooter.connectionState) { state in
             if scooter.authenticating {
                 switch(scooter.model?.scooterProtocol(forceNbCrypto: self.forceNbCrypto)) {
@@ -84,6 +71,5 @@ struct ScooterView: View {
                 }
             )
         }
-        .navigationTitle(discoveredScooter.name)
     }
 }
