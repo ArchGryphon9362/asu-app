@@ -7,7 +7,7 @@
 
 import Foundation
 
-class SHFW : ObservableObject {
+struct SHFW: Equatable {
     var compatible: Bool?
     var installed: Bool?
     var version: String?

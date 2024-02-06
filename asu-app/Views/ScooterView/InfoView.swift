@@ -9,8 +9,6 @@ import SwiftUI
 
 struct InfoView: View {
     @EnvironmentObject var scooterManager: ScooterManager
-    @StateObject var scooter: Scooter
-    var discoveredScooter: DiscoveredScooter
     @State var showConfig: Bool = false
     
     var body: some View {
@@ -20,27 +18,27 @@ struct InfoView: View {
                     HStack {
                         Text("Model")
                         Spacer()
-                        Text("\(scooter.model?.name ?? "N/A")")
+                        Text("\(self.scooterManager.scooter.model?.name ?? "N/A")")
                     }
                     HStack {
                         Text("BLE")
                         Spacer()
-                        Text("\(scooter.ble ?? "N/A")")
+                        Text("\(self.scooterManager.scooter.ble ?? "N/A")")
                     }
                     HStack {
                         Text("DRV")
                         Spacer()
-                        Text("\(scooter.esc ?? "N/A")")
+                        Text("\(self.scooterManager.scooter.esc ?? "N/A")")
                     }
                     HStack {
                         Text("BMS")
                         Spacer()
-                        Text("\(scooter.bms ?? "N/A")")
+                        Text("\(self.scooterManager.scooter.bms ?? "N/A")")
                     }
                     HStack {
                         Text("Serial number")
                         Spacer()
-                        Text("\(scooter.serial ?? "N/A")")
+                        Text("\(self.scooterManager.scooter.serial ?? "N/A")")
                     }
                 }
                 

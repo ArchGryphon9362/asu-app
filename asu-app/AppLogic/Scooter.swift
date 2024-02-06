@@ -209,18 +209,18 @@ enum ScooterProtocol {
     }
 }
 
-class Scooter : ObservableObject {
+struct Scooter: Equatable {
     var authenticating: Bool
     
-    @Published var ble: String?
-    @Published var esc: String?
-    @Published var bms: String?
-    @Published var serial: String?
-    @Published var uuid: String?
-    @Published var model: ScooterModel?
-    @Published var battery: Int?
-    @Published var shfw: SHFW
-    @Published var connectionState: ConnectionState
+    var ble: String?
+    var esc: String?
+    var bms: String?
+    var serial: String?
+    var uuid: String?
+    var model: ScooterModel?
+    var battery: Int?
+    var shfw: SHFW
+    var connectionState: ConnectionState
     
     init() {
         self.authenticating = false
@@ -229,7 +229,7 @@ class Scooter : ObservableObject {
         self.connectionState = .disconnected
     }
     
-    func reset() {
+    mutating func reset() {
         self.authenticating = false
         
         self.ble = nil

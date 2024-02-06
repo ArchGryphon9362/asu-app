@@ -51,7 +51,11 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         scooterBluetooth.disconnect(nil, overrideAuthMode: updateUi)
     }
     
-    func write(_ data: Data, keepTrying: @escaping () -> (Bool)) {
+    func write(_ data: Data?, keepTrying: @escaping () -> (Bool)) {
+        guard let data = data else {
+            return
+        }
+        
         switch (self.scooter.model?.scooterProtocol(forceNbCrypto: self.forceNbCrypto).crypto) {
         case true:
             self.scooterBluetooth.write { serialWrite, upnpWrite, avdtpWrite in

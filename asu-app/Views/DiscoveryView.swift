@@ -24,7 +24,6 @@ struct DiscoveryView: View {
                     VStack(alignment: .leading) {
                         Text(scooter.name).bold().font(.title2).background(
                             NavigationLink("", destination: ScooterView(
-                                scooter: scooterManager.scooter,
                                 discoveredScooter: scooter,
                                 forceNbCrypto: forceNbCrypto[scooter.peripheral.identifier] ?? false
                             )

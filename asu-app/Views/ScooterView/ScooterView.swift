@@ -11,7 +11,6 @@ struct ScooterView: View {
     @Environment(\.presentationMode) var presentation
     
     @EnvironmentObject var scooterManager: ScooterManager
-    @StateObject var scooter: Scooter
     var discoveredScooter: DiscoveredScooter
     var forceNbCrypto: Bool
     
@@ -24,7 +23,7 @@ struct ScooterView: View {
                 .tabItem {
                     Label("Dashboard", systemImage: "scooter")
                 }
-            InfoView(scooter: self.scooter, discoveredScooter: self.discoveredScooter)
+            InfoView()
                 .tabItem {
                     Label("Info", systemImage: "info.circle")
                 }
@@ -36,9 +35,9 @@ struct ScooterView: View {
             self.scooterManager.disconnectFromScooter(updateUi: true)
             self.connectingMessage = "Please wait..."
         }
-        .onChange(of: scooter.connectionState) { state in
-            if scooter.authenticating {
-                switch(scooter.model?.scooterProtocol(forceNbCrypto: self.forceNbCrypto)) {
+        .onChange(of: self.scooterManager.scooter.connectionState) { state in
+            if self.scooterManager.scooter.authenticating {
+                switch(self.scooterManager.scooter.model?.scooterProtocol(forceNbCrypto: self.forceNbCrypto)) {
                 case .xiaomi(true):
                     self.connectingMessage = "Authenticating with scooter...\n\nPlease toggle the headlight by pressing the power button."
                 default:

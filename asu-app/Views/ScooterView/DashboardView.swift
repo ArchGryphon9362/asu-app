@@ -9,7 +9,15 @@ import Foundation
 import SwiftUI
 
 struct DashboardView: View {
+    @EnvironmentObject var scooterManager: ScooterManager
+    
     var body: some View {
-        Text("vroom 😎🦊")
+        List {
+            Text("vroom 😎🦊")
+            Button("Reboot") {
+                let msg = self.scooterManager.messageManager.ninebotWrite(.powerOff(false), ack: false)
+                self.scooterManager.write(msg) { true }
+            }
+        }
     }
 }
