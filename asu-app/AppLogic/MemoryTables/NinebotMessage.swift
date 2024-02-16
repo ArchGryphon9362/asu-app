@@ -281,8 +281,8 @@ enum NinebotMessage: CaseIterable {
             let bat1Pct = Float(data[(0x03 * 2 + 0x00)]) / 100
             let bat2Pct = Float(data[(0x03 * 2 + 0x01)]) / 100
             let chargePct = Float(dataToUInt16(data[(0x04 * 2)...].prefix(2))) / 100
-            let speed = Float(dataToInt16(data[(0x05 * 2)...].prefix(2))) / 1000
-            let averageSpeed = Float(dataToInt16(data[(0x06 * 2)...].prefix(2))) / 10
+            let speed = Float(dataToUInt16(data[(0x05 * 2)...].prefix(2))) / 10
+            let averageSpeed = Float(dataToUInt16(data[(0x06 * 2)...].prefix(2))) / 10
             let mileage = Float(dataToUInt32(data[(0x07 * 2)...].prefix(4))) / 1000
             let uptime = Int(dataToUInt16(data[(0x0a * 2)...].prefix(2)))
             let bodyTemp = Float(dataToInt16(data[(0x0b * 2)...].prefix(2))) / 10

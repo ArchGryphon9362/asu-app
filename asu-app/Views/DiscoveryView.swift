@@ -73,7 +73,7 @@ struct DiscoveryView: View {
             }
             .listStyle(.inset)
             .navigationTitle("Pick your scooter" + (appSettings.foxMode ? " 🦊" : ""))
-            .background(Text(appSettings.foxMode.description).hidden()) // fix fox mode not changing title
+            .background(Text(appSettings.foxMode.description).hidden()) // TODO: this doesn't fix fox mode not changing title
             #if !os(macOS)
             .toolbar {
                 Button("Settings") {

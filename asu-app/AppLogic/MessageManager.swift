@@ -34,6 +34,10 @@ class MessageManager {
                 guard let message = NinebotMessage.parse(payload, address: addr) else {
                     return nil
                 }
+                if case var .infoDump(infoDump) = message {
+                    infoDump.speed /= 100 // why does xiaomi have to be stupid??
+                    return .ninebotMessage(.infoDump(infoDump))
+                }
                 return .ninebotMessage(message)
             case 0x05:
                 guard let messageType = NinebotMessage.getMessageType(address: addr) else {
