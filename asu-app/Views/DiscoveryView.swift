@@ -34,9 +34,6 @@ struct DiscoveryView: View {
                                         self.isSettingsOpen = true
                                     }
                                 }
-                                .sheet(isPresented: $isSettingsOpen, content: {
-                                    SettingsView()
-                                })
                                 #endif
                         ).opacity(0))
                         Text(scooter.model.name)
