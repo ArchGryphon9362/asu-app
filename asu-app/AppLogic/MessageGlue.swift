@@ -49,7 +49,7 @@ class MessageGlue {
 
     func put(data: [UInt8]) -> [UInt8]? {
         guard data.count > 0 else { return nil }
-        if fullMessage != nil, leftToRead > 0 {
+        if fullMessage != nil, leftToRead > 0, data.count <= leftToRead {
             let chunkLen = data.count
             for i in 0..<chunkLen {
                 fullMessage![fullMessage!.count - leftToRead + i] = data[i]
