@@ -9,6 +9,7 @@
 import SwiftUI
 import Foundation
 
+// TODO: extra "features" attrib
 enum ScooterModel : Equatable {
     case XiaomiM365(Bool)
     case NinebotESx(Bool)

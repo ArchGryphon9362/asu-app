@@ -16,7 +16,7 @@ let ninebotHeader = Data(hex: "5aa5")
 let xiaomiCryptHeader = Data(hex: "55ab")
 let xiaomiHeader = Data(hex: "55aa")
 
-let messageFrequency = 0.25
+let fallbackMessageFrequency = 0.25
 let xiaomiAuthButtonTimeout = 1
 let advertisementTimeout: TimeInterval = 15
 

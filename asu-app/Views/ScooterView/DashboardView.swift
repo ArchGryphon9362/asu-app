@@ -16,7 +16,11 @@ struct DashboardView: View {
             Text("vroom 😎🦊")
             Button("Reboot") {
                 let msg = self.scooterManager.messageManager.ninebotWrite(.powerOff(false), ack: false)
-                self.scooterManager.write(msg) { true }
+                var send = false
+                self.scooterManager.write(msg) {
+                    send.toggle()
+                    return send
+                }
             }
         }
     }

@@ -58,23 +58,13 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         
         switch (self.scooter.model?.scooterProtocol(forceNbCrypto: self.forceNbCrypto).crypto) {
         case true:
-            self.scooterBluetooth.write { serialWrite, upnpWrite, avdtpWrite in
-                guard keepTrying() else {
-                    return false
-                }
-                
+            self.scooterBluetooth.write(writeType: .condition(condition: keepTrying), characteristic: .serial) {
                 let encryptedData = self.scooterCrypto.encrypt(data)
-                serialWrite(encryptedData)
-                return true
+                return encryptedData
             }
         case false:
-            self.scooterBluetooth.write { serialWrite, upnpWrite, avdtpWrite in
-                guard keepTrying() else {
-                    return false
-                }
-                
-                serialWrite(data)
-                return true
+            self.scooterBluetooth.write(writeType: .condition(condition: keepTrying), characteristic: .serial) {
+                return data
             }
         default: return
         }

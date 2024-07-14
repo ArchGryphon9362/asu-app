@@ -10,6 +10,7 @@ import CoreBluetooth
 import CryptoKit
 
 fileprivate let debugnbcrypto = true
+// TODO: convert to actor!!
 class ScooterCrypto {
     var authenticated: Bool {
         switch(self.scooterProtocol) {

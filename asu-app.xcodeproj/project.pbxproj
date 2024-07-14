@@ -36,6 +36,7 @@
 		FCA1AAE82AC1A4D2004578F4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCA1AAE72AC1A4D2004578F4 /* Assets.xcassets */; };
 		FCA328452ACB2B08004D39B6 /* MessageGlue.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA328442ACB2B08004D39B6 /* MessageGlue.swift */; };
 		FCA328472ACB6B1F004D39B6 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA328462ACB6B1F004D39B6 /* Utilities.swift */; };
+		FCAF3D2D2C4313B600C09DEF /* WriteLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCAF3D2C2C4313B600C09DEF /* WriteLoop.swift */; };
 		FCF4CC8A2B6AF01900F0310B /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4CC892B6AF01900F0310B /* Settings.swift */; };
 		FCF4CC8C2B6BD7B200F0310B /* MessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4CC8B2B6BD7B200F0310B /* MessageManager.swift */; };
 		FCF4CC902B6BD91B00F0310B /* NinebotMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4CC8F2B6BD91B00F0310B /* NinebotMessage.swift */; };
@@ -75,6 +76,7 @@
 		FCA1AAE92AC1A4D2004578F4 /* asu_app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = asu_app.entitlements; sourceTree = "<group>"; };
 		FCA328442ACB2B08004D39B6 /* MessageGlue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageGlue.swift; sourceTree = "<group>"; };
 		FCA328462ACB6B1F004D39B6 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		FCAF3D2C2C4313B600C09DEF /* WriteLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteLoop.swift; sourceTree = "<group>"; };
 		FCF4CC892B6AF01900F0310B /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		FCF4CC8B2B6BD7B200F0310B /* MessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageManager.swift; sourceTree = "<group>"; };
 		FCF4CC8F2B6BD91B00F0310B /* NinebotMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NinebotMessage.swift; sourceTree = "<group>"; };
@@ -169,6 +171,7 @@
 				FC5F33812AC26F7B006B4E0B /* SHFW.swift */,
 				FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */,
 				FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */,
+				FCAF3D2C2C4313B600C09DEF /* WriteLoop.swift */,
 				FCA328442ACB2B08004D39B6 /* MessageGlue.swift */,
 				FCF4CC892B6AF01900F0310B /* Settings.swift */,
 				FCF4CC8B2B6BD7B200F0310B /* MessageManager.swift */,
@@ -301,6 +304,7 @@
 				FCF4CC8C2B6BD7B200F0310B /* MessageManager.swift in Sources */,
 				FC0579FE2AC9DCDD004D8C1F /* SHFWConfigView.swift in Sources */,
 				FC5F33802AC213DE006B4E0B /* Scooter.swift in Sources */,
+				FCAF3D2D2C4313B600C09DEF /* WriteLoop.swift in Sources */,
 				FC5F33822AC26F7B006B4E0B /* SHFW.swift in Sources */,
 				FCA328472ACB6B1F004D39B6 /* Utilities.swift in Sources */,
 				FCA1AAE62AC1A4D1004578F4 /* DiscoveryView.swift in Sources */,
