@@ -15,31 +15,11 @@ struct InfoView: View {
         VStack {
             List {
                 Section {
-                    HStack {
-                        Text("Model")
-                        Spacer()
-                        Text("\(self.scooterManager.scooter.model?.name ?? "N/A")")
-                    }
-                    HStack {
-                        Text("BLE")
-                        Spacer()
-                        Text("\(self.scooterManager.scooter.ble ?? "N/A")")
-                    }
-                    HStack {
-                        Text("DRV")
-                        Spacer()
-                        Text("\(self.scooterManager.scooter.esc ?? "N/A")")
-                    }
-                    HStack {
-                        Text("BMS")
-                        Spacer()
-                        Text("\(self.scooterManager.scooter.bms ?? "N/A")")
-                    }
-                    HStack {
-                        Text("Serial number")
-                        Spacer()
-                        Text("\(self.scooterManager.scooter.serial ?? "N/A")")
-                    }
+                    ListItem(title: "Model", data: self.scooterManager.scooter.model?.name)
+                    ListItem(title: "BLE", data: self.scooterManager.scooter.ble)
+                    ListItem(title: "DRV", data: self.scooterManager.scooter.esc)
+                    ListItem(title: "BMS", data: self.scooterManager.scooter.bms)
+                    ListItem(title: "Serial Number", data: self.scooterManager.scooter.serial)
                 }
                 
                 Button("Scooter Config", action: {

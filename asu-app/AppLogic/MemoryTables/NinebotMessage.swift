@@ -50,7 +50,7 @@ enum NinebotMessage: CaseIterable {
         .infoDump(),
     ]
     
-    struct ErrorCode {
+    struct ErrorCode: Equatable {
         let code: UInt16
         var shortDescription: String? {
             switch self.code {
@@ -106,7 +106,7 @@ enum NinebotMessage: CaseIterable {
         }
     }
     
-    struct ScooterStatus {
+    struct ScooterStatus: Equatable {
         var speedLimit: Bool = false
         var lock: Bool = false
         var beep: Bool = false
@@ -145,7 +145,7 @@ enum NinebotMessage: CaseIterable {
         }
     }
     
-    struct InfoDump {
+    struct InfoDump: Equatable {
         var errorCode: ErrorCode = .init(code: 0)
         var alarmCode: AlarmCode = .none
         var scooterStatus: ScooterStatus = .init()

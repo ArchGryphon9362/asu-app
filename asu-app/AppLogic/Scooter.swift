@@ -219,6 +219,7 @@ struct Scooter: Equatable {
     var serial: String?
     var uuid: String?
     var model: ScooterModel?
+    var infoDump: NinebotMessage.InfoDump?
     var battery: Int?
     var shfw: SHFW
     var connectionState: ConnectionState

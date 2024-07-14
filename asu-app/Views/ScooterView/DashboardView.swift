@@ -22,6 +22,7 @@ struct DashboardView: View {
                     return send
                 }
             }
+            Text("")
         }
     }
 }

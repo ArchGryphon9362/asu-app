@@ -136,9 +136,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             case let .escVersion(version): self.scooter.esc = version.parsed
             case let .bmsVersion(version): self.scooter.bms = version.parsed
             case let .bleVersion(version): self.scooter.ble = version.parsed
-            case let .infoDump(infoDump): // TODO: fix this lmao
-                self.scooter.bms = "\(infoDump.speed)km/h"
-                print(infoDump)
+            case let .infoDump(infoDump): self.scooter.infoDump = infoDump
             default: break
             }
         default: break

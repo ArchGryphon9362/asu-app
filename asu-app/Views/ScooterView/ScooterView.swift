@@ -23,6 +23,10 @@ struct ScooterView: View {
                 .tabItem {
                     Label("Dashboard", systemImage: "scooter")
                 }
+            TripsView()
+                .tabItem {
+                    Label("Trips", systemImage: "list.bullet.below.rectangle")
+                }
             InfoView()
                 .tabItem {
                     Label("Info", systemImage: "info.circle")
