@@ -10,7 +10,7 @@
 	<true/>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)com.archgryphon.asu-app</string>
+		<string>$(AppIdentifierPrefix)dev.nyaaa.asu</string>
 	</array>
 </dict>
 </plist>

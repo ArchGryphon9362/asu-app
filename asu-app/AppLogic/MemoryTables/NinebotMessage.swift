@@ -115,11 +115,11 @@ enum NinebotMessage: CaseIterable {
         
         static func parse(_ value: UInt16) -> Self {
             .init(
-                speedLimit: value & 0x0001 > 0,
-                lock: value & 0x0002 > 0,
-                beep: value & 0x0004 > 0,
-                bat2In: value & 0x0200 > 0,
-                activated: value & 0x0800 > 0
+                speedLimit: value & 0b0000000000000001 > 0,
+                lock:       value & 0b0000000000000010 > 0,
+                beep:       value & 0b0000000000000100 > 0,
+                bat2In:     value & 0b0000001000000000 > 0,
+                activated:  value & 0b0000100000000000 > 0
             )
         }
     }
@@ -169,7 +169,7 @@ enum NinebotMessage: CaseIterable {
         
         var int: UInt8 {
             switch self {
-            case .eco: 1
+            case .eco:   1
             case .drive: 0
             case .sport: 2
             }
@@ -179,7 +179,7 @@ enum NinebotMessage: CaseIterable {
             switch int {
             case 0x01: .eco
             case 0x02: .sport
-            default: .drive
+            default:   .drive
             }
         }
     }
@@ -219,24 +219,24 @@ enum NinebotMessage: CaseIterable {
     
     private var registerInfo: NinebotRegisterInfo {
         switch self {
-        case .serialNumber(_): NinebotRegisterInfo(address: 0x10, amount: 14)
-        case .escVersion(_): NinebotRegisterInfo(address: 0x1a)
+        case .serialNumber(_):   NinebotRegisterInfo(address: 0x10, amount: 14)
+        case .escVersion(_):     NinebotRegisterInfo(address: 0x1a)
         case .actualDistance(_): NinebotRegisterInfo(address: 0x24)
-        case .ridingTime(_): NinebotRegisterInfo(address: 0x34, amount: 4)
-        case .bat1Temp(_): NinebotRegisterInfo(address: 0x3f)
-        case .bat2Temp(_): NinebotRegisterInfo(address: 0x40)
-        case .systemVoltage(_): NinebotRegisterInfo(address: 0x47)
-        case .phaseCurrent(_): NinebotRegisterInfo(address: 0x53)
-        case .extBmsVersion(_): NinebotRegisterInfo(address: 0x66)
-        case .bmsVersion(_): NinebotRegisterInfo(address: 0x67)
-        case .bleVersion(_): NinebotRegisterInfo(address: 0x68)
-        case .lock(_): NinebotRegisterInfo(address: 0x70)
-        case .speedLimit(_): NinebotRegisterInfo(address: 0x72)
-        case .driveMode(_): NinebotRegisterInfo(address: 0x75)
-        case .powerOff(_): NinebotRegisterInfo(address: 0x79)
-        case .cruiseControl(_): NinebotRegisterInfo(address: 0x7c)
-        case .functionSetup(_): NinebotRegisterInfo(address: 0x7d)
-        case .infoDump(_): NinebotRegisterInfo(address: 0xb0, amount: 32)
+        case .ridingTime(_):     NinebotRegisterInfo(address: 0x34, amount: 4)
+        case .bat1Temp(_):       NinebotRegisterInfo(address: 0x3f)
+        case .bat2Temp(_):       NinebotRegisterInfo(address: 0x40)
+        case .systemVoltage(_):  NinebotRegisterInfo(address: 0x47)
+        case .phaseCurrent(_):   NinebotRegisterInfo(address: 0x53)
+        case .extBmsVersion(_):  NinebotRegisterInfo(address: 0x66)
+        case .bmsVersion(_):     NinebotRegisterInfo(address: 0x67)
+        case .bleVersion(_):     NinebotRegisterInfo(address: 0x68)
+        case .lock(_):           NinebotRegisterInfo(address: 0x70)
+        case .speedLimit(_):     NinebotRegisterInfo(address: 0x72)
+        case .driveMode(_):      NinebotRegisterInfo(address: 0x75)
+        case .powerOff(_):       NinebotRegisterInfo(address: 0x79)
+        case .cruiseControl(_):  NinebotRegisterInfo(address: 0x7c)
+        case .functionSetup(_):  NinebotRegisterInfo(address: 0x7d)
+        case .infoDump(_):       NinebotRegisterInfo(address: 0xb0, amount: 32)
         }
     }
     
@@ -245,11 +245,8 @@ enum NinebotMessage: CaseIterable {
     }
     
     static func parse(_ data: Data, address: UInt8) -> Self? {
-        guard let message = self.getMessageType(address: address) else {
-            return nil
-        }
-        
-        guard data.count == message.registerInfo.amount else {
+        guard let message = self.getMessageType(address: address),
+              data.count == message.registerInfo.amount else {
             return nil
         }
         
