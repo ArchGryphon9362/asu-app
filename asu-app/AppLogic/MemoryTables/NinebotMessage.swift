@@ -7,7 +7,7 @@
 
 import Foundation
 
-fileprivate struct NinebotRegisterInfo {
+struct NinebotRegisterInfo {
     var address: UInt8
     var amount: UInt8 = 2
 }
@@ -115,11 +115,11 @@ enum NinebotMessage: CaseIterable {
         
         static func parse(_ value: UInt16) -> Self {
             .init(
-                speedLimit: value & 0b0000000000000001 > 0,
-                lock:       value & 0b0000000000000010 > 0,
-                beep:       value & 0b0000000000000100 > 0,
-                bat2In:     value & 0b0000001000000000 > 0,
-                activated:  value & 0b0000100000000000 > 0
+                speedLimit: value & (1 <<  0) > 0,
+                lock:       value & (1 <<  1) > 0,
+                beep:       value & (1 <<  2) > 0,
+                bat2In:     value & (1 <<  9) > 0,
+                activated:  value & (1 << 11) > 0
             )
         }
     }
