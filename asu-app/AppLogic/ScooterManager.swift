@@ -104,11 +104,11 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             }
         case .connected:
             // collect infos
-            self.write(self.messageManager.ninebotRead(.serialNumber())) { self.scooter.serial == nil }
-            self.write(self.messageManager.ninebotRead(.escVersion())) { self.scooter.esc == nil }
-            self.write(self.messageManager.ninebotRead(.bmsVersion())) { self.scooter.bms == nil }
-            self.write(self.messageManager.ninebotRead(.bleVersion())) { self.scooter.ble == nil }
-            self.write(self.messageManager.ninebotRead(.infoDump())) { true }
+            self.write(self.messageManager.ninebotRead(StockNBMessage.serialNumber())) { self.scooter.serial == nil }
+            self.write(self.messageManager.ninebotRead(StockNBMessage.escVersion())) { self.scooter.esc == nil }
+            self.write(self.messageManager.ninebotRead(StockNBMessage.bmsVersion())) { self.scooter.bms == nil }
+            self.write(self.messageManager.ninebotRead(StockNBMessage.bleVersion())) { self.scooter.ble == nil }
+            self.write(self.messageManager.ninebotRead(StockNBMessage.infoDump())) { true }
         default: return
         }
     }
@@ -130,7 +130,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         
         let parsedData = self.messageManager.ninebotParse(data)
         switch parsedData {
-        case let .ninebotMessage(ninebotMessage):
+        case let .stockNBMessage(ninebotMessage):
             switch ninebotMessage {
             case let .serialNumber(serial): self.scooter.serial = serial
             case let .escVersion(version): self.scooter.esc = version.parsed

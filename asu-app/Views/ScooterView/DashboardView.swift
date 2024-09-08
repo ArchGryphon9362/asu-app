@@ -15,7 +15,7 @@ struct DashboardView: View {
         List {
             Text("vroom 😎🦊")
             Button("Reboot") {
-                let msg = self.scooterManager.messageManager.ninebotWrite(.powerOff(false), ack: false)
+                let msg = self.scooterManager.messageManager.ninebotWrite(StockNBMessage.powerOff(false), ack: false)
                 var send = false
                 self.scooterManager.write(msg) {
                     send.toggle()

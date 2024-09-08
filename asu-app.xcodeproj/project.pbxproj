@@ -12,6 +12,7 @@
 		FC0579FC2AC9DCD3004D8C1F /* FlashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579FB2AC9DCD3004D8C1F /* FlashView.swift */; };
 		FC0579FE2AC9DCDD004D8C1F /* SHFWConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579FD2AC9DCDD004D8C1F /* SHFWConfigView.swift */; };
 		FC057A002ACA24BA004D8C1F /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0579FF2ACA24BA004D8C1F /* Constants.swift */; };
+		FC0B68BA2C8E5A6000765217 /* StockNBMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0B68B92C8E5A6000765217 /* StockNBMessage.swift */; };
 		FC298CAD2AD214CE000B9E55 /* ScooterCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC298CAC2AD214CD000B9E55 /* ScooterCrypto.swift */; };
 		FC298CAF2AD25374000B9E55 /* NinebotAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC298CAE2AD25374000B9E55 /* NinebotAuth.swift */; };
 		FC5DE3D62B49983A003DE7AB /* XiaomiAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5DE3D52B49983A003DE7AB /* XiaomiAuth.swift */; };
@@ -49,6 +50,7 @@
 		FC0579FB2AC9DCD3004D8C1F /* FlashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashView.swift; sourceTree = "<group>"; };
 		FC0579FD2AC9DCDD004D8C1F /* SHFWConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHFWConfigView.swift; sourceTree = "<group>"; };
 		FC0579FF2ACA24BA004D8C1F /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		FC0B68B92C8E5A6000765217 /* StockNBMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockNBMessage.swift; sourceTree = "<group>"; };
 		FC298CAC2AD214CD000B9E55 /* ScooterCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterCrypto.swift; sourceTree = "<group>"; };
 		FC298CAE2AD25374000B9E55 /* NinebotAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NinebotAuth.swift; sourceTree = "<group>"; };
 		FC298CB02AD2588A000B9E55 /* OldXiaomiAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OldXiaomiAuth.swift; sourceTree = "<group>"; };
@@ -218,6 +220,7 @@
 			isa = PBXGroup;
 			children = (
 				FCF4CC8F2B6BD91B00F0310B /* NinebotMessage.swift */,
+				FC0B68B92C8E5A6000765217 /* StockNBMessage.swift */,
 			);
 			path = MemoryTables;
 			sourceTree = "<group>";
@@ -311,6 +314,7 @@
 				FC5F33822AC26F7B006B4E0B /* SHFW.swift in Sources */,
 				FCA328472ACB6B1F004D39B6 /* Utilities.swift in Sources */,
 				FCA1AAE62AC1A4D1004578F4 /* DiscoveryView.swift in Sources */,
+				FC0B68BA2C8E5A6000765217 /* StockNBMessage.swift in Sources */,
 				FC8D43482B6AC2E1004177BE /* SettingsView.swift in Sources */,
 				FC6F69B92B6E926800928CF0 /* ScooterConfigView.swift in Sources */,
 				FC8D434A2B6AE89C004177BE /* SecretView.swift in Sources */,

@@ -8,8 +8,8 @@
 import Foundation
 
 enum ParsedNinebotMessage {
-    case ninebotMessage(NinebotMessage)
-    case ninebotWriteAck(NinebotMessage)
+    case stockNBMessage(StockNBMessage)
+    case stockNBWriteAck(StockNBMessage)
 }
 
 class MessageManager {
@@ -20,53 +20,32 @@ class MessageManager {
     }
     
     func ninebotParse(_ data: Data) -> ParsedNinebotMessage? {
-        switch self.scooterProtocol {
-        case .xiaomi:
-            guard data.count >= 4 else {
+        let isXiaomi = if case .xiaomi(_) = self.scooterProtocol { true } else { false }
+        let keyOffset = isXiaomi ? 0x04 : 0x05
+        
+        guard data.count >= keyOffset + 2 else {
+            return nil
+        }
+        let cmd = data[keyOffset + 0x00]
+        let addr = data[keyOffset + 0x01]
+        let payload = Data(data[(keyOffset + 0x02)...])
+        
+        switch cmd {
+        case 0x04:
+            guard let message = StockNBMessage.parse(payload, address: addr) else {
                 return nil
             }
-            let cmd = data[3 + 0x01]
-            let addr = data[3 + 0x02]
-            let payload = data[(3 + 0x03)...]
-            
-            switch cmd {
-            case 0x04:
-                guard let message = NinebotMessage.parse(payload, address: addr) else {
-                    return nil
-                }
-                if case var .infoDump(infoDump) = message {
-                    infoDump.speed /= 100 // why does xiaomi have to be stupid??
-                    return .ninebotMessage(.infoDump(infoDump))
-                }
-                return .ninebotMessage(message)
-            case 0x05:
-                guard let messageType = NinebotMessage.getMessageType(address: addr) else {
-                    return nil
-                }
-                return .ninebotWriteAck(messageType)
-            default: return nil
+            if case var StockNBMessage.infoDump(infoDump) = message, isXiaomi {
+                infoDump.speed /= 100 // why does xiaomi have to be stupid??
+                return .stockNBMessage(StockNBMessage.infoDump(infoDump))
             }
-        default: // this is case ninebot, but also how i want it to act if some other scooter protocol is specified for whatever reason
-            guard data.count >= 5 else {
+            return .stockNBMessage(message)
+        case 0x05:
+            guard let messageType = StockNBMessage.getMessageType(address: addr) else {
                 return nil
             }
-            let cmd = data[3 + 0x02]
-            let addr = data[3 + 0x03]
-            let payload = Data(data[(3 + 0x04)...])
-            
-            switch cmd {
-            case 0x01, 0x04:
-                guard let message = NinebotMessage.parse(payload, address: addr) else {
-                    return nil
-                }
-                return .ninebotMessage(message)
-            case 0x02, 0x03, 0x05:
-                guard let messageType = NinebotMessage.getMessageType(address: addr) else {
-                    return nil
-                }
-                return .ninebotWriteAck(messageType)
-            default: return nil
-            }
+            return .stockNBWriteAck(messageType)
+        default: return nil
         }
     }
     

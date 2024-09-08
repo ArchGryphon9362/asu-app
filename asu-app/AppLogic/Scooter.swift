@@ -219,8 +219,7 @@ struct Scooter: Equatable {
     var serial: String?
     var uuid: String?
     var model: ScooterModel?
-    var infoDump: NinebotMessage.InfoDump?
-    var battery: Int?
+    var infoDump: StockNBMessage.InfoDump?
     var shfw: SHFW
     var connectionState: ConnectionState
     
@@ -240,7 +239,6 @@ struct Scooter: Equatable {
         self.serial = nil
         self.uuid = nil
         self.model = nil
-        self.battery = nil
         self.shfw = SHFW()
         self.connectionState = .disconnected
     }
