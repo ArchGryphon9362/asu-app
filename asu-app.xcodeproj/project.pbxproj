@@ -39,6 +39,7 @@
 		FCA328472ACB6B1F004D39B6 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCA328462ACB6B1F004D39B6 /* Utilities.swift */; };
 		FCAF3D2D2C4313B600C09DEF /* WriteLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCAF3D2C2C4313B600C09DEF /* WriteLoop.swift */; };
 		FCAF3D2F2C43E13600C09DEF /* ListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCAF3D2E2C43E13600C09DEF /* ListItem.swift */; };
+		FCAF3D312C43E48B00C09DEF /* SHFWMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCAF3D302C43E48B00C09DEF /* SHFWMessage.swift */; };
 		FCF4CC8A2B6AF01900F0310B /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4CC892B6AF01900F0310B /* Settings.swift */; };
 		FCF4CC8C2B6BD7B200F0310B /* MessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4CC8B2B6BD7B200F0310B /* MessageManager.swift */; };
 		FCF4CC902B6BD91B00F0310B /* NinebotMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4CC8F2B6BD91B00F0310B /* NinebotMessage.swift */; };
@@ -81,6 +82,7 @@
 		FCA328462ACB6B1F004D39B6 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		FCAF3D2C2C4313B600C09DEF /* WriteLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteLoop.swift; sourceTree = "<group>"; };
 		FCAF3D2E2C43E13600C09DEF /* ListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListItem.swift; sourceTree = "<group>"; };
+		FCAF3D302C43E48B00C09DEF /* SHFWMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHFWMessage.swift; sourceTree = "<group>"; };
 		FCF4CC892B6AF01900F0310B /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		FCF4CC8B2B6BD7B200F0310B /* MessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageManager.swift; sourceTree = "<group>"; };
 		FCF4CC8F2B6BD91B00F0310B /* NinebotMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NinebotMessage.swift; sourceTree = "<group>"; };
@@ -220,6 +222,7 @@
 			isa = PBXGroup;
 			children = (
 				FCF4CC8F2B6BD91B00F0310B /* NinebotMessage.swift */,
+				FCAF3D302C43E48B00C09DEF /* SHFWMessage.swift */,
 				FC0B68B92C8E5A6000765217 /* StockNBMessage.swift */,
 			);
 			path = MemoryTables;
@@ -333,6 +336,7 @@
 				FCA328452ACB2B08004D39B6 /* MessageGlue.swift in Sources */,
 				FC5F338E2AC98ABC006B4E0B /* ScooterView.swift in Sources */,
 				FC0579F82AC9DCC0004D8C1F /* InfoView.swift in Sources */,
+				FCAF3D312C43E48B00C09DEF /* SHFWMessage.swift in Sources */,
 				FC5DE3D62B49983A003DE7AB /* XiaomiAuth.swift in Sources */,
 				FC298CAF2AD25374000B9E55 /* NinebotAuth.swift in Sources */,
 				FCF4CC8A2B6AF01900F0310B /* Settings.swift in Sources */,

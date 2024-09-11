@@ -10,6 +10,8 @@ import Foundation
 enum ParsedNinebotMessage {
     case stockNBMessage(StockNBMessage)
     case stockNBWriteAck(StockNBMessage)
+    case shfwMessage(SHFWMessage)
+    case shfwWriteAck(SHFWMessage)
 }
 
 class MessageManager {
@@ -45,6 +47,21 @@ class MessageManager {
                 return nil
             }
             return .stockNBWriteAck(messageType)
+        case 0x34:
+            guard let message = SHFWMessage.parse(payload, address: addr) else {
+                return nil
+            }
+            return .shfwMessage(message)
+        case 0x35:
+            guard let messageType = SHFWMessage.getMessageType(address: addr, size: UInt8(payload.count)) else {
+                return nil
+            }
+            return .shfwWriteAck(messageType)
+        case 0x39:
+            guard let message = SHFWMessage.parseNewVersion(payload) else {
+                return nil
+            }
+            return .shfwMessage(message)
         default: return nil
         }
     }

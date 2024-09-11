@@ -139,6 +139,8 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             case let .infoDump(infoDump): self.scooter.infoDump = infoDump
             default: break
             }
+        case let .shfwMessage(shfwMessage):
+            print("[ScooterManager] much waw shfw: \(shfwMessage)")
         default: break
         }
         
