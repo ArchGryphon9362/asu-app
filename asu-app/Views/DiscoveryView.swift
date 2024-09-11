@@ -31,6 +31,7 @@ struct DiscoveryView: View {
                                 #if !os(macOS)
                                 .toolbar {
                                     Button("Settings") {
+                                        // TODO: fix this. ios doesn't like it. (only from ScooterView)
                                         self.isSettingsOpen = true
                                     }
                                 }
