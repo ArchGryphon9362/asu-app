@@ -59,7 +59,7 @@ internal func dataToUInt32(_ data: Data) -> UInt32 {
     return UInt32((UInt32(dataToUInt16(Data(data)[2..<4])) << 16) + UInt32(dataToUInt16(Data(data)[0..<2])))
 }
 
-internal func undatafy(_ value: Int) -> (Data) {
+internal func undatafy(_ value: Int) -> Data {
     let lower = UInt8((value & 0x00ff) >> 0)
     let upper = UInt8((value & 0xff00) >> 8)
     
