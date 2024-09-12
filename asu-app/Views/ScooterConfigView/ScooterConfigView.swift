@@ -52,37 +52,57 @@ struct ScooterConfigView: View {
             }
             .onChange(of: self.selectedTab) { newTab in
                 if newTab == 2 {
-                    if !(self.scooterManager.scooter.shfw.installed ?? false) {
+                    if self.scooterManager.scooter.shfw.installed != true {
                         self.shfwMissingAlert = true
-                        self.selectedTab = self.prevSelectedTab
                         return
                     }
                 }
                 
                 self.prevSelectedTab = newTab
             }
+            .onChange(of: self.scooterManager.scooter.shfw.installed) { installed in
+                guard installed == true else { return }
+                self.shfwMissingAlert = false
+            }
             .alert(isPresented: self.$shfwMissingAlert, content: {
+                guard self.scooterManager.scooter.shfw.installed != nil else {
+                    return Alert(
+                        title: Text("SHFW Loading..."),
+                        message: Text("Still checking for presence of SHFW..."),
+                        dismissButton: .cancel(Text("OK")) {
+                            self.selectedTab = self.prevSelectedTab
+                        }
+                    )
+                }
+                
                 switch self.scooterManager.scooter.shfw.compatible {
-                case true: Alert(
-                    title: Text("SHFW Missing!"),
-                    message: Text("Your scooter doesn't currently have SHFW installed!"),
-                    primaryButton: .cancel(Text("OK")),
-                    secondaryButton: .default(Text("Install")) {
-                        self.selectedTab = 1
-                        // TODO: pop open shfw flasher
-                    }
-                )
-                case false: Alert(
-                    title: Text("SHFW Missing!"),
-                    message: Text("Your scooter doesn't support SHFW!"),
-                    dismissButton: .default(Text("OK"))
-                )
+                case true:
+                    return Alert(
+                        title: Text("SHFW Missing!"),
+                        message: Text("Your scooter doesn't currently have SHFW installed!"),
+                        primaryButton: .cancel(Text("OK")),
+                        secondaryButton: .default(Text("Install")) {
+                            self.selectedTab = 1
+                            // TODO: pop open shfw flasher
+                        }
+                    )
+                case false: 
+                    return Alert(
+                        title: Text("SHFW Missing!"),
+                        message: Text("Your scooter doesn't support SHFW!"),
+                        dismissButton: .default(Text("OK"))
+                    )
                 // TODO: change this alert if shfw (un)discovered (or will swiftui be a nice one and do this for me??)
-                default: Alert(
-                    title: Text("SHFW Loading..."),
-                    message: Text("Still checking for presence of SHFW..."),
-                    dismissButton: .cancel(Text("OK"))
-                )
+                default:
+                    return Alert(
+                        title: Text("SHFW Missing!"),
+                        message: Text("Compatability unknown, you may still attempt an install"),
+                        primaryButton: .cancel(Text("OK")),
+                        secondaryButton: .default(Text("Install")) {
+                            self.selectedTab = 1
+                            // TODO: pop open shfw flasher
+                        }
+                    )
                 }
             })
         }
