@@ -12,18 +12,21 @@ fileprivate enum QueueItem {
     class Every {
         private var count: Int
         private var limit: Int?
+        private var limitHit: (() -> ())
         private var timer: Timer?
         
         init(
             getData: @escaping () -> (Data),
             frequency: Double,
             limit: Int?,
+            limitHit: (() -> ())?,
             addFunction: @escaping (Data) async -> ()
         ) {
             precondition(frequency >= 0.2, "WriteLoop: .every message frequency must be at least 0.2")
             
             self.count = 0
             self.limit = limit
+            self.limitHit = limitHit ?? {}
             self.timer = Timer(timeInterval: frequency, repeats: true) { _ in
                 self.enqueue(getData: getData, addFunction: addFunction)
             }
@@ -39,9 +42,9 @@ fileprivate enum QueueItem {
         func shouldDispose() -> Bool {
             // i'm certain there's a better way to write this function but i'm far too eepy to deal with that.
             guard let limit = self.limit else {
-                return self.timer == nil
+                return self.timer == nil && self.limitHit() == ()
             }
-            return self.timer == nil || self.count >= limit
+            return (self.timer == nil || self.count >= limit) && self.limitHit() == ()
         }
         
         private func enqueue(
@@ -65,8 +68,8 @@ fileprivate enum QueueItem {
     class Limited {
         private enum Limit {
             case none
-            case time(expiry: DispatchTime)
-            case count(Int)
+            case time(expiry: DispatchTime, limitHit: () -> ())
+            case count(limit: Int, limitHit: () -> ())
         }
         
         private let limit: Limit
@@ -76,20 +79,20 @@ fileprivate enum QueueItem {
             self.limit = .none
         }
         
-        init(timeLimit: Float) {
-            self.limit = .time(expiry: DispatchTime.distantFuture.advanced(by: .milliseconds(Int(timeLimit * 1000))))
+        init(timeLimit: Float, limitHit: (() -> ())?) {
+            self.limit = .time(expiry: DispatchTime.distantFuture.advanced(by: .milliseconds(Int(timeLimit * 1000))), limitHit: limitHit ?? {})
         }
         
-        init(countLimit: Int) {
-            self.limit = .count(countLimit)
+        init(countLimit: Int, limitHit: (() -> ())?) {
+            self.limit = .count(limit: countLimit, limitHit: limitHit ?? {})
             self.count = 0
         }
         
         func shouldDispose() -> Bool {
             return switch self.limit {
             case .none: false
-            case .time(let expiry): DispatchTime.now() >= expiry
-            case .count(let limit): self.count ?? 0 >= limit
+            case .time(let expiry, let limitHit): DispatchTime.now() >= expiry && limitHit() == ()
+            case .count(let limit, let limitHit): self.count ?? 0 >= limit && limitHit() == ()
             }
         }
         
@@ -118,19 +121,19 @@ actor WriteLoop {
         /// every x seconds (if this is too frequent, you WILL indefinitely block any other request. we crash if this is less than 0.2)
         case every(every: Double)
         /// every x seconds x times (if this is too frequent, the write loop will QUICKLY slow to a crawl. we crash if this is less than 0.2)
-        case everyLimit(every: Double, times: Int)
+        case everyLimit(every: Double, times: Int, limitHit: (() -> ())? = nil)
         /// forever (pass void. here for the overload)
         case forever
         /// forever, until x seconds
-        case foreverLimitSeconds(until: Float)
+        case foreverLimitSeconds(until: Float, limitHit: (() -> ())? = nil)
         /// forever, until x time
-        case foreverLimitTimes(times: Int)
+        case foreverLimitTimes(times: Int, limitHit: (() -> ())? = nil)
         /// until the condition is false (always done at least once)
         case condition(condition: () -> (Bool))
         /// until the condition is false, until x seconds (always done at least once)
-        case conditionLimitSeconds(condition: () -> (Bool), until: Float)
+        case conditionLimitSeconds(condition: () -> (Bool), until: Float, limitHit: (() -> ())? = nil)
         /// until the condition is false, until x seconds (always done at least once)
-        case conditionLimitTimes(condition: () -> (Bool), times: Int)
+        case conditionLimitTimes(condition: () -> (Bool), times: Int, limitHit: (() -> ())? = nil)
     }
     
     enum WriteCharacteristic {
@@ -202,27 +205,27 @@ actor WriteLoop {
         switch writeType {
         case .once: self.writeQueue[UUID()] = (characteristic, getData())
         case .every(every: let every):
-            let item = QueueItem.Every(getData: getData, frequency: every, limit: nil) { data in
+            let item = QueueItem.Every(getData: getData, frequency: every, limit: nil, limitHit: nil) { data in
                 self.writeQueue[UUID()] = (characteristic, getData())
             }
             self.queueOfEveries.append(item)
-        case .everyLimit(every: let every, times: let times):
-            let item = QueueItem.Every(getData: getData, frequency: every, limit: times) { data in
+        case .everyLimit(every: let every, times: let times, let limitHit):
+            let item = QueueItem.Every(getData: getData, frequency: every, limit: times, limitHit: limitHit) { data in
                 self.writeQueue[UUID()] = (characteristic, getData())
             }
             self.queueOfEveries.append(item)
         case .forever:
             enqueueSingle(characteristic, .forever(getData, .init()))
-        case .foreverLimitSeconds(until: let until):
-            enqueueSingle(characteristic, .forever(getData, .init(timeLimit: until)))
-        case .foreverLimitTimes(times: let times):
-            enqueueSingle(characteristic, .forever(getData, .init(countLimit: times)))
+        case .foreverLimitSeconds(until: let until, let limitHit):
+            enqueueSingle(characteristic, .forever(getData, .init(timeLimit: until, limitHit: limitHit)))
+        case .foreverLimitTimes(times: let times, let limitHit):
+            enqueueSingle(characteristic, .forever(getData, .init(countLimit: times, limitHit: limitHit)))
         case .condition(condition: let condition):
             enqueueSingle(characteristic, .condition(getData, condition, .init()))
-        case .conditionLimitSeconds(condition: let condition, until: let until):
-            enqueueSingle(characteristic, .condition(getData, condition, .init(timeLimit: until)))
-        case .conditionLimitTimes(condition: let condition, times: let times):
-            enqueueSingle(characteristic, .condition(getData, condition, .init(countLimit: times)))
+        case .conditionLimitSeconds(condition: let condition, until: let until, let limitHit):
+            enqueueSingle(characteristic, .condition(getData, condition, .init(timeLimit: until, limitHit: limitHit)))
+        case .conditionLimitTimes(condition: let condition, times: let times, let limitHit):
+            enqueueSingle(characteristic, .condition(getData, condition, .init(countLimit: times, limitHit: limitHit)))
         }
     }
     
