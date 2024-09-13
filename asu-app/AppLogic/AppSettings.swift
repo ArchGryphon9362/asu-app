@@ -1,5 +1,5 @@
 //
-//  Settings.swift
+//  AppSettings.swift
 //  asu-app
 //
 //  Created by ArchGryphon9362 on 31/01/2024.
@@ -8,9 +8,9 @@
 import Foundation
 import SwiftUI
 
-let appSettings = Settings()
+let appSettings = AppSettings()
 
-class Settings: ObservableObject {
+class AppSettings: ObservableObject {
     // main
     @AppStorage("correctSpeedUnits") var correctSpeedUnits = Locale.current.usesMetricSystem
     
