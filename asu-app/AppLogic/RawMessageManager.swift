@@ -1,5 +1,5 @@
 //
-//  MessageManager.swift
+//  RawMessageManager.swift
 //  asu-app
 //
 //  Created by ArchGryphon9362 on 01/02/2024.
@@ -14,7 +14,7 @@ enum ParsedNinebotMessage {
     case shfwWriteAck(SHFWMessage)
 }
 
-class MessageManager {
+class RawMessageManager {
     var scooterProtocol: ScooterProtocol
     
     init(scooterProtocol: ScooterProtocol) {
