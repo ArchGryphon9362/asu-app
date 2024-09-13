@@ -19,7 +19,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     @Published var scooter: Scooter
     @Published var scooterBluetooth: ScooterBluetooth
     var scooterCrypto: ScooterCrypto
-    var messageManager: MessageManager
+    var messageManager: RawMessageManager
     var scooterRemover: [UUID: Timer]
     
     init() {

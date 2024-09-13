@@ -40,8 +40,8 @@
 		FCAF3D2D2C4313B600C09DEF /* WriteLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCAF3D2C2C4313B600C09DEF /* WriteLoop.swift */; };
 		FCAF3D2F2C43E13600C09DEF /* ListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCAF3D2E2C43E13600C09DEF /* ListItem.swift */; };
 		FCAF3D312C43E48B00C09DEF /* SHFWMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCAF3D302C43E48B00C09DEF /* SHFWMessage.swift */; };
-		FCF4CC8A2B6AF01900F0310B /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4CC892B6AF01900F0310B /* Settings.swift */; };
-		FCF4CC8C2B6BD7B200F0310B /* MessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4CC8B2B6BD7B200F0310B /* MessageManager.swift */; };
+		FCF4CC8A2B6AF01900F0310B /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4CC892B6AF01900F0310B /* AppSettings.swift */; };
+		FCF4CC8C2B6BD7B200F0310B /* RawMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4CC8B2B6BD7B200F0310B /* RawMessageManager.swift */; };
 		FCF4CC902B6BD91B00F0310B /* NinebotMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4CC8F2B6BD91B00F0310B /* NinebotMessage.swift */; };
 /* End PBXBuildFile section */
 
@@ -83,8 +83,8 @@
 		FCAF3D2C2C4313B600C09DEF /* WriteLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteLoop.swift; sourceTree = "<group>"; };
 		FCAF3D2E2C43E13600C09DEF /* ListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListItem.swift; sourceTree = "<group>"; };
 		FCAF3D302C43E48B00C09DEF /* SHFWMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHFWMessage.swift; sourceTree = "<group>"; };
-		FCF4CC892B6AF01900F0310B /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
-		FCF4CC8B2B6BD7B200F0310B /* MessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageManager.swift; sourceTree = "<group>"; };
+		FCF4CC892B6AF01900F0310B /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		FCF4CC8B2B6BD7B200F0310B /* RawMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawMessageManager.swift; sourceTree = "<group>"; };
 		FCF4CC8F2B6BD91B00F0310B /* NinebotMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NinebotMessage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -173,15 +173,12 @@
 		FC8DE1BA2ACCAF3500E92501 /* AppLogic */ = {
 			isa = PBXGroup;
 			children = (
+				FCAD7CA42C946D79008A52B6 /* LowLevel */,
 				FCF4CC8E2B6BD8D600F0310B /* MemoryTables */,
 				FC5F337F2AC213DE006B4E0B /* Scooter.swift */,
 				FC5F33812AC26F7B006B4E0B /* SHFW.swift */,
 				FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */,
-				FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */,
-				FCAF3D2C2C4313B600C09DEF /* WriteLoop.swift */,
-				FCA328442ACB2B08004D39B6 /* MessageGlue.swift */,
-				FCF4CC892B6AF01900F0310B /* Settings.swift */,
-				FCF4CC8B2B6BD7B200F0310B /* MessageManager.swift */,
+				FCF4CC892B6AF01900F0310B /* AppSettings.swift */,
 			);
 			path = AppLogic;
 			sourceTree = "<group>";
@@ -216,6 +213,17 @@
 				FCA1AAE92AC1A4D2004578F4 /* asu_app.entitlements */,
 			);
 			path = "asu-app";
+			sourceTree = "<group>";
+		};
+		FCAD7CA42C946D79008A52B6 /* LowLevel */ = {
+			isa = PBXGroup;
+			children = (
+				FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */,
+				FCAF3D2C2C4313B600C09DEF /* WriteLoop.swift */,
+				FCA328442ACB2B08004D39B6 /* MessageGlue.swift */,
+				FCF4CC8B2B6BD7B200F0310B /* RawMessageManager.swift */,
+			);
+			path = LowLevel;
 			sourceTree = "<group>";
 		};
 		FCF4CC8E2B6BD8D600F0310B /* MemoryTables */ = {
@@ -310,7 +318,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FCF4CC8C2B6BD7B200F0310B /* MessageManager.swift in Sources */,
+				FCF4CC8C2B6BD7B200F0310B /* RawMessageManager.swift in Sources */,
 				FC0579FE2AC9DCDD004D8C1F /* SHFWConfigView.swift in Sources */,
 				FC5F33802AC213DE006B4E0B /* Scooter.swift in Sources */,
 				FCAF3D2D2C4313B600C09DEF /* WriteLoop.swift in Sources */,
@@ -339,7 +347,7 @@
 				FCAF3D312C43E48B00C09DEF /* SHFWMessage.swift in Sources */,
 				FC5DE3D62B49983A003DE7AB /* XiaomiAuth.swift in Sources */,
 				FC298CAF2AD25374000B9E55 /* NinebotAuth.swift in Sources */,
-				FCF4CC8A2B6AF01900F0310B /* Settings.swift in Sources */,
+				FCF4CC8A2B6AF01900F0310B /* AppSettings.swift in Sources */,
 				FCA1AAE42AC1A4D1004578F4 /* ASUApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
