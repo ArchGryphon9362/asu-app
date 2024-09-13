@@ -16,7 +16,7 @@
 		FC298CAD2AD214CE000B9E55 /* ScooterCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC298CAC2AD214CD000B9E55 /* ScooterCrypto.swift */; };
 		FC298CAF2AD25374000B9E55 /* NinebotAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC298CAE2AD25374000B9E55 /* NinebotAuth.swift */; };
 		FC5DE3D62B49983A003DE7AB /* XiaomiAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5DE3D52B49983A003DE7AB /* XiaomiAuth.swift */; };
-		FC5F337C2AC20BD6006B4E0B /* ScooterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */; };
+		FC5F337C2AC20BD6006B4E0B /* AppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337B2AC20BD6006B4E0B /* AppManager.swift */; };
 		FC5F337E2AC20BE1006B4E0B /* ScooterBluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */; };
 		FC5F33802AC213DE006B4E0B /* Scooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337F2AC213DE006B4E0B /* Scooter.swift */; };
 		FC5F33822AC26F7B006B4E0B /* SHFW.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F33812AC26F7B006B4E0B /* SHFW.swift */; };
@@ -60,7 +60,7 @@
 		FC5DE3D92B4AED97003DE7AB /* CBCentralManagerHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CBCentralManagerHandler.m; sourceTree = "<group>"; };
 		FC5DE3DB2B4AF8C8003DE7AB /* CBCentralManagerHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CBCentralManagerHandler.h; sourceTree = "<group>"; };
 		FC5DE3DC2B4B04AE003DE7AB /* CBCentralManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CBCentralManager.h; sourceTree = "<group>"; };
-		FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterManager.swift; sourceTree = "<group>"; };
+		FC5F337B2AC20BD6006B4E0B /* AppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppManager.swift; sourceTree = "<group>"; };
 		FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterBluetooth.swift; sourceTree = "<group>"; };
 		FC5F337F2AC213DE006B4E0B /* Scooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scooter.swift; sourceTree = "<group>"; };
 		FC5F33812AC26F7B006B4E0B /* SHFW.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHFW.swift; sourceTree = "<group>"; };
@@ -177,7 +177,7 @@
 				FCF4CC8E2B6BD8D600F0310B /* MemoryTables */,
 				FC5F337F2AC213DE006B4E0B /* Scooter.swift */,
 				FC5F33812AC26F7B006B4E0B /* SHFW.swift */,
-				FC5F337B2AC20BD6006B4E0B /* ScooterManager.swift */,
+				FC5F337B2AC20BD6006B4E0B /* AppManager.swift */,
 				FCF4CC892B6AF01900F0310B /* AppSettings.swift */,
 			);
 			path = AppLogic;
@@ -332,7 +332,7 @@
 				FCAF3D2F2C43E13600C09DEF /* ListItem.swift in Sources */,
 				FC6F69BF2B6EE0C000928CF0 /* TripsView.swift in Sources */,
 				FC8DE1B72ACCAE7300E92501 /* XiaomiCrypto.swift in Sources */,
-				FC5F337C2AC20BD6006B4E0B /* ScooterManager.swift in Sources */,
+				FC5F337C2AC20BD6006B4E0B /* AppManager.swift in Sources */,
 				FC6F69BB2B6E933B00928CF0 /* DashboardView.swift in Sources */,
 				FC0579FA2AC9DCCC004D8C1F /* MainConfigView.swift in Sources */,
 				FC298CAD2AD214CE000B9E55 /* ScooterCrypto.swift in Sources */,

@@ -31,16 +31,16 @@ class NinebotAuth {
         self.randomAuthData = generateRandom(count: 16)
     }
     
-    func startAuthenticating(withScooterManager scooterManager: ScooterManager) {
+    func startAuthenticating(withScooterManager appManager: AppManager) {
         guard !self.authenticated else {
             return
         }
         
         self.authState = .start
-        scooterManager.write(Data(hex: "5aa5003e215b00")) { self.authState == .start }
+        appManager.write(Data(hex: "5aa5003e215b00")) { self.authState == .start }
     }
     
-    func continueAuthenticating(withScooterManager scooterManager: ScooterManager, received data: Data, forCharacteristic uuid: CBUUID) {
+    func continueAuthenticating(withScooterManager appManager: AppManager, received data: Data, forCharacteristic uuid: CBUUID) {
         guard uuid == serialRXCharUUID else {
             return
         }
@@ -63,7 +63,7 @@ class NinebotAuth {
             dst == 0x3E &&
             cmd == 0x5B) {
             self.authState = .buttonPress
-            scooterManager.write(Data(hex: "5aa5103e215c00") + self.randomAuthData) { self.authState == .buttonPress }
+            appManager.write(Data(hex: "5aa5103e215c00") + self.randomAuthData) { self.authState == .buttonPress }
         }
         
         if (src == 0x21 &&
@@ -71,9 +71,9 @@ class NinebotAuth {
             cmd == 0x5C) {
             self.authState = .finish
             if (arg == 0x00) {
-                scooterManager.scooterBluetooth.setConnectionState(.authenticating)
+                appManager.scooterBluetooth.setConnectionState(.authenticating)
             }
-            scooterManager.write(Data(hex: "5aa5003e215d00")) { self.authState == .finish }
+            appManager.write(Data(hex: "5aa5003e215d00")) { self.authState == .finish }
         }
         
         if (src == 0x21 &&
@@ -81,7 +81,7 @@ class NinebotAuth {
             cmd == 0x5D &&
             arg == 0x01) {
             self.authState = .authenticated
-            scooterManager.scooterBluetooth.setConnectionState(.connected)
+            appManager.scooterBluetooth.setConnectionState(.connected)
         }
     }
 }

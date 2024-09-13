@@ -10,7 +10,7 @@ import SwiftUI
 struct ScooterView: View {
     @Environment(\.presentationMode) var presentation
     
-    @EnvironmentObject var scooterManager: ScooterManager
+    @EnvironmentObject var appManager: AppManager
     var discoveredScooter: DiscoveredScooter
     var forceNbCrypto: Bool
     
@@ -33,15 +33,15 @@ struct ScooterView: View {
                 }
         }
         .onAppear {
-            self.scooterManager.connectTo(discoveredScooter: discoveredScooter, forceNbCrypto: self.forceNbCrypto)
+            self.appManager.connectTo(discoveredScooter: discoveredScooter, forceNbCrypto: self.forceNbCrypto)
         }
         .onDisappear {
-            self.scooterManager.disconnectFromScooter(updateUi: true)
+            self.appManager.disconnectFromScooter(updateUi: true)
             self.connectingMessage = "Please wait..."
         }
-        .onChange(of: self.scooterManager.scooter.connectionState) { state in
-            if self.scooterManager.scooter.authenticating {
-                switch(self.scooterManager.scooter.model?.scooterProtocol(forceNbCrypto: self.forceNbCrypto)) {
+        .onChange(of: self.appManager.scooter.connectionState) { state in
+            if self.appManager.scooter.authenticating {
+                switch(self.appManager.scooter.model?.scooterProtocol(forceNbCrypto: self.forceNbCrypto)) {
                 case .xiaomi(true):
                     self.connectingMessage = "Authenticating with scooter...\n\nPlease toggle the headlight by pressing the power button."
                 default:
@@ -52,7 +52,7 @@ struct ScooterView: View {
                 self.connectingMessage = "Please wait..."
             }
             
-            guard !self.scooterManager.scooterBluetooth.blockDisconnectUpdates else {
+            guard !self.appManager.scooterBluetooth.blockDisconnectUpdates else {
                 return
             }
             
@@ -68,7 +68,7 @@ struct ScooterView: View {
                 title: Text("Connecting..."), // TODO: allowing heading to change too
                 message: message,
                 dismissButton: .destructive(Text("Disconnect")) {
-                    self.scooterManager.disconnectFromScooter(updateUi: true)
+                    self.appManager.disconnectFromScooter(updateUi: true)
                     self.connectingMessage = "Please wait..."
                     self.presentation.wrappedValue.dismiss()
                 }

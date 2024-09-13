@@ -10,7 +10,7 @@ import CoreBluetooth
 import NavigationBackport
 
 struct DiscoveryView: View {
-    @EnvironmentObject var scooterManager: ScooterManager
+    @EnvironmentObject var appManager: AppManager
     @State var forceNbCrypto: [UUID: Bool] = [:]
     #if !os(macOS)
     @State var isSettingsOpen: Bool = false
@@ -19,7 +19,7 @@ struct DiscoveryView: View {
     
     var body: some View {
         NBNavigationStack {
-            List(Array(scooterManager.discoveredScooters.values), id: \.peripheral.identifier) { scooter in
+            List(Array(appManager.discoveredScooters.values), id: \.peripheral.identifier) { scooter in
                 HStack {
                     VStack(alignment: .leading) {
                         Text(scooter.name).bold().font(.title2).background(

@@ -1,5 +1,5 @@
 //
-//  ScooterManager.swift
+//  AppManager.swift
 //  asu-app
 //
 //  Created by ArchGryphon9362 on 25/09/2023.
@@ -12,7 +12,7 @@ import OrderedCollections
 import CryptoKit
 
 // TODO: lower min ios version to 13 or 14
-class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
+class AppManager : ObservableObject, ScooterBluetoothDelegate {
     private var forceNbCrypto: Bool
     
     @Published var discoveredScooters: OrderedDictionary<UUID, DiscoveredScooter>
@@ -108,7 +108,6 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             self.write(self.messageManager.ninebotRead(StockNBMessage.escVersion())) { self.scooter.esc == nil }
             self.write(self.messageManager.ninebotRead(StockNBMessage.bmsVersion())) { self.scooter.bms == nil }
             self.write(self.messageManager.ninebotRead(StockNBMessage.bleVersion())) { self.scooter.ble == nil }
-            self.write(self.messageManager.ninebotRead(StockNBMessage.infoDump())) { true }
         default: return
         }
     }
@@ -140,7 +139,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             default: break
             }
         case let .shfwMessage(shfwMessage):
-            print("[ScooterManager] much waw shfw: \(shfwMessage)")
+            print("[AppManager] much waw shfw: \(shfwMessage)")
         default: break
         }
         

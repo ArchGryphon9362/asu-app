@@ -9,15 +9,15 @@ import Foundation
 import SwiftUI
 
 struct DashboardView: View {
-    @EnvironmentObject var scooterManager: ScooterManager
+    @EnvironmentObject var appManager: AppManager
     
     var body: some View {
         List {
             Text("vroom 😎🦊")
             Button("Reboot") {
-                let msg = self.scooterManager.messageManager.ninebotWrite(StockNBMessage.powerOff(false), ack: false)
+                let msg = self.appManager.messageManager.ninebotWrite(StockNBMessage.powerOff(false), ack: false)
                 var send = false
-                self.scooterManager.write(msg) {
+                self.appManager.write(msg) {
                     send.toggle()
                     return send
                 }

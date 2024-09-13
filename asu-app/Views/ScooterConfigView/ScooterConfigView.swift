@@ -12,7 +12,7 @@ import NavigationBackport
 struct ScooterConfigView: View {
     @Environment(\.presentationMode) var presentation
     
-    @EnvironmentObject var scooterManager: ScooterManager
+    @EnvironmentObject var appManager: AppManager
     
     @State var selectedTab = 0
     @State var prevSelectedTab = 0
@@ -52,7 +52,7 @@ struct ScooterConfigView: View {
             }
             .onChange(of: self.selectedTab) { newTab in
                 if newTab == 2 {
-                    if self.scooterManager.scooter.shfw.installed != true {
+                    if self.appManager.scooter.shfw.installed != true {
                         self.shfwMissingAlert = true
                         return
                     }
@@ -60,12 +60,12 @@ struct ScooterConfigView: View {
                 
                 self.prevSelectedTab = newTab
             }
-            .onChange(of: self.scooterManager.scooter.shfw.installed) { installed in
+            .onChange(of: self.appManager.scooter.shfw.installed) { installed in
                 guard installed == true else { return }
                 self.shfwMissingAlert = false
             }
             .alert(isPresented: self.$shfwMissingAlert, content: {
-                guard self.scooterManager.scooter.shfw.installed != nil else {
+                guard self.appManager.scooter.shfw.installed != nil else {
                     return Alert(
                         title: Text("SHFW Loading..."),
                         message: Text("Still checking for presence of SHFW..."),
@@ -75,7 +75,7 @@ struct ScooterConfigView: View {
                     )
                 }
                 
-                switch self.scooterManager.scooter.shfw.compatible {
+                switch self.appManager.scooter.shfw.compatible {
                 case true:
                     return Alert(
                         title: Text("SHFW Missing!"),
