@@ -33,7 +33,7 @@ class RawMessageManager {
         let payload = Data(data[(keyOffset + 0x02)...])
         
         switch cmd {
-        case 0x04:
+        case 0x01, 0x04:
             guard let message = StockNBMessage.parse(payload, address: addr) else {
                 return nil
             }
@@ -42,17 +42,17 @@ class RawMessageManager {
                 return .stockNBMessage(StockNBMessage.infoDump(infoDump))
             }
             return .stockNBMessage(message)
-        case 0x05:
+        case 0x02, 0x05:
             guard let messageType = StockNBMessage.getMessageType(address: addr) else {
                 return nil
             }
             return .stockNBWriteAck(messageType)
-        case 0x34:
+        case 0x31, 0x34:
             guard let message = SHFWMessage.parse(payload, address: addr) else {
                 return nil
             }
             return .shfwMessage(message)
-        case 0x35:
+        case 0x32, 0x35:
             guard let messageType = SHFWMessage.getMessageType(address: addr, size: UInt8(payload.count)) else {
                 return nil
             }
