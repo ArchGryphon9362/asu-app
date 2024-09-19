@@ -72,6 +72,16 @@ struct DiscoveryView: View {
             .listStyle(.inset)
             .navigationTitle("Pick your scooter" + (appSettings.foxMode ? " 🦊" : ""))
             .background(Text(appSettings.foxMode.description).hidden()) // TODO: this doesn't fix fox mode not changing title
+            // TODO: remove this when micrypto is implemented
+            .onChange(of: appManager.discoveredScooters) { discoveredScooters in
+                for scooter in discoveredScooters.values {
+                    if /*appSettings.allowForceNbCrypto,*/ // this check can go given mi crypto is completely broken atm
+                       forceNbCrypto[scooter.peripheral.identifier] == nil,
+                       case .xiaomi = scooter.model.scooterProtocol(forceNbCrypto: false) {
+                        forceNbCrypto[scooter.peripheral.identifier] = true
+                    }
+                }
+            }
             #if !os(macOS)
             .toolbar {
                 Button("Settings") {
