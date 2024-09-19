@@ -36,7 +36,7 @@ class AppManager : ObservableObject, ScooterBluetoothDelegate {
     
     func connectTo(discoveredScooter: DiscoveredScooter, forceNbCrypto: Bool = false) {
         let name = discoveredScooter.name
-        let scooterProtocol = discoveredScooter.model.scooterProtocol(forceNbCrypto: self.forceNbCrypto)
+        let scooterProtocol = discoveredScooter.model.scooterProtocol(forceNbCrypto: forceNbCrypto)
         
         scooter.model = discoveredScooter.model
         self.forceNbCrypto = forceNbCrypto
