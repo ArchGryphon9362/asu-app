@@ -169,7 +169,7 @@ actor WriteLoop {
         }
     }
     
-    func stop() {
+    func stop(clear: Bool = true) {
         // cancel the task
         task?.cancel()
         
@@ -177,11 +177,13 @@ actor WriteLoop {
         self.continuationTimer?.invalidate()
         self.continuationTimer = nil
         
-        // get rid of queues
-        self.queueOfEveries.forEach { item in item.stop() }
-        self.queueOfEveries = []
-        self.queue = []
-        self.writeQueue = [:]
+        if clear {
+            // get rid of queues
+            self.queueOfEveries.forEach { item in item.stop() }
+            self.queueOfEveries = []
+            self.queue = []
+            self.writeQueue = [:]
+        }
         
         // resume any remaining continuations indicating to not continue
         self.continuation?.resume(returning: false)
