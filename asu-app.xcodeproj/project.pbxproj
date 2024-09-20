@@ -176,7 +176,6 @@
 				FCAD7CA42C946D79008A52B6 /* LowLevel */,
 				FCF4CC8E2B6BD8D600F0310B /* MemoryTables */,
 				FC5F337F2AC213DE006B4E0B /* Scooter.swift */,
-				FC5F33812AC26F7B006B4E0B /* SHFW.swift */,
 				FC5F337B2AC20BD6006B4E0B /* AppManager.swift */,
 				FCF4CC892B6AF01900F0310B /* AppSettings.swift */,
 			);
@@ -206,6 +205,7 @@
 				FC0579F42AC9DC90004D8C1F /* Views */,
 				FC8DE1B82ACCAEB400E92501 /* Assets */,
 				FC8DE1B92ACCAEE000E92501 /* Crypto */,
+				FCCD207E2C9DA969002A314A /* DataModels */,
 				FC8DE1BA2ACCAF3500E92501 /* AppLogic */,
 				FC0579FF2ACA24BA004D8C1F /* Constants.swift */,
 				FCA328462ACB6B1F004D39B6 /* Utilities.swift */,
@@ -226,10 +226,18 @@
 			path = LowLevel;
 			sourceTree = "<group>";
 		};
-		FCF4CC8E2B6BD8D600F0310B /* MemoryTables */ = {
+		FCCD207E2C9DA969002A314A /* DataModels */ = {
 			isa = PBXGroup;
 			children = (
 				FCF4CC8F2B6BD91B00F0310B /* NinebotMessage.swift */,
+				FC5F33812AC26F7B006B4E0B /* SHFW.swift */,
+			);
+			path = DataModels;
+			sourceTree = "<group>";
+		};
+		FCF4CC8E2B6BD8D600F0310B /* MemoryTables */ = {
+			isa = PBXGroup;
+			children = (
 				FCAF3D302C43E48B00C09DEF /* SHFWMessage.swift */,
 				FC0B68B92C8E5A6000765217 /* StockNBMessage.swift */,
 			);
