@@ -40,6 +40,7 @@
 		FCAF3D2D2C4313B600C09DEF /* WriteLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCAF3D2C2C4313B600C09DEF /* WriteLoop.swift */; };
 		FCAF3D2F2C43E13600C09DEF /* ListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCAF3D2E2C43E13600C09DEF /* ListItem.swift */; };
 		FCAF3D312C43E48B00C09DEF /* SHFWMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCAF3D302C43E48B00C09DEF /* SHFWMessage.swift */; };
+		FCCD20802C9DAA9F002A314A /* ScooterModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD207F2C9DAA9F002A314A /* ScooterModel.swift */; };
 		FCF4CC8A2B6AF01900F0310B /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4CC892B6AF01900F0310B /* AppSettings.swift */; };
 		FCF4CC8C2B6BD7B200F0310B /* RawMessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4CC8B2B6BD7B200F0310B /* RawMessageManager.swift */; };
 		FCF4CC902B6BD91B00F0310B /* NinebotMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF4CC8F2B6BD91B00F0310B /* NinebotMessage.swift */; };
@@ -83,6 +84,7 @@
 		FCAF3D2C2C4313B600C09DEF /* WriteLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteLoop.swift; sourceTree = "<group>"; };
 		FCAF3D2E2C43E13600C09DEF /* ListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListItem.swift; sourceTree = "<group>"; };
 		FCAF3D302C43E48B00C09DEF /* SHFWMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHFWMessage.swift; sourceTree = "<group>"; };
+		FCCD207F2C9DAA9F002A314A /* ScooterModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterModel.swift; sourceTree = "<group>"; };
 		FCF4CC892B6AF01900F0310B /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		FCF4CC8B2B6BD7B200F0310B /* RawMessageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawMessageManager.swift; sourceTree = "<group>"; };
 		FCF4CC8F2B6BD91B00F0310B /* NinebotMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NinebotMessage.swift; sourceTree = "<group>"; };
@@ -229,6 +231,7 @@
 		FCCD207E2C9DA969002A314A /* DataModels */ = {
 			isa = PBXGroup;
 			children = (
+				FCCD207F2C9DAA9F002A314A /* ScooterModel.swift */,
 				FCF4CC8F2B6BD91B00F0310B /* NinebotMessage.swift */,
 				FC5F33812AC26F7B006B4E0B /* SHFW.swift */,
 			);
@@ -335,6 +338,7 @@
 				FCA1AAE62AC1A4D1004578F4 /* DiscoveryView.swift in Sources */,
 				FC0B68BA2C8E5A6000765217 /* StockNBMessage.swift in Sources */,
 				FC8D43482B6AC2E1004177BE /* SettingsView.swift in Sources */,
+				FCCD20802C9DAA9F002A314A /* ScooterModel.swift in Sources */,
 				FC6F69B92B6E926800928CF0 /* ScooterConfigView.swift in Sources */,
 				FC8D434A2B6AE89C004177BE /* SecretView.swift in Sources */,
 				FCAF3D2F2C43E13600C09DEF /* ListItem.swift in Sources */,
