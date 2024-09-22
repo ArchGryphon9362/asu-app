@@ -64,6 +64,10 @@ class Scooter : Observable, ScooterBluetoothDelegate {
     }
     
     // private stuff
+    private func handle(_ message: ParsedNinebotMessage) {
+        // TODO: do something with the parsed data
+    }
+    
     private func startInfoDump() {
         self.infoDumpId += 1
         let newInfoDumpId = self.infoDumpId
@@ -134,8 +138,9 @@ class Scooter : Observable, ScooterBluetoothDelegate {
             return
         }
         
-        let parsedData = self.messageManager.ninebotParse(data)
-        // TODO: do something with the parsed data
+        if let parsedData = self.messageManager.ninebotParse(data) {
+            self.handle(parsedData)
+        }
     }
 }
 
