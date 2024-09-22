@@ -13,10 +13,10 @@ import CoreBluetooth
 
 class Scooter : Observable, ScooterBluetoothDelegate {
     class CoreInfo : Observable {
-        @State var serial: String? = nil
-        @State var esc: NinebotVersion? = nil
-        @State var ble: NinebotVersion? = nil
-        @State var bms: NinebotVersion? = nil
+        @State fileprivate(set) var serial: String? = nil
+        @State fileprivate(set) var esc: NinebotVersion? = nil
+        @State fileprivate(set) var ble: NinebotVersion? = nil
+        @State fileprivate(set) var bms: NinebotVersion? = nil
         
         // init code
         private var scooter: Scooter! = nil
