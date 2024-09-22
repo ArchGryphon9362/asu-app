@@ -1,3 +1,4 @@
+// Thanks to Basse for providing the beacon parsing code and all the models
 //
 //  ScooterModel.swift
 //  asu-app
