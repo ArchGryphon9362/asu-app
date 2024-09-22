@@ -6,22 +6,39 @@
 //  Created by ArchGryphon9362 on 25/09/2023.
 //
 
+import SwiftUI
 import Foundation
 import OrderedCollections
 import CoreBluetooth
 
 class Scooter : Observable, ScooterBluetoothDelegate {
-    private var forceNbCrypto: Bool = false
-    private var scooterBluetooth: ScooterBluetooth = .init()
-    private var scooterCrypto: ScooterCrypto = .init()
-    private var messageManager: RawMessageManager = .init(scooterProtocol: .ninebot(true))
-    private var scooterRemover: [UUID: Timer] = [:]
+    class CoreInfo : Observable {
+        @State var serial: String? = nil
+        @State var esc: NinebotVersion? = nil
+        @State var ble: NinebotVersion? = nil
+        @State var bms: NinebotVersion? = nil
+        
+        // init code
+        private var scooter: Scooter! = nil
+        
+        fileprivate func setScooter(_ scooter: Scooter) {
+            self.scooter = scooter
+        }
+    }
+    
+    fileprivate var forceNbCrypto: Bool = false
+    fileprivate var scooterBluetooth: ScooterBluetooth = .init()
+    fileprivate var scooterCrypto: ScooterCrypto = .init()
+    fileprivate var messageManager: RawMessageManager = .init(scooterProtocol: .ninebot(true))
+    fileprivate var scooterRemover: [UUID: Timer] = [:]
     
     // used for ensuring only 1 info dump can run at any given time
     // (any more would be a waste of WriteLoop cycles)
-    private var infoDumpId = 0
+    fileprivate var infoDumpId = 0
     
     @Published var discoveredScooters: OrderedDictionary<UUID, DiscoveredScooter> = [:]
+    
+    @Published var coreInfo: CoreInfo = .init()
     
     var authenticating: Bool = false
     var model: ScooterModel? = nil
@@ -29,6 +46,7 @@ class Scooter : Observable, ScooterBluetoothDelegate {
     
     init() {
         self.scooterBluetooth.setScooterBluetoothDelegate(self)
+        self.coreInfo.setScooter(self)
     }
     
     // basic bluetooth methods
@@ -64,11 +82,11 @@ class Scooter : Observable, ScooterBluetoothDelegate {
     }
     
     // private stuff
-    private func handle(_ message: ParsedNinebotMessage) {
+    fileprivate func handle(_ message: ParsedNinebotMessage) {
         // TODO: do something with the parsed data
     }
     
-    private func startInfoDump() {
+    fileprivate func startInfoDump() {
         self.infoDumpId += 1
         let newInfoDumpId = self.infoDumpId
         let infoDumpMsg = self.messageManager.ninebotRead(StockNBMessage.infoDump())
@@ -77,8 +95,35 @@ class Scooter : Observable, ScooterBluetoothDelegate {
         })
     }
     
-    private func stopInfoDump() {
+    fileprivate func stopInfoDump() {
         self.infoDumpId += 1
+    }
+    
+    fileprivate func requestAll() {
+        self.requestCoreInfo()
+        self.requestFullShfw()
+    }
+    
+    fileprivate func requestCoreInfo() {
+        let coreRequests: [(NinebotMessage, PartialKeyPath<CoreInfo>)] = [
+            (StockNBMessage.serialNumber(), \CoreInfo.serial),
+            (StockNBMessage.escVersion(), \CoreInfo.esc),
+            (StockNBMessage.bleVersion(), \CoreInfo.ble),
+            (StockNBMessage.bmsVersion(), \CoreInfo.bms)
+        ]
+        
+        for (request, key) in coreRequests {
+            let msg = self.messageManager.ninebotRead(request)
+            self.writeRaw(msg, characteristic: .serial, writeType: .condition(
+                condition: {
+                    self.coreInfo[keyPath: key] as Optional == nil
+                }
+            ))
+        }
+    }
+    
+    fileprivate func requestFullShfw() {
+        
     }
     
     // underlying ScooterBluetooth methods
@@ -117,6 +162,7 @@ class Scooter : Observable, ScooterBluetoothDelegate {
         case .connected:
             // TODO: start collecting info and whatnot
             self.startInfoDump()
+            self.requestAll()
         default: return
         }
     }
