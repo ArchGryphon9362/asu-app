@@ -17,6 +17,10 @@ class Scooter : Observable, ScooterBluetoothDelegate {
     private var messageManager: RawMessageManager = .init(scooterProtocol: .ninebot(true))
     private var scooterRemover: [UUID: Timer] = [:]
     
+    // used for ensuring only 1 info dump can run at any given time
+    // (any more would be a waste of WriteLoop cycles)
+    private var infoDumpId = 0
+    
     @Published var discoveredScooters: OrderedDictionary<UUID, DiscoveredScooter> = [:]
     
     var authenticating: Bool = false
@@ -27,6 +31,7 @@ class Scooter : Observable, ScooterBluetoothDelegate {
         self.scooterBluetooth.setScooterBluetoothDelegate(self)
     }
     
+    // basic bluetooth methods
     func connectTo(discoveredScooter: DiscoveredScooter, forceNbCrypto: Bool = false) {
         let name = discoveredScooter.name
         let scooterProtocol = discoveredScooter.model.scooterProtocol(forceNbCrypto: forceNbCrypto)
@@ -39,12 +44,16 @@ class Scooter : Observable, ScooterBluetoothDelegate {
         scooterBluetooth.connect(discoveredScooter.peripheral, name: name, scooterProtocol: scooterProtocol)
     }
     
-    // TODO: add "updateUi" back
+    // TODO: add "updateUi" back for miauth
     func disconnectFromScooter() {
         scooterBluetooth.disconnect(nil)
     }
     
-    func writeRaw(_ data: Data, characteristic: WriteLoop.WriteCharacteristic, writeType: WriteLoop.WriteType) {
+    func writeRaw(_ data: Data?, characteristic: WriteLoop.WriteCharacteristic, writeType: WriteLoop.WriteType) {
+        guard let data = data else {
+            return
+        }
+        
         self.scooterBluetooth.write(writeType: writeType, characteristic: characteristic) {
             var data = data
             if characteristic == .serial, self.model?.scooterProtocol(forceNbCrypto: self.forceNbCrypto).crypto == true {
@@ -52,6 +61,20 @@ class Scooter : Observable, ScooterBluetoothDelegate {
             }
             return data
         }
+    }
+    
+    // private stuff
+    private func startInfoDump() {
+        self.infoDumpId += 1
+        let newInfoDumpId = self.infoDumpId
+        let infoDumpMsg = self.messageManager.ninebotRead(StockNBMessage.infoDump())
+        self.writeRaw(infoDumpMsg, characteristic: .serial, writeType: .condition {
+            self.infoDumpId == newInfoDumpId
+        })
+    }
+    
+    private func stopInfoDump() {
+        self.infoDumpId += 1
     }
     
     // underlying ScooterBluetooth methods
@@ -89,7 +112,7 @@ class Scooter : Observable, ScooterBluetoothDelegate {
             }
         case .connected:
             // TODO: start collecting info and whatnot
-            break
+            self.startInfoDump()
         default: return
         }
     }
