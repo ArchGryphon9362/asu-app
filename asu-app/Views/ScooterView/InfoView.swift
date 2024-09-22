@@ -16,10 +16,10 @@ struct InfoView: View {
             List {
                 Section {
                     ListItem(title: "Model", data: self.appManager.scooter.model?.name)
-                    ListItem(title: "BLE", data: self.appManager.scooter.ble)
-                    ListItem(title: "DRV", data: self.appManager.scooter.esc)
-                    ListItem(title: "BMS", data: self.appManager.scooter.bms)
-                    ListItem(title: "Serial Number", data: self.appManager.scooter.serial)
+                    ListItem(title: "BLE", data: nil)//self.appManager.scooter.ble)
+                    ListItem(title: "DRV", data: nil)//self.appManager.scooter.esc)
+                    ListItem(title: "BMS", data: nil)//self.appManager.scooter.bms)
+                    ListItem(title: "Serial Number", data: nil)//self.appManager.scooter.serial)
                 }
                 
                 Button("Scooter Config", action: {

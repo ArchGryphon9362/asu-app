@@ -96,31 +96,31 @@ class ScooterCrypto {
         }
     }
     
-    func startAuthenticating(withScooterManager appManager: AppManager) {
+    func startAuthenticating(withScooter scooter: Scooter) {
         switch(self.scooterProtocol) {
         case .ninebot(true):
             guard !self.ninebotAuth.authenticated else {
                 return
             }
             
-            self.ninebotAuth.startAuthenticating(withScooterManager: appManager)
+            self.ninebotAuth.startAuthenticating(withScooter: scooter)
         case .xiaomi(true):
             guard !self.xiaomiAuth.authenticated else {
                 return
             }
             
-            self.xiaomiAuth.startAuthenticating(withScooterManager: appManager)
+            self.xiaomiAuth.startAuthenticating(withScooter: scooter)
         default: return
         }
     }
     
-    func continueAuthenticating(withScooterManager appManager: AppManager, received data: Data, forCharacteristic uuid: CBUUID) {
+    func continueAuthenticating(withScooter scooter: Scooter, received data: Data, forCharacteristic uuid: CBUUID) -> ConnectionState? {
         switch (self.scooterProtocol) {
         case .ninebot(true):
-            self.ninebotAuth.continueAuthenticating(withScooterManager: appManager, received: data, forCharacteristic: uuid)
+            return self.ninebotAuth.continueAuthenticating(withScooter: scooter, received: data, forCharacteristic: uuid)
         case .xiaomi(true):
-            self.xiaomiAuth.continueAuthenticating(withScooterManager: appManager, received: data, forCharacteristic: uuid)
-        default: return
+            return self.xiaomiAuth.continueAuthenticating(withScooter: scooter, received: data, forCharacteristic: uuid)
+        default: return nil
         }
     }
 }

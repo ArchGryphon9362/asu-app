@@ -13,16 +13,12 @@ struct DashboardView: View {
     
     var body: some View {
         List {
-            Text("vroom 😎🦊")
+            let fox = appSettings.foxMode ? "🦊" : ""
+            Text("vroom 😎" + fox)
             Button("Reboot") {
-                let msg = self.appManager.messageManager.ninebotWrite(StockNBMessage.powerOff(false), ack: false)
-                var send = false
-                self.appManager.write(msg) {
-                    send.toggle()
-                    return send
-                }
+                // TODO: reimplement
+                print("lol no more, you fucking wish. wait for Scooter.swift v2 lmfaooo")
             }
-            Text("")
         }
     }
 }

@@ -31,22 +31,24 @@ class NinebotAuth {
         self.randomAuthData = generateRandom(count: 16)
     }
     
-    func startAuthenticating(withScooterManager appManager: AppManager) {
+    func startAuthenticating(withScooter scooter: Scooter) {
         guard !self.authenticated else {
             return
         }
         
         self.authState = .start
-        appManager.write(Data(hex: "5aa5003e215b00")) { self.authState == .start }
+        scooter.writeRaw(Data(hex: "5aa5003e215b00"), characteristic: .serial, writeType: .condition {
+            self.authState == .start
+        })
     }
     
-    func continueAuthenticating(withScooterManager appManager: AppManager, received data: Data, forCharacteristic uuid: CBUUID) {
+    func continueAuthenticating(withScooter scooter: Scooter, received data: Data, forCharacteristic uuid: CBUUID) -> ConnectionState? {
         guard uuid == serialRXCharUUID else {
-            return
+            return nil
         }
         
         guard data.count > 6 else {
-            return
+            return nil
         }
         
         let payloadLength = data[2 + 0x00]
@@ -56,14 +58,16 @@ class NinebotAuth {
         let arg = data[2 + 0x04]
         
         guard data.count - 0x07 >= payloadLength else {
-            return
+            return nil
         }
         
         if (src == 0x21 &&
             dst == 0x3E &&
             cmd == 0x5B) {
             self.authState = .buttonPress
-            appManager.write(Data(hex: "5aa5103e215c00") + self.randomAuthData) { self.authState == .buttonPress }
+            scooter.writeRaw(Data(hex: "5aa5103e215c00") + self.randomAuthData, characteristic: .serial, writeType: .condition {
+                self.authState == .buttonPress
+            })
         }
         
         if (src == 0x21 &&
@@ -71,9 +75,11 @@ class NinebotAuth {
             cmd == 0x5C) {
             self.authState = .finish
             if (arg == 0x00) {
-                appManager.scooterBluetooth.setConnectionState(.authenticating)
+                return .authenticating
             }
-            appManager.write(Data(hex: "5aa5003e215d00")) { self.authState == .finish }
+            scooter.writeRaw(Data(hex: "5aa5003e215d00"), characteristic: .serial, writeType: .condition {
+                self.authState == .finish
+            })
         }
         
         if (src == 0x21 &&
@@ -81,7 +87,9 @@ class NinebotAuth {
             cmd == 0x5D &&
             arg == 0x01) {
             self.authState = .authenticated
-            appManager.scooterBluetooth.setConnectionState(.connected)
+            return .connected
         }
+        
+        return nil
     }
 }

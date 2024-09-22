@@ -33,10 +33,10 @@ struct ScooterView: View {
                 }
         }
         .onAppear {
-            self.appManager.connectTo(discoveredScooter: discoveredScooter, forceNbCrypto: self.forceNbCrypto)
+            self.appManager.scooter.connectTo(discoveredScooter: discoveredScooter, forceNbCrypto: self.forceNbCrypto)
         }
         .onDisappear {
-            self.appManager.disconnectFromScooter(updateUi: true)
+            self.appManager.scooter.disconnectFromScooter()
             self.connectingMessage = "Please wait..."
         }
         .onChange(of: self.appManager.scooter.connectionState) { state in
@@ -52,9 +52,7 @@ struct ScooterView: View {
                 self.connectingMessage = "Please wait..."
             }
             
-            guard !self.appManager.scooterBluetooth.blockDisconnectUpdates else {
-                return
-            }
+            // TODO: make sure to do some stuff when blocking ui state updates
             
             if state == .disconnected {
                 self.presentation.wrappedValue.dismiss()
@@ -68,7 +66,7 @@ struct ScooterView: View {
                 title: Text("Connecting..."), // TODO: allowing heading to change too
                 message: message,
                 dismissButton: .destructive(Text("Disconnect")) {
-                    self.appManager.disconnectFromScooter(updateUi: true)
+                    self.appManager.scooter.disconnectFromScooter()
                     self.connectingMessage = "Please wait..."
                     self.presentation.wrappedValue.dismiss()
                 }

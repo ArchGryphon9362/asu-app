@@ -118,16 +118,13 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         self.bluetoothManager = CBCentralManager(delegate: self, queue: self.bluetoothQueue)
     }
     
-    func setConnectionState(_ connectionState: ConnectionState, overrideAuthMode: Bool = false) {
-        guard self.connectionState != connectionState || overrideAuthMode else {
+    func setConnectionState(_ connectionState: ConnectionState) {
+        guard self.connectionState != connectionState else {
             return
         }
         
         self.connectionState = connectionState
         if (connectionState == .disconnected) {
-            if overrideAuthMode {
-                self.blockDisconnectUpdates = false
-            }
             self.peripheral = nil
             self.serialWriteChar = nil
             self.upnpChar = nil
@@ -156,9 +153,9 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
         bluetoothManager.connect(peripheral)
     }
     
-    func disconnect(_ peripheral: CBPeripheral?, overrideAuthMode: Bool = false) {
+    func disconnect(_ peripheral: CBPeripheral?) {
         let peripheral = peripheral ?? self.peripheral
-        setConnectionState(.disconnected, overrideAuthMode: overrideAuthMode)
+        setConnectionState(.disconnected)
         guard bluetoothManager.state == .poweredOn, let peripheral = peripheral else { return }
         bluetoothManager.cancelPeripheralConnection(peripheral)
     }
