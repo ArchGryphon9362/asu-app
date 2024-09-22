@@ -252,6 +252,7 @@ actor WriteLoop {
         self.continuation = nil
     }
     
+    // TODO: if ble write fails requeue without testing any conditions or anything for removal
     private func handleLoop(_ serialWrite: (Data) -> (), _ upnpWrite: (Data) -> (), _ avdtpWrite: (Data) -> ()) {
         self.queueOfEveries.removeAll { item in item.shouldDispose() }
         self.queue.removeAll { _, _, item in item.shouldDispose() }
