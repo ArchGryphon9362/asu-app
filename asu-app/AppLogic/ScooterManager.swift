@@ -83,6 +83,25 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     // private stuff
     fileprivate func handle(_ message: ParsedNinebotMessage) {
         // TODO: do something with the parsed data
+        switch message {
+        case let .stockNBMessage(message): self.handleStockNB(message)
+        case let .shfwMessage(message): self.handleSHFW(message)
+        default: break
+        }
+    }
+    
+    fileprivate func handleStockNB(_ message: StockNBMessage) {
+        switch message {
+        case let .serialNumber(serial): self.coreInfo.serial = serial
+        case let .escVersion(version): self.coreInfo.esc = version
+        case let .bleVersion(version): self.coreInfo.ble = version
+        case let .bmsVersion(version): self.coreInfo.bms = version
+        default: break
+        }
+    }
+    
+    fileprivate func handleSHFW(_ message: SHFWMessage) {
+        
     }
     
     fileprivate func startInfoDump() {
