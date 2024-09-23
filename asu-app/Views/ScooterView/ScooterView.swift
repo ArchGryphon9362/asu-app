@@ -10,7 +10,7 @@ import SwiftUI
 struct ScooterView: View {
     @Environment(\.presentationMode) var presentation
     
-    @EnvironmentObject var appManager: AppManager
+    @EnvironmentObject var scooterManager: ScooterManager
     var discoveredScooter: DiscoveredScooter
     var forceNbCrypto: Bool
     
@@ -33,15 +33,15 @@ struct ScooterView: View {
                 }
         }
         .onAppear {
-            self.appManager.scooter.connectTo(discoveredScooter: discoveredScooter, forceNbCrypto: self.forceNbCrypto)
+            self.scooterManager.connectTo(discoveredScooter: discoveredScooter, forceNbCrypto: self.forceNbCrypto)
         }
         .onDisappear {
-            self.appManager.scooter.disconnectFromScooter()
+            self.scooterManager.disconnectFromScooter()
             self.connectingMessage = "Please wait..."
         }
-        .onChange(of: self.appManager.scooter.connectionState) { state in
-            if self.appManager.scooter.authenticating {
-                switch(self.appManager.scooter.model?.scooterProtocol(forceNbCrypto: self.forceNbCrypto)) {
+        .onChange(of: self.scooterManager.connectionState) { state in
+            if self.scooterManager.authenticating {
+                switch(self.scooterManager.model?.scooterProtocol(forceNbCrypto: self.forceNbCrypto)) {
                 case .xiaomi(true):
                     self.connectingMessage = "Authenticating with scooter...\n\nPlease toggle the headlight by pressing the power button."
                 default:
@@ -66,7 +66,7 @@ struct ScooterView: View {
                 title: Text("Connecting..."), // TODO: allowing heading to change too
                 message: message,
                 dismissButton: .destructive(Text("Disconnect")) {
-                    self.appManager.scooter.disconnectFromScooter()
+                    self.scooterManager.disconnectFromScooter()
                     self.connectingMessage = "Please wait..."
                     self.presentation.wrappedValue.dismiss()
                 }

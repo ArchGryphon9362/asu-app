@@ -10,7 +10,7 @@ import CoreBluetooth
 import NavigationBackport
 
 struct DiscoveryView: View {
-    @EnvironmentObject var appManager: AppManager
+    @EnvironmentObject var scooterManager: ScooterManager
     @State var forceNbCrypto: [UUID: Bool] = [:]
     #if !os(macOS)
     @State var isSettingsOpen: Bool = false
@@ -19,7 +19,7 @@ struct DiscoveryView: View {
     
     var body: some View {
         NBNavigationStack {
-            List(Array(appManager.discoveredScooters.values), id: \.peripheral.identifier) { scooter in
+            List(Array(scooterManager.discoveredScooters.values), id: \.peripheral.identifier) { scooter in
                 HStack {
                     VStack(alignment: .leading) {
                         Text(scooter.name).bold().font(.title2).background(
@@ -73,7 +73,7 @@ struct DiscoveryView: View {
             .navigationTitle("Pick your scooter" + (appSettings.foxMode ? " 🦊" : ""))
             .background(Text(appSettings.foxMode.description).hidden()) // TODO: this doesn't fix fox mode not changing title
             // TODO: remove this when micrypto is implemented
-            .onChange(of: appManager.discoveredScooters) { discoveredScooters in
+            .onChange(of: scooterManager.discoveredScooters) { discoveredScooters in
                 for scooter in discoveredScooters.values {
                     if /*appSettings.allowForceNbCrypto,*/ // this check can go given mi crypto is completely broken atm
                        forceNbCrypto[scooter.peripheral.identifier] == nil,

@@ -1,5 +1,5 @@
 //
-//  Scooter.swift
+//  ScooterManager.swift
 //  asu-app
 //
 //  Created by ArchGryphon9362 on 25/09/2023.
@@ -10,7 +10,7 @@ import Foundation
 import OrderedCollections
 import CoreBluetooth
 
-class Scooter : Observable, ScooterBluetoothDelegate {
+class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     class CoreInfo : Observable {
         @State fileprivate(set) var serial: String? = nil
         @State fileprivate(set) var esc: NinebotVersion? = nil
@@ -18,9 +18,9 @@ class Scooter : Observable, ScooterBluetoothDelegate {
         @State fileprivate(set) var bms: NinebotVersion? = nil
         
         // init code
-        private var scooter: Scooter! = nil
+        private var scooter: ScooterManager! = nil
         
-        fileprivate func setScooter(_ scooter: Scooter) {
+        fileprivate func setScooter(_ scooter: ScooterManager) {
             self.scooter = scooter
         }
     }
@@ -156,7 +156,7 @@ class Scooter : Observable, ScooterBluetoothDelegate {
             }
         case .ready:
             if !self.scooterCrypto.authenticated {
-                self.scooterCrypto.startAuthenticating(withScooter: self)
+                self.scooterCrypto.startAuthenticating(withScooterManager: self)
             }
         case .connected:
             // TODO: start collecting info and whatnot
@@ -176,7 +176,7 @@ class Scooter : Observable, ScooterBluetoothDelegate {
         }
         
         if !self.scooterCrypto.authenticated {
-            let connectionState = self.scooterCrypto.continueAuthenticating(withScooter: self, received: data, forCharacteristic: uuid)
+            let connectionState = self.scooterCrypto.continueAuthenticating(withScooterManager: self, received: data, forCharacteristic: uuid)
             if let connectionState = connectionState {
                 scooterBluetooth.setConnectionState(connectionState)
             }

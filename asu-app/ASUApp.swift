@@ -10,16 +10,12 @@ import SwiftUI
 // TODO: asu fox theme ;)
 @main
 struct ASUApp: App {
-    let appManager: AppManager
-    
-    init() {
-        self.appManager = AppManager()
-    }
+    let scooterManager: ScooterManager = .init()
     
     var body: some Scene {
         WindowGroup {
             DiscoveryView()
-                .environmentObject(appManager)
+                .environmentObject(scooterManager)
                 .navigationTitle("Arch's Scooter Utility")
         }
         #if os(macOS)

@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct DashboardView: View {
-    @EnvironmentObject var appManager: AppManager
+    @EnvironmentObject var scooterManager: ScooterManager
     
     var body: some View {
         List {
@@ -17,7 +17,7 @@ struct DashboardView: View {
             Text("vroom 😎" + fox)
             Button("Reboot") {
                 // TODO: reimplement
-                print("lol no more, you fucking wish. wait for Scooter.swift v2 lmfaooo")
+                print("lol no more, you fucking wish. wait for ScooterManager.swift v2 lmfaooo")
             }
         }
     }

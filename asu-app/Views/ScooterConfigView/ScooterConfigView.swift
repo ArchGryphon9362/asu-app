@@ -12,7 +12,7 @@ import NavigationBackport
 struct ScooterConfigView: View {
     @Environment(\.presentationMode) var presentation
     
-    @EnvironmentObject var appManager: AppManager
+    @EnvironmentObject var scooterManager: ScooterManager
     
     @State var selectedTab = 0
     @State var prevSelectedTab = 0
@@ -52,7 +52,7 @@ struct ScooterConfigView: View {
             }
             .onChange(of: self.selectedTab) { newTab in
                 if newTab == 2 {
-//                    if self.appManager.scooter.shfw.installed != true {
+//                    if self.scooterManager.scooter.shfw.installed != true {
 //                        self.shfwMissingAlert = true
 //                        return
 //                    }
@@ -60,7 +60,7 @@ struct ScooterConfigView: View {
                 
                 self.prevSelectedTab = newTab
             }
-//            .onChange(of: self.appManager.scooter.shfw.installed) { installed in
+//            .onChange(of: self.scooterManager.scooter.shfw.installed) { installed in
 //                guard installed == true else { return }
 //                self.shfwMissingAlert = false
 //            }

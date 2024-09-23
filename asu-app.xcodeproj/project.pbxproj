@@ -16,9 +16,8 @@
 		FC298CAD2AD214CE000B9E55 /* ScooterCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC298CAC2AD214CD000B9E55 /* ScooterCrypto.swift */; };
 		FC298CAF2AD25374000B9E55 /* NinebotAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC298CAE2AD25374000B9E55 /* NinebotAuth.swift */; };
 		FC5DE3D62B49983A003DE7AB /* XiaomiAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5DE3D52B49983A003DE7AB /* XiaomiAuth.swift */; };
-		FC5F337C2AC20BD6006B4E0B /* AppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337B2AC20BD6006B4E0B /* AppManager.swift */; };
 		FC5F337E2AC20BE1006B4E0B /* ScooterBluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */; };
-		FC5F33802AC213DE006B4E0B /* Scooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337F2AC213DE006B4E0B /* Scooter.swift */; };
+		FC5F33802AC213DE006B4E0B /* ScooterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337F2AC213DE006B4E0B /* ScooterManager.swift */; };
 		FC5F33822AC26F7B006B4E0B /* SHFW.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F33812AC26F7B006B4E0B /* SHFW.swift */; };
 		FC5F33862AC3391F006B4E0B /* NinebotCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F33852AC3391F006B4E0B /* NinebotCrypto.swift */; };
 		FC5F33892AC33945006B4E0B /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = FC5F33882AC33945006B4E0B /* CryptoSwift */; };
@@ -61,9 +60,8 @@
 		FC5DE3D92B4AED97003DE7AB /* CBCentralManagerHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CBCentralManagerHandler.m; sourceTree = "<group>"; };
 		FC5DE3DB2B4AF8C8003DE7AB /* CBCentralManagerHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CBCentralManagerHandler.h; sourceTree = "<group>"; };
 		FC5DE3DC2B4B04AE003DE7AB /* CBCentralManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CBCentralManager.h; sourceTree = "<group>"; };
-		FC5F337B2AC20BD6006B4E0B /* AppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppManager.swift; sourceTree = "<group>"; };
 		FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterBluetooth.swift; sourceTree = "<group>"; };
-		FC5F337F2AC213DE006B4E0B /* Scooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scooter.swift; sourceTree = "<group>"; };
+		FC5F337F2AC213DE006B4E0B /* ScooterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterManager.swift; sourceTree = "<group>"; };
 		FC5F33812AC26F7B006B4E0B /* SHFW.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHFW.swift; sourceTree = "<group>"; };
 		FC5F33852AC3391F006B4E0B /* NinebotCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NinebotCrypto.swift; sourceTree = "<group>"; };
 		FC5F338D2AC98ABC006B4E0B /* ScooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterView.swift; sourceTree = "<group>"; };
@@ -177,8 +175,7 @@
 			children = (
 				FCAD7CA42C946D79008A52B6 /* LowLevel */,
 				FCF4CC8E2B6BD8D600F0310B /* MemoryTables */,
-				FC5F337F2AC213DE006B4E0B /* Scooter.swift */,
-				FC5F337B2AC20BD6006B4E0B /* AppManager.swift */,
+				FC5F337F2AC213DE006B4E0B /* ScooterManager.swift */,
 				FCF4CC892B6AF01900F0310B /* AppSettings.swift */,
 			);
 			path = AppLogic;
@@ -331,7 +328,7 @@
 			files = (
 				FCF4CC8C2B6BD7B200F0310B /* RawMessageManager.swift in Sources */,
 				FC0579FE2AC9DCDD004D8C1F /* SHFWConfigView.swift in Sources */,
-				FC5F33802AC213DE006B4E0B /* Scooter.swift in Sources */,
+				FC5F33802AC213DE006B4E0B /* ScooterManager.swift in Sources */,
 				FCAF3D2D2C4313B600C09DEF /* WriteLoop.swift in Sources */,
 				FC5F33822AC26F7B006B4E0B /* SHFW.swift in Sources */,
 				FCA328472ACB6B1F004D39B6 /* Utilities.swift in Sources */,
@@ -344,7 +341,6 @@
 				FCAF3D2F2C43E13600C09DEF /* ListItem.swift in Sources */,
 				FC6F69BF2B6EE0C000928CF0 /* TripsView.swift in Sources */,
 				FC8DE1B72ACCAE7300E92501 /* XiaomiCrypto.swift in Sources */,
-				FC5F337C2AC20BD6006B4E0B /* AppManager.swift in Sources */,
 				FC6F69BB2B6E933B00928CF0 /* DashboardView.swift in Sources */,
 				FC0579FA2AC9DCCC004D8C1F /* MainConfigView.swift in Sources */,
 				FC298CAD2AD214CE000B9E55 /* ScooterCrypto.swift in Sources */,

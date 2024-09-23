@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct InfoView: View {
-    @EnvironmentObject var appManager: AppManager
+    @EnvironmentObject var scooterManager: ScooterManager
     @State var showConfig: Bool = false
     
     var body: some View {
         VStack {
             List {
                 Section {
-                    ListItem(title: "Model", data: self.appManager.scooter.model?.name)
-                    ListItem(title: "BLE", data: self.appManager.scooter.coreInfo.ble?.parsed)
-                    ListItem(title: "DRV", data: self.appManager.scooter.coreInfo.esc?.parsed)
-                    ListItem(title: "BMS", data: self.appManager.scooter.coreInfo.bms?.parsed)
-                    ListItem(title: "Serial Number", data: self.appManager.scooter.coreInfo.serial)
+                    ListItem(title: "Model", data: self.scooterManager.model?.name)
+                    ListItem(title: "BLE", data: self.scooterManager.coreInfo.ble?.parsed)
+                    ListItem(title: "DRV", data: self.scooterManager.coreInfo.esc?.parsed)
+                    ListItem(title: "BMS", data: self.scooterManager.coreInfo.bms?.parsed)
+                    ListItem(title: "Serial Number", data: self.scooterManager.coreInfo.serial)
                 }
                 
                 Button("Scooter Config", action: {

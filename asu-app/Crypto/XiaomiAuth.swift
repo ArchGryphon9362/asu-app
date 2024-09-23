@@ -53,11 +53,11 @@ class XiaomiAuth {
 //        self.expectedFrames = 0
     }
     
-    func startAuthenticating(withScooter scooter: Scooter) {
+    func startAuthenticating(withScooterManager scooterManager: ScooterManager) {
         print("no we not starting lol")
     }
     
-    func continueAuthenticating(withScooter scooter: Scooter, received data: Data, forCharacteristic uuid: CBUUID) -> ConnectionState? {
+    func continueAuthenticating(withScooterManager scooterManager: ScooterManager, received data: Data, forCharacteristic uuid: CBUUID) -> ConnectionState? {
         print("lol fr?")
         return nil
     }

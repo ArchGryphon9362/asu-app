@@ -31,18 +31,18 @@ class NinebotAuth {
         self.randomAuthData = generateRandom(count: 16)
     }
     
-    func startAuthenticating(withScooter scooter: Scooter) {
+    func startAuthenticating(withScooterManager scooterManager: ScooterManager) {
         guard !self.authenticated else {
             return
         }
         
         self.authState = .start
-        scooter.writeRaw(Data(hex: "5aa5003e215b00"), characteristic: .serial, writeType: .condition {
+        scooterManager.writeRaw(Data(hex: "5aa5003e215b00"), characteristic: .serial, writeType: .condition {
             self.authState == .start
         })
     }
     
-    func continueAuthenticating(withScooter scooter: Scooter, received data: Data, forCharacteristic uuid: CBUUID) -> ConnectionState? {
+    func continueAuthenticating(withScooterManager scooterManager: ScooterManager, received data: Data, forCharacteristic uuid: CBUUID) -> ConnectionState? {
         guard uuid == serialRXCharUUID else {
             return nil
         }
@@ -65,7 +65,7 @@ class NinebotAuth {
             dst == 0x3E &&
             cmd == 0x5B) {
             self.authState = .buttonPress
-            scooter.writeRaw(Data(hex: "5aa5103e215c00") + self.randomAuthData, characteristic: .serial, writeType: .condition {
+            scooterManager.writeRaw(Data(hex: "5aa5103e215c00") + self.randomAuthData, characteristic: .serial, writeType: .condition {
                 self.authState == .buttonPress
             })
         }
@@ -77,7 +77,7 @@ class NinebotAuth {
             if (arg == 0x00) {
                 return .authenticating
             }
-            scooter.writeRaw(Data(hex: "5aa5003e215d00"), characteristic: .serial, writeType: .condition {
+            scooterManager.writeRaw(Data(hex: "5aa5003e215d00"), characteristic: .serial, writeType: .condition {
                 self.authState == .finish
             })
         }
