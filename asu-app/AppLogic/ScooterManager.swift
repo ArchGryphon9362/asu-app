@@ -38,6 +38,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     @Published var discoveredScooters: OrderedDictionary<UUID, DiscoveredScooter> = [:]
     
     @Published var coreInfo: CoreInfo = .init()
+    @Published var infoDump: StockNBMessage.InfoDump? = nil
     
     var authenticating: Bool = false
     var model: ScooterModel? = nil
@@ -96,6 +97,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         case let .escVersion(version): self.coreInfo.esc = version
         case let .bleVersion(version): self.coreInfo.ble = version
         case let .bmsVersion(version): self.coreInfo.bms = version
+        case let .infoDump(infoDump): self.infoDump = infoDump
         default: break
         }
     }
