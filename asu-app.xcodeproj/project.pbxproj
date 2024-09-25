@@ -18,7 +18,6 @@
 		FC5DE3D62B49983A003DE7AB /* XiaomiAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5DE3D52B49983A003DE7AB /* XiaomiAuth.swift */; };
 		FC5F337E2AC20BE1006B4E0B /* ScooterBluetooth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */; };
 		FC5F33802AC213DE006B4E0B /* ScooterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F337F2AC213DE006B4E0B /* ScooterManager.swift */; };
-		FC5F33822AC26F7B006B4E0B /* SHFW.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F33812AC26F7B006B4E0B /* SHFW.swift */; };
 		FC5F33862AC3391F006B4E0B /* NinebotCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5F33852AC3391F006B4E0B /* NinebotCrypto.swift */; };
 		FC5F33892AC33945006B4E0B /* CryptoSwift in Frameworks */ = {isa = PBXBuildFile; productRef = FC5F33882AC33945006B4E0B /* CryptoSwift */; };
 		FC5F338C2AC374DB006B4E0B /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = FC5F338B2AC374DB006B4E0B /* OrderedCollections */; };
@@ -62,7 +61,6 @@
 		FC5DE3DC2B4B04AE003DE7AB /* CBCentralManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CBCentralManager.h; sourceTree = "<group>"; };
 		FC5F337D2AC20BE1006B4E0B /* ScooterBluetooth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterBluetooth.swift; sourceTree = "<group>"; };
 		FC5F337F2AC213DE006B4E0B /* ScooterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterManager.swift; sourceTree = "<group>"; };
-		FC5F33812AC26F7B006B4E0B /* SHFW.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHFW.swift; sourceTree = "<group>"; };
 		FC5F33852AC3391F006B4E0B /* NinebotCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NinebotCrypto.swift; sourceTree = "<group>"; };
 		FC5F338D2AC98ABC006B4E0B /* ScooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterView.swift; sourceTree = "<group>"; };
 		FC5F338F2AC9D6B0006B4E0B /* ScooterIcons.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = ScooterIcons.xcassets; sourceTree = "<group>"; };
@@ -230,7 +228,6 @@
 			children = (
 				FCCD207F2C9DAA9F002A314A /* ScooterModel.swift */,
 				FCF4CC8F2B6BD91B00F0310B /* NinebotMessage.swift */,
-				FC5F33812AC26F7B006B4E0B /* SHFW.swift */,
 			);
 			path = DataModels;
 			sourceTree = "<group>";
@@ -330,7 +327,6 @@
 				FC0579FE2AC9DCDD004D8C1F /* SHFWConfigView.swift in Sources */,
 				FC5F33802AC213DE006B4E0B /* ScooterManager.swift in Sources */,
 				FCAF3D2D2C4313B600C09DEF /* WriteLoop.swift in Sources */,
-				FC5F33822AC26F7B006B4E0B /* SHFW.swift in Sources */,
 				FCA328472ACB6B1F004D39B6 /* Utilities.swift in Sources */,
 				FCA1AAE62AC1A4D1004578F4 /* DiscoveryView.swift in Sources */,
 				FC0B68BA2C8E5A6000765217 /* StockNBMessage.swift in Sources */,

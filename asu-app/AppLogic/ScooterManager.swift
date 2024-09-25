@@ -10,6 +10,27 @@ import Foundation
 import OrderedCollections
 import CoreBluetooth
 
+fileprivate func configBinding<T>(scooterManager: ScooterManager, getValue: @escaping () -> (T), request: @escaping (T) -> (SHFWMessage?)) -> Binding<T> {
+    return Binding(get: {
+        getValue()
+    }, set: { newValue in
+        guard let requestMsg = request(newValue) else {
+            return
+        }
+        
+        scooterManager.writeRaw(
+            requestMsg.write(ack: false),
+            characteristic: .serial,
+            writeType: .foreverLimitTimes(times: 2)
+        )
+        scooterManager.writeRaw(
+            requestMsg.read(),
+            characteristic: .serial,
+            writeType: .foreverLimitTimes(times: 2)
+        )
+    })
+}
+
 class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     class CoreInfo : Observable {
         @State fileprivate(set) var serial: String? = nil
@@ -18,10 +39,101 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         @State fileprivate(set) var bms: NinebotVersion? = nil
         
         // init code
-        private var scooter: ScooterManager! = nil
+        private var scooterManager: ScooterManager! = nil
         
-        fileprivate func setScooter(_ scooter: ScooterManager) {
-            self.scooter = scooter
+        fileprivate func setScooterManager(_ scooterManager: ScooterManager) {
+            self.scooterManager = scooterManager
+        }
+    }
+    
+    class SHFWProfile : ObservableObject {
+        fileprivate var _ecoAmps: [Float]!
+        var ecoAmps: Binding<[Float]>!
+        
+        init(profile: Int, ecoAmps: [Float]) {
+            func i<T>(
+                _ valuePath: ReferenceWritableKeyPath<ScooterManager.SHFWProfile, T>,
+                _ initial: T,
+                _ condition: @escaping (T) -> (Bool),
+                _ request: @escaping (T) -> (SHFWMessage.ProfileData.ProfileItem)
+            ) -> Binding<T> {
+                self[keyPath: valuePath] = initial
+                
+                return configBinding(scooterManager: self.scooterManager, getValue: { self[keyPath: valuePath] }) { newValue in
+                    guard condition(newValue) else { return nil }
+                    return SHFWMessage.profileItem(profile, request(newValue))
+                }
+            }
+            
+            self.ecoAmps = i(\._ecoAmps, ecoAmps, { v in v.count >= 4}, { v in .ecoAmps(v[0], v[1], v[2], v[3])})
+        }
+        
+        // init code
+        private var scooterManager: ScooterManager! = nil
+        
+        fileprivate func setScooterManager(_ scooterManager: ScooterManager) {
+            self.scooterManager = scooterManager
+        }
+    }
+    
+    class SHFWConfig : Observable {
+        @State fileprivate(set) var profile1: SHFWProfile
+        @State fileprivate(set) var profile2: SHFWProfile
+        @State fileprivate(set) var profile3: SHFWProfile
+        
+        // init code
+        init(profile1: SHFWProfile, profile2: SHFWProfile, profile3: SHFWProfile) {
+            self.profile1 = profile1
+            self.profile2 = profile2
+            self.profile3 = profile3
+        }
+        
+        private var scooterManager: ScooterManager! = nil
+        
+        fileprivate func setScooterManager(_ scooterManager: ScooterManager) {
+            self.scooterManager = scooterManager
+            
+            self.profile1.setScooterManager(scooterManager)
+            self.profile2.setScooterManager(scooterManager)
+            self.profile3.setScooterManager(scooterManager)
+        }
+    }
+    
+    class SHFW : Observable {
+        @State fileprivate(set) var compatible: Bool? = nil
+        @State fileprivate(set) var installed: Bool? = nil
+        @State fileprivate(set) var version: SHFWVersion? = nil
+        
+        @Published private(set) var config: SHFWConfig? = nil
+
+        // config init code
+        fileprivate var initProfile1Core: SHFWMessage.ProfileData? = nil
+        fileprivate var initProfile1Extra: SHFWMessage.ProfileExtraData? = nil
+        fileprivate var initProfile2Core: SHFWMessage.ProfileData? = nil
+        fileprivate var initProfile2Extra: SHFWMessage.ProfileExtraData? = nil
+        fileprivate var initProfile3Core: SHFWMessage.ProfileData? = nil
+        fileprivate var initProfile3Extra: SHFWMessage.ProfileExtraData? = nil
+        fileprivate var settingsCore: SHFWMessage.SystemSettings? = nil
+        fileprivate var settingsExtra: SHFWMessage.ExtraSystemSettings? = nil
+        
+        fileprivate func initConfig() {
+            guard let initProfile1Core = initProfile1Core,
+                  let initProfile1Extra = initProfile1Extra,
+                  let initProfile2Core = initProfile2Core,
+                  let initProfile2Extra = initProfile2Extra,
+                  let initProfile3Core = initProfile3Core,
+                  let initProfile3Extra = initProfile3Extra,
+                  let settingsCore = settingsCore,
+                  let settingsExtra = settingsExtra else {
+                return
+            }
+        }
+        
+        // init code
+        private var scooterManager: ScooterManager! = nil
+        
+        fileprivate func setScooterManager(_ scooterManager: ScooterManager) {
+            self.scooterManager = scooterManager
         }
     }
     
@@ -39,6 +151,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     
     @Published var coreInfo: CoreInfo = .init()
     @Published var infoDump: StockNBMessage.InfoDump? = nil
+    @Published var shfw: SHFW = .init()
     
     var authenticating: Bool = false
     var model: ScooterModel? = nil
@@ -46,7 +159,8 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     
     init() {
         self.scooterBluetooth.setScooterBluetoothDelegate(self)
-        self.coreInfo.setScooter(self)
+        self.coreInfo.setScooterManager(self)
+        self.shfw.setScooterManager(self)
     }
     
     // basic bluetooth methods
