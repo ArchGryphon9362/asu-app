@@ -22,6 +22,7 @@ enum ScooterModel : Equatable {
     case XiaomiPro2(Bool)
     case XiaomiLite(Bool)
     case Xiaomi3(Bool)
+    case NinebotF2Pro(Bool)
     case NinebotF2(Bool)
     case NinebotF(Bool)
     case NinebotGT1(Bool)
@@ -49,6 +50,7 @@ enum ScooterModel : Equatable {
         case .XiaomiPro2: return .xiaomiPro2
         case .XiaomiLite: return .xiaomi1S
         case .Xiaomi3: return .xiaomi3
+        case .NinebotF2Pro: return .ninebotF2
         case .NinebotF2: return .ninebotF2
         case .NinebotF: return .ninebotF
         case .NinebotGT1: return .ninebotGT2
@@ -79,6 +81,7 @@ enum ScooterModel : Equatable {
         case .XiaomiPro2:       return "Mi Electric Scooter Pro 2"
         case .XiaomiLite:       return "Mi Electric Scooter Essential"
         case .Xiaomi3:          return "Mi Electric Scooter 3"
+        case .NinebotF2Pro:     return "Ninebot F2 Pro"
         case .NinebotF2:        return "Ninebot F2"
         case .NinebotF:         return "Ninebot F"
         case .NinebotF65:       return "Ninebot F65"
@@ -108,6 +111,7 @@ enum ScooterModel : Equatable {
         case .XiaomiPro2:       return "pro2"
         case .XiaomiLite:       return "lite"
         case .Xiaomi3:          return "mi3"
+        case .NinebotF2Pro:     return "f2"
         case .NinebotF2:        return "f2"
         case .NinebotF:         return "f"
         case .NinebotF65:       return "f65"
@@ -137,6 +141,7 @@ enum ScooterModel : Equatable {
         case let .XiaomiPro2(crypto):       return .xiaomi(crypto)
         case let .XiaomiLite(crypto):       return .xiaomi(crypto)
         case let .Xiaomi3(crypto):          return .xiaomi(crypto)
+        case let .NinebotF2Pro(crypto):     return .ninebot(crypto)
         case let .NinebotF2(crypto):        return .ninebot(crypto)
         case let .NinebotF(crypto):         return .ninebot(crypto)
         case let .NinebotF65(crypto):       return .ninebot(crypto)
@@ -180,6 +185,7 @@ enum ScooterModel : Equatable {
         case 0x28: return       .XiaomiPro2(crypto)
         case 0x29: return       .XiaomiLite(crypto)
         case 0x2E: return       .Xiaomi3(crypto)
+        case 0x81: return       .NinebotF2Pro(crypto)
         case 0x7F, 0x80: return .NinebotF2(crypto)
         case 0x7B, 0x2C: return .NinebotF(crypto)
         case 0x2D: return       .NinebotF65(crypto)
