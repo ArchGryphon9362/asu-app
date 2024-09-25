@@ -239,6 +239,10 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         @State fileprivate(set) var profile2: SHFWProfile
         @State fileprivate(set) var profile3: SHFWProfile
         
+        func getProfile(_ profile: Int) -> SHFWProfile {
+            return [self.profile1, self.profile2, self.profile3][profile]
+        }
+        
         // init code
         init(profile1: SHFWProfile, profile2: SHFWProfile, profile3: SHFWProfile) {
             self.profile1 = profile1
