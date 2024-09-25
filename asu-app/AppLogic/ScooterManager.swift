@@ -181,7 +181,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             func i<T>(
                 _ valuePath: ReferenceWritableKeyPath<ScooterManager.SHFWProfile, T>,
                 _ initial: T,
-                _ condition: @escaping (T) -> (Bool) = { _ in true },
+                c condition: @escaping (T) -> (Bool) = { _ in true },
                 _ request: @escaping (T) -> (SHFWMessage.ProfileData.ProfileItem)
             ) -> Binding<T> {
                 self[keyPath: valuePath] = initial
@@ -192,7 +192,15 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
                 }
             }
             
-            self.ecoAmps = i(\._ecoAmps, ecoAmps, { v in v.count >= 4}, { v in .ecoAmps(v[0], v[1], v[2], v[3])})
+            self.ecoAmps = i(\._ecoAmps, ecoAmps, c: { v in v.count >= 4 }, { v in .ecoAmps(v[0], v[1], v[2], v[3])})
+            self.driveAmps = i(\._driveAmps, driveAmps, c: { v in v.count >= 4 }, { v in .driveAmps(v[0], v[1], v[2], v[3])})
+            self.sportsAmps = i(\._sportsAmps, sportsAmps, c: { v in v.count >= 4 }, { v in .sportsAmps(v[0], v[1], v[2], v[3])})
+            self.brakeAmps = i(\._brakeAmps, brakeAmps, c: { v in v.count >= 4 }, { v in .brakeAmps(v[0], v[1], v[2], v[3])})
+            self.ecoSmoothness = i(\._ecoSmoothness, ecoSmoothness, { v in .ecoSmoothness(v)})
+            self.driveSmoothness = i(\._driveSmoothness, driveSmoothness, { v in .driveSmoothness(v)})
+            self.sportsSmoothness = i(\._sportsSmoothness, sportsSmoothness, { v in .sportsSmoothness(v)})
+            self.msp = i(\._msp, msp, { v in .mspBrakeBoost(v, self._brakeBoost)})
+            self.brakeBoost = i(\._brakeBoost, brakeBoost, { v in .mspBrakeBoost(self._msp, v)})
         }
         
         // init code
