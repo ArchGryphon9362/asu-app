@@ -213,6 +213,17 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             self.ccExitBeep = i(\._ccExitBeep, ccExitBeep, { v in .ccDelayExitBeep(self._ccDelay, v) })
             self.initMode = i(\._initMode, initMode, { v in .initModeBeep(v, self._initBeep) })
             self.initBeep = i(\._initBeep, initBeep, { v in .initModeBeep(self._initMode, v) })
+            self.brakeMsp = i(\._brakeMsp, brakeMsp, { v in .brakeMspOvershoot(v, self._brakeOvershoot) })
+            self.brakeOvershoot = i(\._brakeOvershoot, brakeOvershoot, { v in .brakeMspOvershoot(self._brakeMsp, v) })
+            self.ccChangeTime = i(\._ccChangeTime, ccChangeTime, { v in .ccChangeTimeAutobrakingAmps(v, self._autobrakeAmps) })
+            self.autobrakeAmps = i(\._autobrakeAmps, autobrakeAmps, { v in .ccChangeTimeAutobrakingAmps(self._ccChangeTime, v) })
+            self.fwkSpeed = i(\._fwkSpeed, fwkSpeed, { v in .fwkSpeedCurrent(v, self._fwkCurrent) })
+            self.fwkCurrent = i(\._fwkCurrent, fwkCurrent, { v in .fwkSpeedCurrent(self._fwkSpeed, v) })
+            self.fwkVarCurrent = i(\._fwkVarCurrent, fwkVarCurrent, { v in .fwkVarCurrent(v) })
+            self.maxFieldCurrent = i(\._maxFieldCurrent, maxFieldCurrent, { v in .maxFieldTorqueCurrent(v, self._maxTorqueCurrent) })
+            self.maxTorqueCurrent = i(\._maxTorqueCurrent, maxTorqueCurrent, { v in .maxFieldTorqueCurrent(self._maxFieldCurrent, v) })
+            self.accelerationBoost = i(\._accelerationBoost, accelerationBoost, { v in .accelerationBoost(v) })
+            self.newBooleans = i(\._newBooleans, newBooleans, { v in .newBooleans(v) })
         }
         
         // init code
