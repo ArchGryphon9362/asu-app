@@ -201,6 +201,18 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             self.sportsSmoothness = i(\._sportsSmoothness, sportsSmoothness, { v in .sportsSmoothness(v) })
             self.msp = i(\._msp, msp, { v in .mspBrakeBoost(v, self._brakeBoost) })
             self.brakeBoost = i(\._brakeBoost, brakeBoost, { v in .mspBrakeBoost(self._msp, v) })
+            self.brakeLight = i(\._brakeLight, brakeLight, { v in .brakeLight(v) })
+            self.booleans = i(\._booleans, booleans, { v in .booleans(v) })
+            self.idleData = i(\._idleData, idleData, { v in .idleSpeedData(v, self._speedData) })
+            self.speedData = i(\._speedData, speedData, { v in .idleSpeedData(self._idleData, v) })
+            self.alternatingData = i(\._alternatingData, alternatingData, { v in .alternatingBatteryBarData(v, self._batteryBarData) })
+            self.batteryBarData = i(\._batteryBarData, batteryBarData, { v in .alternatingBatteryBarData(self._alternatingData, v) })
+            self.ccMode = i(\._ccMode, ccMode, { v in .ccModeBeep(v, self._ccEnterBeep) })
+            self.ccEnterBeep = i(\._ccEnterBeep, ccEnterBeep, { v in .ccModeBeep(self._ccMode, v) })
+            self.ccDelay = i(\._ccDelay, ccDelay, { v in .ccDelayExitBeep(v, self._ccExitBeep) })
+            self.ccExitBeep = i(\._ccExitBeep, ccExitBeep, { v in .ccDelayExitBeep(self._ccDelay, v) })
+            self.initMode = i(\._initMode, initMode, { v in .initModeBeep(v, self._initBeep) })
+            self.initBeep = i(\._initBeep, initBeep, { v in .initModeBeep(self._initMode, v) })
         }
         
         // init code
