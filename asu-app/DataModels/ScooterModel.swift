@@ -49,7 +49,7 @@ enum ScooterModel : Equatable {
         case .XiaomiPro2: return .xiaomiPro2
         case .XiaomiLite: return .xiaomi1S
         case .Xiaomi3: return .xiaomi3
-        case .NinebotF2: return .ninebotF
+        case .NinebotF2: return .ninebotF2
         case .NinebotF: return .ninebotF
         case .NinebotGT1: return .ninebotGT2
         case .NinebotGT2: return .ninebotGT2
