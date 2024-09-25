@@ -181,7 +181,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             func i<T>(
                 _ valuePath: ReferenceWritableKeyPath<ScooterManager.SHFWProfile, T>,
                 _ initial: T,
-                _ condition: @escaping (T) -> (Bool),
+                _ condition: @escaping (T) -> (Bool) = { _ in true },
                 _ request: @escaping (T) -> (SHFWMessage.ProfileData.ProfileItem)
             ) -> Binding<T> {
                 self[keyPath: valuePath] = initial
