@@ -285,6 +285,64 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
                   let settingsExtra = settingsExtra else {
                 return
             }
+            
+            var profiles: [SHFWProfile] = []
+            
+            let profileData: [(SHFWMessage.ProfileData, SHFWMessage.ProfileExtraData)] = [
+                (initProfile1Core, initProfile1Extra),
+                (initProfile2Core, initProfile2Extra),
+                (initProfile3Core, initProfile3Extra)
+            ]
+            
+            for (profileNum, (pdc, pde)) in profileData.enumerated() {
+                profiles.append(
+                    .init(
+                        profile: profileNum,
+                        ecoAmps: pdc.ecoAmps,
+                        driveAmps: pdc.driveAmps,
+                        sportsAmps: pdc.sportsAmps,
+                        brakeAmps: pdc.brakeAmps,
+                        ecoSmoothness: pdc.ecoSmoothness,
+                        driveSmoothness: pdc.driveSmoothness,
+                        sportsSmoothness: pdc.sportsSmoothness,
+                        msp: pdc.msp,
+                        brakeBoost: pdc.brakeBoost,
+                        brakeLight: pdc.brakeLight,
+                        booleans: pdc.booleans,
+                        idleData: pdc.idleData,
+                        speedData: pdc.speedData,
+                        alternatingData: pdc.alternatingData,
+                        batteryBarData: pdc.batteryBarData,
+                        ccMode: pdc.ccMode,
+                        ccEnterBeep: pdc.ccEnterBeep,
+                        ccDelay: pdc.ccDelay,
+                        ccExitBeep: pdc.ccExitBeep,
+                        initMode: pdc.initMode,
+                        initBeep: pdc.initBeep,
+                        brakeMsp: pdc.brakeMsp,
+                        brakeOvershoot: pdc.brakeOvershoot,
+                        ccChangeTime: pdc.ccChangeTime,
+                        autobrakeAmps: pdc.autobrakeAmps,
+                        fwkSpeed: pde.fwkSpeed,
+                        fwkCurrent: pde.fwkCurrent,
+                        fwkVarCurrent: pde.fwkVarCurrent,
+                        maxFieldCurrent: pde.maxFieldCurrent,
+                        maxTorqueCurrent: pde.maxTorqueCurrent,
+                        accelerationBoost: pde.accelerationBoost,
+                        newBooleans: pde.booleans
+                    )
+                )
+            }
+            
+            guard profiles.count == profileData.count else {
+                fatalError("something went seriously wrong")
+            }
+            
+            self.config = .init(
+                profile1: profiles[0],
+                profile2: profiles[1],
+                profile3: profiles[2]
+            )
         }
         
         // init code
