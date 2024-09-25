@@ -50,7 +50,134 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         fileprivate var _ecoAmps: [Float]!
         var ecoAmps: Binding<[Float]>!
         
-        init(profile: Int, ecoAmps: [Float]) {
+        fileprivate var _driveAmps: [Float]!
+        var driveAmps: Binding<[Float]>!
+
+        fileprivate var _sportsAmps: [Float]!
+        var sportsAmps: Binding<[Float]>!
+
+        fileprivate var _brakeAmps: [Float]!
+        var brakeAmps: Binding<[Float]>!
+
+        fileprivate var _ecoSmoothness: SHFWMessage.SpeedBasedConfig!
+        var ecoSmoothness: Binding<SHFWMessage.SpeedBasedConfig>!
+
+        fileprivate var _driveSmoothness: SHFWMessage.SpeedBasedConfig!
+        var driveSmoothness: Binding<SHFWMessage.SpeedBasedConfig>!
+
+        fileprivate var _sportsSmoothness: SHFWMessage.SpeedBasedConfig!
+        var sportsSmoothness: Binding<SHFWMessage.SpeedBasedConfig>!
+
+        fileprivate var _msp: Int!
+        var msp: Binding<Int>!
+
+        fileprivate var _brakeBoost: Int!
+        var brakeBoost: Binding<Int>!
+
+        fileprivate var _brakeLight: SHFWMessage.BrakeLightConfig!
+        var brakeLight: Binding<SHFWMessage.BrakeLightConfig>!
+
+        fileprivate var _booleans: SHFWMessage.ProfileBoolean!
+        var booleans: Binding<SHFWMessage.ProfileBoolean>!
+
+        fileprivate var _idleData: SHFWMessage.DashData!
+        var idleData: Binding<SHFWMessage.DashData>!
+
+        fileprivate var _speedData: SHFWMessage.DashData!
+        var speedData: Binding<SHFWMessage.DashData>!
+
+        fileprivate var _alternatingData: SHFWMessage.DashData!
+        var alternatingData: Binding<SHFWMessage.DashData>!
+
+        fileprivate var _batteryBarData: SHFWMessage.BatteryBarData!
+        var batteryBarData: Binding<SHFWMessage.BatteryBarData>!
+
+        fileprivate var _ccMode: SHFWMessage.CCMode!
+        var ccMode: Binding<SHFWMessage.CCMode>!
+
+        fileprivate var _ccEnterBeep: SHFWMessage.Beep!
+        var ccEnterBeep: Binding<SHFWMessage.Beep>!
+
+        fileprivate var _ccDelay: Int!
+        var ccDelay: Binding<Int>!
+
+        fileprivate var _ccExitBeep: SHFWMessage.Beep!
+        var ccExitBeep: Binding<SHFWMessage.Beep>!
+
+        fileprivate var _initMode: SHFWMessage.DriveMode!
+        var initMode: Binding<SHFWMessage.DriveMode>!
+
+        fileprivate var _initBeep: SHFWMessage.Beep!
+        var initBeep: Binding<SHFWMessage.Beep>!
+
+        fileprivate var _brakeMsp: Int!
+        var brakeMsp: Binding<Int>!
+
+        fileprivate var _brakeOvershoot: Int!
+        var brakeOvershoot: Binding<Int>!
+
+        fileprivate var _ccChangeTime: Float!
+        var ccChangeTime: Binding<Float>!
+
+        fileprivate var _autobrakeAmps: Int!
+        var autobrakeAmps: Binding<Int>!
+
+        fileprivate var _fwkSpeed: Int!
+        var fwkSpeed: Binding<Int>!
+
+        fileprivate var _fwkCurrent: Int!
+        var fwkCurrent: Binding<Int>!
+
+        fileprivate var _fwkVarCurrent: Int!
+        var fwkVarCurrent: Binding<Int>!
+
+        fileprivate var _maxFieldCurrent: Int!
+        var maxFieldCurrent: Binding<Int>!
+
+        fileprivate var _maxTorqueCurrent: Int!
+        var maxTorqueCurrent: Binding<Int>!
+
+        fileprivate var _accelerationBoost: Int!
+        var accelerationBoost: Binding<Int>!
+
+        fileprivate var _newBooleans: SHFWMessage.NewProfileBoolean!
+        var newBooleans: Binding<SHFWMessage.NewProfileBoolean>!
+        
+        init(
+            profile: Int,
+            ecoAmps: [Float],
+            driveAmps: [Float],
+            sportsAmps: [Float],
+            brakeAmps: [Float],
+            ecoSmoothness: SHFWMessage.SpeedBasedConfig,
+            driveSmoothness: SHFWMessage.SpeedBasedConfig,
+            sportsSmoothness: SHFWMessage.SpeedBasedConfig,
+            msp: Int,
+            brakeBoost: Int,
+            brakeLight: SHFWMessage.BrakeLightConfig,
+            booleans: SHFWMessage.ProfileBoolean,
+            idleData: SHFWMessage.DashData,
+            speedData: SHFWMessage.DashData,
+            alternatingData: SHFWMessage.DashData,
+            batteryBarData: SHFWMessage.BatteryBarData,
+            ccMode: SHFWMessage.CCMode,
+            ccEnterBeep: SHFWMessage.Beep,
+            ccDelay: Int,
+            ccExitBeep: SHFWMessage.Beep,
+            initMode: SHFWMessage.DriveMode,
+            initBeep: SHFWMessage.Beep,
+            brakeMsp: Int,
+            brakeOvershoot: Int,
+            ccChangeTime: Float,
+            autobrakeAmps: Int,
+            fwkSpeed: Int,
+            fwkCurrent: Int,
+            fwkVarCurrent: Int,
+            maxFieldCurrent: Int,
+            maxTorqueCurrent: Int,
+            accelerationBoost: Int,
+            newBooleans: SHFWMessage.NewProfileBoolean
+        ) {
             func i<T>(
                 _ valuePath: ReferenceWritableKeyPath<ScooterManager.SHFWProfile, T>,
                 _ initial: T,
