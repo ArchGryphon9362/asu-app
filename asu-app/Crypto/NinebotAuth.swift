@@ -74,12 +74,12 @@ class NinebotAuth {
             dst == 0x3E &&
             cmd == 0x5C) {
             self.authState = .finish
-            if (arg == 0x00) {
-                return .authenticating
-            }
             scooterManager.writeRaw(Data(hex: "5aa5003e215d00"), characteristic: .serial, writeType: .condition {
                 self.authState == .finish
             })
+            if (arg == 0x00) {
+                return .authenticating
+            }
         }
         
         if (src == 0x21 &&
