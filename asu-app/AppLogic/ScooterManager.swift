@@ -10,7 +10,7 @@ import Foundation
 import OrderedCollections
 import CoreBluetooth
 
-fileprivate func configBinding<T>(scooterManager: ScooterManager, getValue: @escaping () -> (T), request: @escaping (T) -> (SHFWMessage?)) -> Binding<T> {
+fileprivate func configBinding<T>(scooterManager: ScooterManager, messageManager: RawMessageManager, getValue: @escaping () -> (T), request: @escaping (T) -> (SHFWMessage?)) -> Binding<T> {
     return Binding(get: {
         getValue()
     }, set: { newValue in
@@ -19,12 +19,12 @@ fileprivate func configBinding<T>(scooterManager: ScooterManager, getValue: @esc
         }
         
         scooterManager.writeRaw(
-            requestMsg.write(ack: false),
+            messageManager.ninebotWrite(requestMsg, ack: false),
             characteristic: .serial,
             writeType: .foreverLimitTimes(times: 2)
         )
         scooterManager.writeRaw(
-            requestMsg.read(),
+            messageManager.ninebotRead(requestMsg),
             characteristic: .serial,
             writeType: .foreverLimitTimes(times: 2)
         )
@@ -186,7 +186,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             ) -> Binding<T> {
                 self[keyPath: valuePath] = initial
                 
-                return configBinding(scooterManager: self.scooterManager, getValue: { self[keyPath: valuePath] }) { newValue in
+                return configBinding(scooterManager: self.scooterManager, messageManager: self.scooterManager.messageManager, getValue: { self[keyPath: valuePath] }) { newValue in
                     guard condition(newValue) else { return nil }
                     return SHFWMessage.profileItem(profile, request(newValue))
                 }
@@ -267,7 +267,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         @State fileprivate(set) var version: SHFWVersion? = nil
         
         @Published private(set) var config: SHFWConfig? = nil
-
+        
         // config init code
         fileprivate var initProfile1Core: SHFWMessage.ProfileData? = nil
         fileprivate var initProfile1Extra: SHFWMessage.ProfileExtraData? = nil
@@ -437,7 +437,37 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     }
     
     fileprivate func handleSHFW(_ message: SHFWMessage) {
-        
+        switch message {
+        case let .profileCore(profile, settings, _): break
+        case let .profileExtra(profile, settings, _): break
+        case let .profileItem(profile, item): break
+        case let .systemSettings(settings, _): break
+        case let .extraSystemSettings(settings, _): break
+        case let .systemSetting(settings): break
+        case let .version(version):
+            guard !version.newVersioning else {
+                let msg = self.messageManager.ninebotRead(SHFWMessage.newVersion())
+                self.writeRaw(msg, characteristic: .serial, writeType: .conditionLimitTimes(
+                    condition: {
+                        self.shfw.version == nil
+                    },
+                    times: 10,
+                    limitHit: {
+                        print("[ScooterManager]", "version response indicates new versioning is used, but scooter refused to let us have it. assuming shfw not installed")
+                        self.shfw.installed = false
+                        self.shfw.compatible = true
+                    }
+                ))
+                return
+            }
+            
+            self.shfw.version = version
+        case let .newVersion(version):
+            self.shfw.version = version
+            self.shfw.installed = true
+            self.shfw.compatible = true
+        default: break
+        }
     }
     
     fileprivate func startInfoDump() {
@@ -455,7 +485,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     
     fileprivate func requestAll() {
         self.requestCoreInfo()
-        self.requestFullShfw()
+        self.requestShfw()
     }
     
     fileprivate func requestCoreInfo() {
@@ -476,8 +506,18 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         }
     }
     
-    fileprivate func requestFullShfw() {
-        
+    fileprivate func requestShfw() {
+        let msg = self.messageManager.ninebotRead(SHFWMessage.version())
+        self.writeRaw(msg, characteristic: .serial, writeType: .conditionLimitTimes(
+            condition: {
+                self.shfw.installed != nil
+            },
+            times: 10,
+            limitHit: {
+                self.shfw.installed = false
+                // TODO: when SHFWApi is ready, set self.shfw.compatability to api's response
+            }
+        ))
     }
     
     // underlying ScooterBluetooth methods
