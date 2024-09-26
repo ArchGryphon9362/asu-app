@@ -11,7 +11,6 @@ struct SHFWConfigView: View {
     @EnvironmentObject var scooterManager: ScooterManager
     
     var body: some View {
-        Text("SHFW Config tab")
         ListItem(title: "Version", data: scooterManager.shfw.version?.parsed)
     }
 }
