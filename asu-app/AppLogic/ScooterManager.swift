@@ -417,7 +417,6 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     
     // private stuff
     fileprivate func handle(_ message: ParsedNinebotMessage) {
-        // TODO: do something with the parsed data
         switch message {
         case let .stockNBMessage(message): self.handleStockNB(message)
         case let .shfwMessage(message): self.handleSHFW(message)
@@ -506,7 +505,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         let msg = self.messageManager.ninebotRead(SHFWMessage.version())
         self.writeRaw(msg, characteristic: .serial, writeType: .conditionLimitTimes(
             condition: {
-                self.shfw.installed != nil
+                self.shfw.installed == nil
             },
             times: 10,
             limitHit: {
