@@ -33,10 +33,10 @@ fileprivate func configBinding<T>(scooterManager: ScooterManager, messageManager
 
 class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     class CoreInfo : Observable {
-        @State fileprivate(set) var serial: String? = nil
-        @State fileprivate(set) var esc: NinebotVersion? = nil
-        @State fileprivate(set) var ble: NinebotVersion? = nil
-        @State fileprivate(set) var bms: NinebotVersion? = nil
+        @Published fileprivate(set) var serial: String? = nil
+        @Published fileprivate(set) var esc: NinebotVersion? = nil
+        @Published fileprivate(set) var ble: NinebotVersion? = nil
+        @Published fileprivate(set) var bms: NinebotVersion? = nil
         
         // init code
         private var scooterManager: ScooterManager! = nil
@@ -235,9 +235,9 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     }
     
     class SHFWConfig : Observable {
-        @State fileprivate(set) var profile1: SHFWProfile
-        @State fileprivate(set) var profile2: SHFWProfile
-        @State fileprivate(set) var profile3: SHFWProfile
+        @Published fileprivate(set) var profile1: SHFWProfile
+        @Published fileprivate(set) var profile2: SHFWProfile
+        @Published fileprivate(set) var profile3: SHFWProfile
         
         func getProfile(_ profile: Int) -> SHFWProfile {
             return [self.profile1, self.profile2, self.profile3][profile]
@@ -262,9 +262,9 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     }
     
     class SHFW : Observable {
-        @State fileprivate(set) var compatible: Bool? = nil
-        @State fileprivate(set) var installed: Bool? = nil
-        @State fileprivate(set) var version: SHFWVersion? = nil
+        @Published fileprivate(set) var compatible: Bool? = nil
+        @Published fileprivate(set) var installed: Bool? = nil
+        @Published fileprivate(set) var version: SHFWVersion? = nil
         
         @Published private(set) var config: SHFWConfig? = nil
         
@@ -489,20 +489,16 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     }
     
     fileprivate func requestCoreInfo() {
-        let coreRequests: [(NinebotMessage, PartialKeyPath<CoreInfo>)] = [
-            (StockNBMessage.serialNumber(), \CoreInfo.serial),
-            (StockNBMessage.escVersion(), \CoreInfo.esc),
-            (StockNBMessage.bleVersion(), \CoreInfo.ble),
-            (StockNBMessage.bmsVersion(), \CoreInfo.bms)
+        let coreRequests: [(NinebotMessage, () -> (Bool))] = [
+            (StockNBMessage.serialNumber(), { self.coreInfo.serial == nil }),
+            (StockNBMessage.escVersion(), { self.coreInfo.esc == nil }),
+            (StockNBMessage.bleVersion(), { self.coreInfo.ble == nil }),
+            (StockNBMessage.bmsVersion(), { self.coreInfo.bms == nil })
         ]
         
-        for (request, key) in coreRequests {
+        for (request, check) in coreRequests {
             let msg = self.messageManager.ninebotRead(request)
-            self.writeRaw(msg, characteristic: .serial, writeType: .condition(
-                condition: {
-                    self.coreInfo[keyPath: key] as Optional == nil
-                }
-            ))
+            self.writeRaw(msg, characteristic: .serial, writeType: .condition(condition: check))
         }
     }
     
