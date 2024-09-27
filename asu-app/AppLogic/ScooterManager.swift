@@ -10,7 +10,7 @@ import Foundation
 import OrderedCollections
 import CoreBluetooth
 
-fileprivate func configBinding<T>(scooterManager: ScooterManager, messageManager: RawMessageManager, getValue: @escaping () -> (T), request: @escaping (T) -> (SHFWMessage?)) -> Binding<T> {
+fileprivate func configBinding<T>(scooterManager: ScooterManager, getValue: @escaping () -> (T), request: @escaping (T) -> (SHFWMessage?)) -> Binding<T> {
     return Binding(get: {
         getValue()
     }, set: { newValue in
@@ -19,12 +19,12 @@ fileprivate func configBinding<T>(scooterManager: ScooterManager, messageManager
         }
         
         scooterManager.writeRaw(
-            messageManager.ninebotWrite(requestMsg, ack: false),
+            scooterManager.messageManager.ninebotWrite(requestMsg, ack: false),
             characteristic: .serial,
             writeType: .foreverLimitTimes(times: 2)
         )
         scooterManager.writeRaw(
-            messageManager.ninebotRead(requestMsg),
+            scooterManager.messageManager.ninebotRead(requestMsg),
             characteristic: .serial,
             writeType: .foreverLimitTimes(times: 2)
         )
@@ -47,104 +47,105 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     }
     
     class SHFWProfile : ObservableObject {
-        fileprivate var _ecoAmps: [Float]!
+        fileprivate var _ecoAmps: [Float] = []
         var ecoAmps: Binding<[Float]>!
         
-        fileprivate var _driveAmps: [Float]!
+        fileprivate var _driveAmps: [Float] = []
         var driveAmps: Binding<[Float]>!
 
-        fileprivate var _sportsAmps: [Float]!
+        fileprivate var _sportsAmps: [Float] = []
         var sportsAmps: Binding<[Float]>!
 
-        fileprivate var _brakeAmps: [Float]!
+        fileprivate var _brakeAmps: [Float] = []
         var brakeAmps: Binding<[Float]>!
 
-        fileprivate var _ecoSmoothness: SHFWMessage.SpeedBasedConfig!
+        fileprivate var _ecoSmoothness: SHFWMessage.SpeedBasedConfig = .init()
         var ecoSmoothness: Binding<SHFWMessage.SpeedBasedConfig>!
 
-        fileprivate var _driveSmoothness: SHFWMessage.SpeedBasedConfig!
+        fileprivate var _driveSmoothness: SHFWMessage.SpeedBasedConfig = .init()
         var driveSmoothness: Binding<SHFWMessage.SpeedBasedConfig>!
 
-        fileprivate var _sportsSmoothness: SHFWMessage.SpeedBasedConfig!
+        fileprivate var _sportsSmoothness: SHFWMessage.SpeedBasedConfig = .init()
         var sportsSmoothness: Binding<SHFWMessage.SpeedBasedConfig>!
 
-        fileprivate var _msp: Int!
+        fileprivate var _msp: Int = 0
         var msp: Binding<Int>!
 
-        fileprivate var _brakeBoost: Int!
+        fileprivate var _brakeBoost: Int = 0
         var brakeBoost: Binding<Int>!
 
-        fileprivate var _brakeLight: SHFWMessage.BrakeLightConfig!
+        fileprivate var _brakeLight: SHFWMessage.BrakeLightConfig = .init()
         var brakeLight: Binding<SHFWMessage.BrakeLightConfig>!
 
-        fileprivate var _booleans: SHFWMessage.ProfileBoolean!
+        fileprivate var _booleans: SHFWMessage.ProfileBoolean = .init()
         var booleans: Binding<SHFWMessage.ProfileBoolean>!
 
-        fileprivate var _idleData: SHFWMessage.DashData!
+        fileprivate var _idleData: SHFWMessage.DashData = .unknown(0)
         var idleData: Binding<SHFWMessage.DashData>!
 
-        fileprivate var _speedData: SHFWMessage.DashData!
+        fileprivate var _speedData: SHFWMessage.DashData = .unknown(0)
         var speedData: Binding<SHFWMessage.DashData>!
 
-        fileprivate var _alternatingData: SHFWMessage.DashData!
+        fileprivate var _alternatingData: SHFWMessage.DashData = .unknown(0)
         var alternatingData: Binding<SHFWMessage.DashData>!
 
-        fileprivate var _batteryBarData: SHFWMessage.BatteryBarData!
+        fileprivate var _batteryBarData: SHFWMessage.BatteryBarData = .unknown(0)
         var batteryBarData: Binding<SHFWMessage.BatteryBarData>!
 
-        fileprivate var _ccMode: SHFWMessage.CCMode!
+        fileprivate var _ccMode: SHFWMessage.CCMode = .unknown(0)
         var ccMode: Binding<SHFWMessage.CCMode>!
 
-        fileprivate var _ccEnterBeep: SHFWMessage.Beep!
+        fileprivate var _ccEnterBeep: SHFWMessage.Beep = .unknown(0)
         var ccEnterBeep: Binding<SHFWMessage.Beep>!
 
-        fileprivate var _ccDelay: Int!
+        fileprivate var _ccDelay: Int = 0
         var ccDelay: Binding<Int>!
 
-        fileprivate var _ccExitBeep: SHFWMessage.Beep!
+        fileprivate var _ccExitBeep: SHFWMessage.Beep = .unknown(0)
         var ccExitBeep: Binding<SHFWMessage.Beep>!
 
-        fileprivate var _initMode: SHFWMessage.DriveMode!
+        fileprivate var _initMode: SHFWMessage.DriveMode = .unknown(0)
         var initMode: Binding<SHFWMessage.DriveMode>!
 
-        fileprivate var _initBeep: SHFWMessage.Beep!
+        fileprivate var _initBeep: SHFWMessage.Beep = .unknown(0)
         var initBeep: Binding<SHFWMessage.Beep>!
 
-        fileprivate var _brakeMsp: Int!
+        fileprivate var _brakeMsp: Int = 0
         var brakeMsp: Binding<Int>!
 
-        fileprivate var _brakeOvershoot: Int!
+        fileprivate var _brakeOvershoot: Int = 0
         var brakeOvershoot: Binding<Int>!
 
-        fileprivate var _ccChangeTime: Float!
+        fileprivate var _ccChangeTime: Float = 0
         var ccChangeTime: Binding<Float>!
 
-        fileprivate var _autobrakeAmps: Int!
+        fileprivate var _autobrakeAmps: Int = 0
         var autobrakeAmps: Binding<Int>!
 
-        fileprivate var _fwkSpeed: Int!
+        fileprivate var _fwkSpeed: Int = 0
         var fwkSpeed: Binding<Int>!
 
-        fileprivate var _fwkCurrent: Int!
+        fileprivate var _fwkCurrent: Int = 0
         var fwkCurrent: Binding<Int>!
 
-        fileprivate var _fwkVarCurrent: Int!
+        fileprivate var _fwkVarCurrent: Int = 0
         var fwkVarCurrent: Binding<Int>!
 
-        fileprivate var _maxFieldCurrent: Int!
+        fileprivate var _maxFieldCurrent: Int = 0
         var maxFieldCurrent: Binding<Int>!
 
-        fileprivate var _maxTorqueCurrent: Int!
+        fileprivate var _maxTorqueCurrent: Int = 0
         var maxTorqueCurrent: Binding<Int>!
 
-        fileprivate var _accelerationBoost: Int!
+        fileprivate var _accelerationBoost: Int = 0
         var accelerationBoost: Binding<Int>!
 
-        fileprivate var _newBooleans: SHFWMessage.NewProfileBoolean!
+        fileprivate var _newBooleans: SHFWMessage.NewProfileBoolean = .init()
         var newBooleans: Binding<SHFWMessage.NewProfileBoolean>!
         
         init(
             profile: Int,
+            scooterManager: ScooterManager,
             ecoAmps: [Float],
             driveAmps: [Float],
             sportsAmps: [Float],
@@ -186,7 +187,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             ) -> Binding<T> {
                 self[keyPath: valuePath] = initial
                 
-                return configBinding(scooterManager: self.scooterManager, messageManager: self.scooterManager.messageManager, getValue: { self[keyPath: valuePath] }) { newValue in
+                return configBinding(scooterManager: scooterManager, getValue: { self[keyPath: valuePath] }) { newValue in
                     guard condition(newValue) else { return nil }
                     return SHFWMessage.profileItem(profile, request(newValue))
                 }
@@ -225,13 +226,6 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             self.accelerationBoost = i(\._accelerationBoost, accelerationBoost, { v in .accelerationBoost(v) })
             self.newBooleans = i(\._newBooleans, newBooleans, { v in .newBooleans(v) })
         }
-        
-        // init code
-        private var scooterManager: ScooterManager! = nil
-        
-        fileprivate func setScooterManager(_ scooterManager: ScooterManager) {
-            self.scooterManager = scooterManager
-        }
     }
     
     class SHFWConfig : Observable {
@@ -254,10 +248,6 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         
         fileprivate func setScooterManager(_ scooterManager: ScooterManager) {
             self.scooterManager = scooterManager
-            
-            self.profile1.setScooterManager(scooterManager)
-            self.profile2.setScooterManager(scooterManager)
-            self.profile3.setScooterManager(scooterManager)
         }
     }
     
@@ -285,8 +275,9 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
                   let initProfile2Extra = initProfile2Extra,
                   let initProfile3Core = initProfile3Core,
                   let initProfile3Extra = initProfile3Extra,
-                  let settingsCore = settingsCore,
-                  let settingsExtra = settingsExtra else {
+//                  let settingsCore = settingsCore,
+//                  let settingsExtra = settingsExtra,
+                  self.config == nil else {
                 return
             }
             
@@ -302,6 +293,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
                 profiles.append(
                     .init(
                         profile: profileNum,
+                        scooterManager: self.scooterManager,
                         ecoAmps: pdc.ecoAmps,
                         driveAmps: pdc.driveAmps,
                         sportsAmps: pdc.sportsAmps,
@@ -436,10 +428,98 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     }
     
     fileprivate func handleSHFW(_ message: SHFWMessage) {
+        // couldn't be bothered to figure out key paths for profiles
         switch message {
-        case let .profileCore(profile, settings, _): break
-        case let .profileExtra(profile, settings, _): break
-        case let .profileItem(profile, item): break
+        case let .profileCore(profile, settings, _):
+            switch profile {
+            case 0: self.shfw.initProfile1Core = settings
+            case 1: self.shfw.initProfile2Core = settings
+            case 2: self.shfw.initProfile3Core = settings
+            default: break
+            }
+            
+            self.shfw.initConfig()
+        case let .profileExtra(profile, settings, _):
+            switch profile {
+            case 0: self.shfw.initProfile1Extra = settings
+            case 1: self.shfw.initProfile2Extra = settings
+            case 2: self.shfw.initProfile3Extra = settings
+            default: break
+            }
+            self.shfw.initConfig()
+        case let .profileItem(profileNum, item):
+            guard let profile = switch profileNum {
+            case 0: self.shfw.config?.profile1
+            case 1: self.shfw.config?.profile2
+            case 2: self.shfw.config?.profile3
+            default: nil
+            } else {
+                break
+            }
+            
+            switch item {
+            case let .ecoAmps(v0, v1, v2, v3): profile._ecoAmps = [v0, v1, v2, v3]; profile.ecoAmps.update()
+            case let .ecoAmps1(v): profile._ecoAmps[0] = v; profile.ecoAmps.update()
+            case let .ecoAmps2(v): profile._ecoAmps[1] = v; profile.ecoAmps.update()
+            case let .ecoAmps3(v): profile._ecoAmps[2] = v; profile.ecoAmps.update()
+            case let .ecoAmps4(v): profile._ecoAmps[3] = v; profile.ecoAmps.update()
+            case let .driveAmps(v0, v1, v2, v3): profile._driveAmps = [v0, v1, v2, v3]; profile.driveAmps.update()
+            case let .driveAmps1(v): profile._driveAmps[0] = v; profile.driveAmps.update()
+            case let .driveAmps2(v): profile._driveAmps[1] = v; profile.driveAmps.update()
+            case let .driveAmps3(v): profile._driveAmps[2] = v; profile.driveAmps.update()
+            case let .driveAmps4(v): profile._driveAmps[3] = v; profile.driveAmps.update()
+            case let .sportsAmps(v0, v1, v2, v3): 
+                profile._sportsAmps = [v0, v1, v2, v3]
+                profile.sportsAmps.update()
+                print("updated")
+            case let .sportsAmps1(v): profile._sportsAmps[0] = v; profile.sportsAmps.update()
+            case let .sportsAmps2(v): profile._sportsAmps[1] = v; profile.sportsAmps.update()
+            case let .sportsAmps3(v): profile._sportsAmps[2] = v; profile.sportsAmps.update()
+            case let .sportsAmps4(v): profile._sportsAmps[3] = v; profile.sportsAmps.update()
+            case let .brakeAmps(v0, v1, v2, v3): profile._brakeAmps = [v0, v1, v2, v3]; profile.brakeAmps.update()
+            case let .brakeAmps1(v): profile._brakeAmps[0] = v; profile.brakeAmps.update()
+            case let .brakeAmps2(v): profile._brakeAmps[1] = v; profile.brakeAmps.update()
+            case let .brakeAmps3(v): profile._brakeAmps[2] = v; profile.brakeAmps.update()
+            case let .brakeAmps4(v): profile._brakeAmps[3] = v; profile.brakeAmps.update()
+            case let .ecoSmoothness(smooothness): profile._ecoSmoothness = smooothness; profile.ecoSmoothness.update()
+            case let .driveSmoothness(smooothness): profile._driveSmoothness = smooothness; profile.driveSmoothness.update()
+            case let .sportsSmoothness(smooothness): profile._sportsSmoothness = smooothness; profile.sportsSmoothness.update()
+            case let .mspBrakeBoost(msp, brakeBoost):
+                profile._msp = msp; profile.msp.update()
+                profile._brakeBoost = brakeBoost; profile.brakeBoost.update()
+            case let .brakeLight(config): profile._brakeLight = config; profile.brakeLight.update()
+            case let .booleans(booleans): profile._booleans = booleans; profile.booleans.update()
+            case let .idleSpeedData(idleData, speedData):
+                profile._idleData = idleData; profile.idleData.update()
+                profile._speedData = speedData; profile.speedData.update()
+            case let .alternatingBatteryBarData(alternatingData, batteryBarData):
+                profile._alternatingData = alternatingData; profile.alternatingData.update()
+                profile._batteryBarData = batteryBarData; profile.batteryBarData.update()
+            case let .ccModeBeep(mode, enterBeep):
+                profile._ccMode = mode; profile.ccMode.update()
+                profile._ccEnterBeep = enterBeep; profile.ccEnterBeep.update()
+            case let .ccDelayExitBeep(delay, exitBeep):
+                profile._ccDelay = delay; profile.ccDelay.update()
+                profile._ccExitBeep = exitBeep; profile.ccExitBeep.update()
+            case let .initModeBeep(mode, beep):
+                profile._initMode = mode; profile.initMode.update()
+                profile._initBeep = beep; profile.initBeep.update()
+            case let .brakeMspOvershoot(msp, overshoot):
+                profile._brakeMsp = msp; profile.brakeMsp.update()
+                profile._brakeOvershoot = overshoot; profile.brakeOvershoot.update()
+            case let .ccChangeTimeAutobrakingAmps(ccChangeTime, autobrakeAmps):
+                profile._ccChangeTime = ccChangeTime; profile.ccChangeTime.update()
+                profile._autobrakeAmps = autobrakeAmps; profile.autobrakeAmps.update()
+            case let .fwkSpeedCurrent(speed, current):
+                profile._fwkSpeed = speed; profile.fwkSpeed.update()
+                profile._fwkCurrent = current; profile.fwkCurrent.update()
+            case let .fwkVarCurrent(current): profile._fwkVarCurrent = current; profile.fwkVarCurrent.update()
+            case let .maxFieldTorqueCurrent(field, torque):
+                profile._maxFieldCurrent = field; profile.maxFieldCurrent.update()
+                profile._maxTorqueCurrent = torque; profile.maxTorqueCurrent.update()
+            case let .accelerationBoost(boost): profile._accelerationBoost = boost; profile.accelerationBoost.update()
+            case let .newBooleans(booleans): profile._newBooleans = booleans; profile.newBooleans.update()
+            }
         case let .systemSettings(settings, _): break
         case let .extraSystemSettings(settings, _): break
         case let .systemSetting(settings): break
@@ -452,7 +532,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
                     },
                     times: 10,
                     limitHit: {
-                        print("[ScooterManager]", "version response indicates new versioning is used, but scooter refused to let us have it. assuming shfw not installed")
+                        print("[ScooterManager]", "version response indicates new versioning is used, but scooter refused to let us have it. pretending shfw not installed")
                         self.shfw.installed = false
                         self.shfw.compatible = true
                     }
@@ -465,6 +545,21 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             self.shfw.version = version
             self.shfw.installed = true
             self.shfw.compatible = true
+            
+            // TODO: allow to compare shfw versions using operators and make sure running >= 3.9.1 or whatev
+            let requests: [(NinebotMessage, () -> (Bool))] = [
+                (SHFWMessage.profileCore(0), { self.shfw.initProfile1Core == nil }),
+                (SHFWMessage.profileCore(1), { self.shfw.initProfile2Core == nil }),
+                (SHFWMessage.profileCore(2), { self.shfw.initProfile3Core == nil }),
+                (SHFWMessage.profileExtra(0), { self.shfw.initProfile1Extra == nil }),
+                (SHFWMessage.profileExtra(1), { self.shfw.initProfile2Extra == nil }),
+                (SHFWMessage.profileExtra(2), { self.shfw.initProfile3Extra == nil }),
+            ]
+            
+            for (request, check) in requests {
+                let msg = self.messageManager.ninebotRead(request)
+                self.writeRaw(msg, characteristic: .serial, writeType: .condition(condition: check))
+            }
         default: break
         }
     }

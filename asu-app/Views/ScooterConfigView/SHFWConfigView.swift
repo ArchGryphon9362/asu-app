@@ -11,10 +11,13 @@ struct SHFWConfigView: View {
     @EnvironmentObject var scooterManager: ScooterManager
     
     var body: some View {
-        ListItem(title: "Version", data: scooterManager.shfw.version?.parsed)
+        VStack {
+            ListItem(title: "Version", data: scooterManager.shfw.version?.parsed)
+            if let p3 = self.scooterManager.shfw.config?.profile3 {
+                ForEach(p3.sportsAmps, id: \.self) { value in
+                    TextField("P3 Sports Value Number X", value: value, format: .number)
+                }
+            }
+        }
     }
-}
-
-#Preview {
-    SHFWConfigView()
 }
