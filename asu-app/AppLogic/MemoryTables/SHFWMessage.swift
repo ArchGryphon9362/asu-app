@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct SHFWVersion {
-    struct ExtraDetails {
-        enum BuildType {
+struct SHFWVersion: Equatable {
+    struct ExtraDetails: Equatable {
+        enum BuildType: Equatable {
             case production
             case prerelease
             case beta
@@ -66,12 +66,12 @@ enum SHFWMessage: CaseIterable, NinebotMessage {
         .newVersion()
     ]
     
-    struct SpeedBasedConfig {
+    struct SpeedBasedConfig: Equatable {
         var speedLimit: Int = 0
         var smoothness: Int = 0
     }
     
-    enum BrakeLightMode {
+    enum BrakeLightMode: Equatable {
         case normal
         case single
         case reversed
@@ -82,12 +82,12 @@ enum SHFWMessage: CaseIterable, NinebotMessage {
         case unknown(Int)
     }
     
-    struct BrakeLightConfig {
+    struct BrakeLightConfig: Equatable {
         var mode: BrakeLightMode = .normal
         var flashSpeed: Int = 241
     }
     
-    struct ProfileBoolean {
+    struct ProfileBoolean: Equatable {
         var swapButton: Bool = false
         var noPowerBeep: Bool = false
         var alwaysHeadlight: Bool = false
@@ -103,14 +103,14 @@ enum SHFWMessage: CaseIterable, NinebotMessage {
         var fwkSports: Bool = false
     }
     
-    struct NewProfileBoolean {
+    struct NewProfileBoolean: Equatable {
         var negativeMsp: Bool = false
         var ecoOvermod: Bool = false
         var driveOvermod: Bool = false
         var sportsOvermod: Bool = false
     }
     
-    enum DashData {
+    enum DashData: Equatable {
         case off
         case speedKm
         case speedMi
@@ -137,7 +137,7 @@ enum SHFWMessage: CaseIterable, NinebotMessage {
         case unknown(Int = 0)
     }
     
-    enum BatteryBarData {
+    enum BatteryBarData: Equatable {
         case off
         case throttle
         case brake
@@ -148,7 +148,7 @@ enum SHFWMessage: CaseIterable, NinebotMessage {
         case unknown(Int)
     }
     
-    enum CCMode {
+    enum CCMode: Equatable {
         case off
         case time
         case single
@@ -157,7 +157,7 @@ enum SHFWMessage: CaseIterable, NinebotMessage {
         case unknown(Int)
     }
     
-    enum Beep {
+    enum Beep: Equatable {
         case none
         case single
         case long
@@ -167,7 +167,7 @@ enum SHFWMessage: CaseIterable, NinebotMessage {
         case unknown(Int)
     }
     
-    enum DriveMode {
+    enum DriveMode: Equatable {
         case last
         case eco
         case drive
