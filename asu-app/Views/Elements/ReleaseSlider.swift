@@ -92,7 +92,7 @@ struct ReleaseSlider<T: Numeric>: View {
                 )
                 Spacer()
                 TextField("", text: self.$displayValue)
-                    .disabled(true)
+                    .allowsHitTesting(false)
                     .textFieldStyle(.roundedBorder)
                     .multilineTextAlignment(.center)
                     .frame(width: 75.0)
