@@ -450,10 +450,12 @@ enum SHFWMessage: CaseIterable, NinebotMessage {
     }
     
     func read() -> Data? {
+        print("[SHFWMessage]", "an shfw read command has just been generated, but the memory table is a stub. shfw functionality will behave as if not installed. file stubbed as per request of ScooterHacking")
         return nil
     }
     
     func write(ack: Bool) -> Data? {
+        print("[SHFWMessage]", "an shfw write command has just been generated, but the memory table is a stub. shfw functionality will behave as if not installed. file stubbed as per request of ScooterHacking")
         return nil
     }
 }
