@@ -724,6 +724,11 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
                 self.connectionState = .disconnected
                 
                 self.scooterCrypto.reset()
+                
+                self.infoDumpId = 0
+                self.coreInfo = .init()
+                self.infoDump = nil
+                self.shfw = .init()
             }
         case .ready:
             if !self.scooterCrypto.authenticated {
