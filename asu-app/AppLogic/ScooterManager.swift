@@ -10,27 +10,6 @@ import Foundation
 import OrderedCollections
 import CoreBluetooth
 
-fileprivate func configBinding<T>(scooterManager: ScooterManager, getValue: @escaping () -> (T), request: @escaping (T) -> (SHFWMessage?)) -> Binding<T> {
-    return Binding(get: {
-        getValue()
-    }, set: { newValue in
-        guard let requestMsg = request(newValue) else {
-            return
-        }
-        
-        scooterManager.writeRaw(
-            scooterManager.messageManager.ninebotWrite(requestMsg, ack: false),
-            characteristic: .serial,
-            writeType: .foreverLimitTimes(times: 2)
-        )
-        scooterManager.writeRaw(
-            scooterManager.messageManager.ninebotRead(requestMsg),
-            characteristic: .serial,
-            writeType: .foreverLimitTimes(times: 2)
-        )
-    })
-}
-
 class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     class CoreInfo : Observable {
         @Published fileprivate(set) var serial: String? = nil
@@ -47,101 +26,228 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     }
     
     class SHFWProfile : ObservableObject {
-        fileprivate var _ecoAmps: [Float] = []
-        var ecoAmps: Binding<[Float]>!
+        @Published var ecoAmps: [Float] {
+            didSet { if !syncing { upd(\.ecoAmps, c: { v in v.count >= 4 }, { v in .ecoAmps(v[0], v[1], v[2], v[3]) }) } }
+        }
         
-        fileprivate var _driveAmps: [Float] = []
-        var driveAmps: Binding<[Float]>!
+        // ######## //
+        
+        @Published var driveAmps: [Float] {
+            didSet { if !syncing { upd(\.driveAmps, c: { v in v.count >= 4 }, { v in .driveAmps(v[0], v[1], v[2], v[3]) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _sportsAmps: [Float] = []
-        var sportsAmps: Binding<[Float]>!
+        @Published var sportsAmps: [Float] {
+            didSet { if self.sportsAmps != oldValue, !syncing { upd(\.sportsAmps, c: { v in v.count >= 4 }, { v in .sportsAmps(v[0], v[1], v[2], v[3]) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _brakeAmps: [Float] = []
-        var brakeAmps: Binding<[Float]>!
+        @Published var brakeAmps: [Float] {
+            didSet { if !syncing { upd(\.brakeAmps, c: { v in v.count >= 4 }, { v in .brakeAmps(v[0], v[1], v[2], v[3]) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _ecoSmoothness: SHFWMessage.SpeedBasedConfig = .init()
-        var ecoSmoothness: Binding<SHFWMessage.SpeedBasedConfig>!
+        @Published var ecoSmoothness: SHFWMessage.SpeedBasedConfig {
+            didSet { if !syncing { upd(\.ecoSmoothness, { v in .ecoSmoothness(v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _driveSmoothness: SHFWMessage.SpeedBasedConfig = .init()
-        var driveSmoothness: Binding<SHFWMessage.SpeedBasedConfig>!
+        @Published var driveSmoothness: SHFWMessage.SpeedBasedConfig {
+            didSet { if !syncing { upd(\.driveSmoothness, { v in .driveSmoothness(v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _sportsSmoothness: SHFWMessage.SpeedBasedConfig = .init()
-        var sportsSmoothness: Binding<SHFWMessage.SpeedBasedConfig>!
+        @Published var sportsSmoothness: SHFWMessage.SpeedBasedConfig {
+            didSet { if !syncing { upd(\.sportsSmoothness, { v in .sportsSmoothness(v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _msp: Int = 0
-        var msp: Binding<Int>!
+        @Published var msp: Int {
+            didSet { if !syncing { upd(\.msp, { v in .mspBrakeBoost(v, self.brakeBoost) }) } }
+        }
+        
+        @Published var brakeBoost: Int {
+            didSet { if !syncing { upd(\.brakeBoost, { v in .mspBrakeBoost(self.msp, v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _brakeBoost: Int = 0
-        var brakeBoost: Binding<Int>!
+        @Published var brakeLight: SHFWMessage.BrakeLightConfig {
+            didSet { if !syncing { upd(\.brakeLight, { v in .brakeLight(v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _brakeLight: SHFWMessage.BrakeLightConfig = .init()
-        var brakeLight: Binding<SHFWMessage.BrakeLightConfig>!
+        @Published var booleans: SHFWMessage.ProfileBoolean {
+            didSet { if !syncing { upd(\.booleans, { v in .booleans(v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _booleans: SHFWMessage.ProfileBoolean = .init()
-        var booleans: Binding<SHFWMessage.ProfileBoolean>!
+        @Published var idleData: SHFWMessage.DashData {
+            didSet { if !syncing { upd(\.idleData, { v in .idleSpeedData(v, self.speedData) }) } }
+        }
 
-        fileprivate var _idleData: SHFWMessage.DashData = .unknown(0)
-        var idleData: Binding<SHFWMessage.DashData>!
+        @Published var speedData: SHFWMessage.DashData {
+            didSet { if !syncing { upd(\.speedData, { v in .idleSpeedData(self.idleData, v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _speedData: SHFWMessage.DashData = .unknown(0)
-        var speedData: Binding<SHFWMessage.DashData>!
+        @Published var alternatingData: SHFWMessage.DashData {
+            didSet { if !syncing { upd(\.alternatingData, { v in .alternatingBatteryBarData(v, self.batteryBarData) }) } }
+        }
 
-        fileprivate var _alternatingData: SHFWMessage.DashData = .unknown(0)
-        var alternatingData: Binding<SHFWMessage.DashData>!
+        @Published var batteryBarData: SHFWMessage.BatteryBarData {
+            didSet { if !syncing { upd(\.batteryBarData, { v in .alternatingBatteryBarData(self.alternatingData, v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _batteryBarData: SHFWMessage.BatteryBarData = .unknown(0)
-        var batteryBarData: Binding<SHFWMessage.BatteryBarData>!
+        @Published var ccMode: SHFWMessage.CCMode {
+            didSet { if !syncing { upd(\.ccMode, { v in .ccModeBeep(v, self.ccEnterBeep) }) } }
+        }
 
-        fileprivate var _ccMode: SHFWMessage.CCMode = .unknown(0)
-        var ccMode: Binding<SHFWMessage.CCMode>!
+        @Published var ccEnterBeep: SHFWMessage.Beep {
+            didSet { if !syncing { upd(\.ccEnterBeep, { v in .ccModeBeep(self.ccMode, v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _ccEnterBeep: SHFWMessage.Beep = .unknown(0)
-        var ccEnterBeep: Binding<SHFWMessage.Beep>!
+        @Published var ccDelay: Int {
+            didSet { if !syncing { upd(\.ccDelay, { v in .ccDelayExitBeep(v, self.ccExitBeep) }) } }
+        }
 
-        fileprivate var _ccDelay: Int = 0
-        var ccDelay: Binding<Int>!
+        @Published var ccExitBeep: SHFWMessage.Beep {
+            didSet { if !syncing { upd(\.ccExitBeep, { v in .ccDelayExitBeep(self.ccDelay, v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _ccExitBeep: SHFWMessage.Beep = .unknown(0)
-        var ccExitBeep: Binding<SHFWMessage.Beep>!
+        @Published var initMode: SHFWMessage.DriveMode {
+            didSet { if !syncing { upd(\.initMode, { v in .initModeBeep(v, self.initBeep) }) } }
+        }
 
-        fileprivate var _initMode: SHFWMessage.DriveMode = .unknown(0)
-        var initMode: Binding<SHFWMessage.DriveMode>!
+        @Published var initBeep: SHFWMessage.Beep {
+            didSet { if !syncing { upd(\.initBeep, { v in .initModeBeep(self.initMode, v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _initBeep: SHFWMessage.Beep = .unknown(0)
-        var initBeep: Binding<SHFWMessage.Beep>!
+        @Published var brakeMsp: Int {
+            didSet { if !syncing { upd(\.brakeMsp, { v in .brakeMspOvershoot(v, self.brakeOvershoot) }) } }
+        }
 
-        fileprivate var _brakeMsp: Int = 0
-        var brakeMsp: Binding<Int>!
+        @Published var brakeOvershoot: Int {
+            didSet { if !syncing { upd(\.brakeOvershoot, { v in .brakeMspOvershoot(self.brakeMsp, v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _brakeOvershoot: Int = 0
-        var brakeOvershoot: Binding<Int>!
+        @Published var ccChangeTime: Float {
+            didSet { if !syncing { upd(\.ccChangeTime, { v in .ccChangeTimeAutobrakingAmps(v, self.autobrakeAmps) }) } }
+        }
 
-        fileprivate var _ccChangeTime: Float = 0
-        var ccChangeTime: Binding<Float>!
+        @Published var autobrakeAmps: Int {
+            didSet { if !syncing { upd(\.autobrakeAmps, { v in .ccChangeTimeAutobrakingAmps(self.ccChangeTime, v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _autobrakeAmps: Int = 0
-        var autobrakeAmps: Binding<Int>!
+        @Published var fwkSpeed: Int {
+            didSet { if !syncing { upd(\.fwkSpeed, { v in .fwkSpeedCurrent(v, self.fwkCurrent) }) } }
+        }
 
-        fileprivate var _fwkSpeed: Int = 0
-        var fwkSpeed: Binding<Int>!
+        @Published var fwkCurrent: Int {
+            didSet { if !syncing { upd(\.fwkCurrent, { v in .fwkSpeedCurrent(self.fwkSpeed, v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _fwkCurrent: Int = 0
-        var fwkCurrent: Binding<Int>!
+        @Published var fwkVarCurrent: Int {
+            didSet { if !syncing { upd(\.fwkVarCurrent, { v in .fwkVarCurrent(v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _fwkVarCurrent: Int = 0
-        var fwkVarCurrent: Binding<Int>!
+        @Published var maxFieldCurrent: Int {
+            didSet { if !syncing { upd(\.maxFieldCurrent, { v in .maxFieldTorqueCurrent(v, self.maxTorqueCurrent) }) } }
+        }
 
-        fileprivate var _maxFieldCurrent: Int = 0
-        var maxFieldCurrent: Binding<Int>!
+        @Published var maxTorqueCurrent: Int {
+            didSet { if !syncing { upd(\.maxTorqueCurrent, { v in .maxFieldTorqueCurrent(self.maxFieldCurrent, v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _maxTorqueCurrent: Int = 0
-        var maxTorqueCurrent: Binding<Int>!
+        @Published var accelerationBoost: Int {
+            didSet { if !syncing { upd(\.accelerationBoost, { v in .accelerationBoost(v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _accelerationBoost: Int = 0
-        var accelerationBoost: Binding<Int>!
+        @Published var newBooleans: SHFWMessage.NewProfileBoolean {
+            didSet { if !syncing { upd(\.newBooleans, { v in .newBooleans(v) }) } }
+        }
+        
+        // ######## //
 
-        fileprivate var _newBooleans: SHFWMessage.NewProfileBoolean = .init()
-        var newBooleans: Binding<SHFWMessage.NewProfileBoolean>!
+        private var profile: Int
+        private var scooterManager: ScooterManager
+        private var updateQueue: DispatchQueue
+        private var syncing = false
+        
+        private func upd<T>(
+            _ path: KeyPath<SHFWProfile, T>,
+            c condition: @escaping (T) -> (Bool) = { _ in true },
+            _ request: @escaping (T) -> (SHFWMessage.ProfileData.ProfileItem?)
+        ) {
+            guard let profileMsg = request(self[keyPath: path]) else {
+                return
+            }
+            
+            let requestMsg = SHFWMessage.profileItem(self.profile, profileMsg)
+            
+            // TODO: read following:
+            //       implement a `.after()` function for my WriteLoop yet that I can have
+            //       schedule a new write only after all writes for a certain write have
+            //       fired. this will need to be implemented under `WriteType.Limit`; this
+            //       will pretty much be a prettier way of scheduling writes instead of
+            //       having to abuse `limitHit` (which is there really of detecting condition
+            //       exhaustion)
+            guard
+                let writeData = self.scooterManager.messageManager.ninebotWrite(requestMsg, ack: false),
+                let readData  = self.scooterManager.messageManager.ninebotRead(requestMsg) else {
+                return
+            }
+            
+            print("update \(profileMsg) for p\(self.profile + 1)")
+            self.scooterManager.writeRaw(writeData, characteristic: .serial, writeType: .conditionLimitTimes(
+                condition: { return true },
+                times: 2,
+                limitHit: {
+                    self.scooterManager.writeRaw(readData, characteristic: .serial, writeType: .foreverLimitTimes(times: 2))
+                }
+            ))
+        }
+        
+        fileprivate func sync<T: Equatable>(_ path: ReferenceWritableKeyPath<SHFWProfile, T>, _ value: T) {
+            self.updateQueue.async {
+                self.syncing = true
+                DispatchQueue.main.async {
+                    if self[keyPath: path] != value {
+                        self[keyPath: path] = value
+                    }
+                    self.syncing = false
+                }
+            }
+        }
         
         init(
             profile: Int,
@@ -179,59 +285,49 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             accelerationBoost: Int,
             newBooleans: SHFWMessage.NewProfileBoolean
         ) {
-            func i<T>(
-                _ valuePath: ReferenceWritableKeyPath<ScooterManager.SHFWProfile, T>,
-                _ initial: T,
-                c condition: @escaping (T) -> (Bool) = { _ in true },
-                _ request: @escaping (T) -> (SHFWMessage.ProfileData.ProfileItem)
-            ) -> Binding<T> {
-                self[keyPath: valuePath] = initial
-                
-                return configBinding(scooterManager: scooterManager, getValue: { self[keyPath: valuePath] }) { newValue in
-                    guard condition(newValue) else { return nil }
-                    return SHFWMessage.profileItem(profile, request(newValue))
-                }
-            }
+            self.profile = profile
+            self.scooterManager = scooterManager
+            self.updateQueue = DispatchQueue(label: "dev.nyaaa.asu.sm.profile.queue.\(profile)", qos: .userInitiated)
             
-            self.ecoAmps = i(\._ecoAmps, ecoAmps, c: { v in v.count >= 4 }, { v in .ecoAmps(v[0], v[1], v[2], v[3]) })
-            self.driveAmps = i(\._driveAmps, driveAmps, c: { v in v.count >= 4 }, { v in .driveAmps(v[0], v[1], v[2], v[3]) })
-            self.sportsAmps = i(\._sportsAmps, sportsAmps, c: { v in v.count >= 4 }, { v in .sportsAmps(v[0], v[1], v[2], v[3]) })
-            self.brakeAmps = i(\._brakeAmps, brakeAmps, c: { v in v.count >= 4 }, { v in .brakeAmps(v[0], v[1], v[2], v[3]) })
-            self.ecoSmoothness = i(\._ecoSmoothness, ecoSmoothness, { v in .ecoSmoothness(v) })
-            self.driveSmoothness = i(\._driveSmoothness, driveSmoothness, { v in .driveSmoothness(v) })
-            self.sportsSmoothness = i(\._sportsSmoothness, sportsSmoothness, { v in .sportsSmoothness(v) })
-            self.msp = i(\._msp, msp, { v in .mspBrakeBoost(v, self._brakeBoost) })
-            self.brakeBoost = i(\._brakeBoost, brakeBoost, { v in .mspBrakeBoost(self._msp, v) })
-            self.brakeLight = i(\._brakeLight, brakeLight, { v in .brakeLight(v) })
-            self.booleans = i(\._booleans, booleans, { v in .booleans(v) })
-            self.idleData = i(\._idleData, idleData, { v in .idleSpeedData(v, self._speedData) })
-            self.speedData = i(\._speedData, speedData, { v in .idleSpeedData(self._idleData, v) })
-            self.alternatingData = i(\._alternatingData, alternatingData, { v in .alternatingBatteryBarData(v, self._batteryBarData) })
-            self.batteryBarData = i(\._batteryBarData, batteryBarData, { v in .alternatingBatteryBarData(self._alternatingData, v) })
-            self.ccMode = i(\._ccMode, ccMode, { v in .ccModeBeep(v, self._ccEnterBeep) })
-            self.ccEnterBeep = i(\._ccEnterBeep, ccEnterBeep, { v in .ccModeBeep(self._ccMode, v) })
-            self.ccDelay = i(\._ccDelay, ccDelay, { v in .ccDelayExitBeep(v, self._ccExitBeep) })
-            self.ccExitBeep = i(\._ccExitBeep, ccExitBeep, { v in .ccDelayExitBeep(self._ccDelay, v) })
-            self.initMode = i(\._initMode, initMode, { v in .initModeBeep(v, self._initBeep) })
-            self.initBeep = i(\._initBeep, initBeep, { v in .initModeBeep(self._initMode, v) })
-            self.brakeMsp = i(\._brakeMsp, brakeMsp, { v in .brakeMspOvershoot(v, self._brakeOvershoot) })
-            self.brakeOvershoot = i(\._brakeOvershoot, brakeOvershoot, { v in .brakeMspOvershoot(self._brakeMsp, v) })
-            self.ccChangeTime = i(\._ccChangeTime, ccChangeTime, { v in .ccChangeTimeAutobrakingAmps(v, self._autobrakeAmps) })
-            self.autobrakeAmps = i(\._autobrakeAmps, autobrakeAmps, { v in .ccChangeTimeAutobrakingAmps(self._ccChangeTime, v) })
-            self.fwkSpeed = i(\._fwkSpeed, fwkSpeed, { v in .fwkSpeedCurrent(v, self._fwkCurrent) })
-            self.fwkCurrent = i(\._fwkCurrent, fwkCurrent, { v in .fwkSpeedCurrent(self._fwkSpeed, v) })
-            self.fwkVarCurrent = i(\._fwkVarCurrent, fwkVarCurrent, { v in .fwkVarCurrent(v) })
-            self.maxFieldCurrent = i(\._maxFieldCurrent, maxFieldCurrent, { v in .maxFieldTorqueCurrent(v, self._maxTorqueCurrent) })
-            self.maxTorqueCurrent = i(\._maxTorqueCurrent, maxTorqueCurrent, { v in .maxFieldTorqueCurrent(self._maxFieldCurrent, v) })
-            self.accelerationBoost = i(\._accelerationBoost, accelerationBoost, { v in .accelerationBoost(v) })
-            self.newBooleans = i(\._newBooleans, newBooleans, { v in .newBooleans(v) })
+            self.ecoAmps = ecoAmps
+            self.driveAmps = driveAmps
+            self.sportsAmps = sportsAmps
+            self.brakeAmps = brakeAmps
+            self.ecoSmoothness = ecoSmoothness
+            self.driveSmoothness = driveSmoothness
+            self.sportsSmoothness = sportsSmoothness
+            self.msp = msp
+            self.brakeBoost = brakeBoost
+            self.brakeLight = brakeLight
+            self.booleans = booleans
+            self.idleData = idleData
+            self.speedData = speedData
+            self.alternatingData = alternatingData
+            self.batteryBarData = batteryBarData
+            self.ccMode = ccMode
+            self.ccEnterBeep = ccEnterBeep
+            self.ccDelay = ccDelay
+            self.ccExitBeep = ccExitBeep
+            self.initMode = initMode
+            self.initBeep = initBeep
+            self.brakeMsp = brakeMsp
+            self.brakeOvershoot = brakeOvershoot
+            self.ccChangeTime = ccChangeTime
+            self.autobrakeAmps = autobrakeAmps
+            self.fwkSpeed = fwkSpeed
+            self.fwkCurrent = fwkCurrent
+            self.fwkVarCurrent = fwkVarCurrent
+            self.maxFieldCurrent = maxFieldCurrent
+            self.maxTorqueCurrent = maxTorqueCurrent
+            self.accelerationBoost = accelerationBoost
+            self.newBooleans = newBooleans
         }
     }
     
     class SHFWConfig : Observable {
-        @Published fileprivate(set) var profile1: SHFWProfile
-        @Published fileprivate(set) var profile2: SHFWProfile
-        @Published fileprivate(set) var profile3: SHFWProfile
+        @Published var profile1: SHFWProfile
+        @Published var profile2: SHFWProfile
+        @Published var profile3: SHFWProfile
         
         func getProfile(_ profile: Int) -> SHFWProfile {
             return [self.profile1, self.profile2, self.profile3][profile]
@@ -256,7 +352,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         @Published fileprivate(set) var installed: Bool? = nil
         @Published fileprivate(set) var version: SHFWVersion? = nil
         
-        @Published private(set) var config: SHFWConfig? = nil
+        @Published var config: SHFWConfig? = nil
         
         // config init code
         fileprivate var initProfile1Core: SHFWMessage.ProfileData? = nil
@@ -458,67 +554,55 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             }
             
             switch item {
-            case let .ecoAmps(v0, v1, v2, v3): profile._ecoAmps = [v0, v1, v2, v3]; profile.ecoAmps.update()
-            case let .ecoAmps1(v): profile._ecoAmps[0] = v; profile.ecoAmps.update()
-            case let .ecoAmps2(v): profile._ecoAmps[1] = v; profile.ecoAmps.update()
-            case let .ecoAmps3(v): profile._ecoAmps[2] = v; profile.ecoAmps.update()
-            case let .ecoAmps4(v): profile._ecoAmps[3] = v; profile.ecoAmps.update()
-            case let .driveAmps(v0, v1, v2, v3): profile._driveAmps = [v0, v1, v2, v3]; profile.driveAmps.update()
-            case let .driveAmps1(v): profile._driveAmps[0] = v; profile.driveAmps.update()
-            case let .driveAmps2(v): profile._driveAmps[1] = v; profile.driveAmps.update()
-            case let .driveAmps3(v): profile._driveAmps[2] = v; profile.driveAmps.update()
-            case let .driveAmps4(v): profile._driveAmps[3] = v; profile.driveAmps.update()
-            case let .sportsAmps(v0, v1, v2, v3): 
-                profile._sportsAmps = [v0, v1, v2, v3]
-                profile.sportsAmps.update()
-                print("updated")
-            case let .sportsAmps1(v): profile._sportsAmps[0] = v; profile.sportsAmps.update()
-            case let .sportsAmps2(v): profile._sportsAmps[1] = v; profile.sportsAmps.update()
-            case let .sportsAmps3(v): profile._sportsAmps[2] = v; profile.sportsAmps.update()
-            case let .sportsAmps4(v): profile._sportsAmps[3] = v; profile.sportsAmps.update()
-            case let .brakeAmps(v0, v1, v2, v3): profile._brakeAmps = [v0, v1, v2, v3]; profile.brakeAmps.update()
-            case let .brakeAmps1(v): profile._brakeAmps[0] = v; profile.brakeAmps.update()
-            case let .brakeAmps2(v): profile._brakeAmps[1] = v; profile.brakeAmps.update()
-            case let .brakeAmps3(v): profile._brakeAmps[2] = v; profile.brakeAmps.update()
-            case let .brakeAmps4(v): profile._brakeAmps[3] = v; profile.brakeAmps.update()
-            case let .ecoSmoothness(smooothness): profile._ecoSmoothness = smooothness; profile.ecoSmoothness.update()
-            case let .driveSmoothness(smooothness): profile._driveSmoothness = smooothness; profile.driveSmoothness.update()
-            case let .sportsSmoothness(smooothness): profile._sportsSmoothness = smooothness; profile.sportsSmoothness.update()
+            case let .ecoAmps(v0, v1, v2, v3): profile.sync(\.ecoAmps, [v0, v1, v2, v3])
+            case let .driveAmps(v0, v1, v2, v3): profile.sync(\.driveAmps, [v0, v1, v2, v3])
+            case let .sportsAmps(v0, v1, v2, v3): profile.sync(\.sportsAmps, [v0, v1, v2, v3])
+            case let .brakeAmps(v0, v1, v2, v3): profile.sync(\.brakeAmps, [v0, v1, v2, v3])
+            case let .ecoSmoothness(smooothness): profile.sync(\.ecoSmoothness, smooothness)
+            case let .driveSmoothness(smooothness): profile.sync(\.driveSmoothness, smooothness)
+            case let .sportsSmoothness(smooothness): profile.sync(\.sportsSmoothness, smooothness)
             case let .mspBrakeBoost(msp, brakeBoost):
-                profile._msp = msp; profile.msp.update()
-                profile._brakeBoost = brakeBoost; profile.brakeBoost.update()
-            case let .brakeLight(config): profile._brakeLight = config; profile.brakeLight.update()
-            case let .booleans(booleans): profile._booleans = booleans; profile.booleans.update()
+                profile.sync(\.msp, msp)
+                profile.sync(\.brakeBoost, brakeBoost)
+            case let .brakeLight(config): profile.sync(\.brakeLight, config)
+            case let .booleans(booleans): profile.sync(\.booleans, booleans)
             case let .idleSpeedData(idleData, speedData):
-                profile._idleData = idleData; profile.idleData.update()
-                profile._speedData = speedData; profile.speedData.update()
+                profile.sync(\.idleData, idleData)
+                profile.sync(\.speedData, speedData)
             case let .alternatingBatteryBarData(alternatingData, batteryBarData):
-                profile._alternatingData = alternatingData; profile.alternatingData.update()
-                profile._batteryBarData = batteryBarData; profile.batteryBarData.update()
+                profile.sync(\.alternatingData, alternatingData)
+                profile.sync(\.batteryBarData, batteryBarData)
             case let .ccModeBeep(mode, enterBeep):
-                profile._ccMode = mode; profile.ccMode.update()
-                profile._ccEnterBeep = enterBeep; profile.ccEnterBeep.update()
+                profile.sync(\.ccMode, mode)
+                profile.sync(\.ccEnterBeep, enterBeep)
             case let .ccDelayExitBeep(delay, exitBeep):
-                profile._ccDelay = delay; profile.ccDelay.update()
-                profile._ccExitBeep = exitBeep; profile.ccExitBeep.update()
+                profile.sync(\.ccDelay, delay)
+                profile.sync(\.ccExitBeep, exitBeep)
             case let .initModeBeep(mode, beep):
-                profile._initMode = mode; profile.initMode.update()
-                profile._initBeep = beep; profile.initBeep.update()
+                profile.sync(\.initMode, mode)
+                profile.sync(\.initBeep, beep)
             case let .brakeMspOvershoot(msp, overshoot):
-                profile._brakeMsp = msp; profile.brakeMsp.update()
-                profile._brakeOvershoot = overshoot; profile.brakeOvershoot.update()
+                profile.sync(\.brakeMsp, msp)
+                profile.sync(\.brakeOvershoot, overshoot)
             case let .ccChangeTimeAutobrakingAmps(ccChangeTime, autobrakeAmps):
-                profile._ccChangeTime = ccChangeTime; profile.ccChangeTime.update()
-                profile._autobrakeAmps = autobrakeAmps; profile.autobrakeAmps.update()
+                profile.sync(\.ccChangeTime, ccChangeTime)
+                profile.sync(\.autobrakeAmps, autobrakeAmps)
             case let .fwkSpeedCurrent(speed, current):
-                profile._fwkSpeed = speed; profile.fwkSpeed.update()
-                profile._fwkCurrent = current; profile.fwkCurrent.update()
-            case let .fwkVarCurrent(current): profile._fwkVarCurrent = current; profile.fwkVarCurrent.update()
+                profile.sync(\.fwkSpeed, speed)
+                profile.sync(\.fwkCurrent, current)
+            case let .fwkVarCurrent(current): profile.sync(\.fwkVarCurrent, current)
             case let .maxFieldTorqueCurrent(field, torque):
-                profile._maxFieldCurrent = field; profile.maxFieldCurrent.update()
-                profile._maxTorqueCurrent = torque; profile.maxTorqueCurrent.update()
-            case let .accelerationBoost(boost): profile._accelerationBoost = boost; profile.accelerationBoost.update()
-            case let .newBooleans(booleans): profile._newBooleans = booleans; profile.newBooleans.update()
+                profile.sync(\.maxFieldCurrent, field)
+                profile.sync(\.maxTorqueCurrent, torque)
+            case let .accelerationBoost(boost): profile.sync(\.accelerationBoost, boost)
+            case let .newBooleans(booleans): profile.sync(\.newBooleans, booleans)
+                
+            // these are ignored because i currently have no way of setting individual amps without writing the whole thing.
+            // in fact i REALLY should just remove individual reads/writes for these. it serves little to no purpose
+            case .ecoAmps1, .driveAmps1, .sportsAmps1, .brakeAmps1: break
+            case .ecoAmps2, .driveAmps2, .sportsAmps2, .brakeAmps2: break
+            case .ecoAmps3, .driveAmps3, .sportsAmps3, .brakeAmps3: break
+            case .ecoAmps4, .driveAmps4, .sportsAmps4, .brakeAmps4: break
             }
         case let .systemSettings(settings, _): break
         case let .extraSystemSettings(settings, _): break
@@ -600,7 +684,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         let msg = self.messageManager.ninebotRead(SHFWMessage.version())
         self.writeRaw(msg, characteristic: .serial, writeType: .conditionLimitTimes(
             condition: {
-                self.shfw.installed == nil
+                return self.shfw.installed == nil
             },
             times: 10,
             limitHit: {
