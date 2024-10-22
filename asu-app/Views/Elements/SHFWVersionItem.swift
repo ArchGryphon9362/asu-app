@@ -35,6 +35,8 @@ struct SHFWVersionItem: View {
             }
             
             details[0].children?.append(SHFWVersionData(title: "Release Type", data: extraDetails.buildType.string.capitalized))
+        } else {
+            details[0].children = nil
         }
         
         return details
