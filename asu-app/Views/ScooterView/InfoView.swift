@@ -18,7 +18,11 @@ struct InfoView: View {
                 Section {
                     ListItem(title: "Model", data: self.scooterManager.model?.name)
                     ListItem(title: "BLE", data: self.scooterManager.coreInfo.ble?.parsed)
-                    ListItem(title: self.scooterManager.shfw.installed == true ? "SHFW" : "DRV", data: self.escVersion)
+                    if let shfwVersion = self.scooterManager.shfw.version {
+                        SHFWVersionItem(version: shfwVersion)
+                    } else {
+                        ListItem(title: "DRV", data: self.scooterManager.coreInfo.esc?.parsed)
+                    }
                     ListItem(title: "BMS", data: self.scooterManager.coreInfo.bms?.parsed)
                     ListItem(title: "Serial Number", data: self.scooterManager.coreInfo.serial)
                 }

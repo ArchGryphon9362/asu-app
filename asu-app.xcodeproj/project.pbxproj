@@ -26,6 +26,7 @@
 		FC6F69B92B6E926800928CF0 /* ScooterConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC6F69B82B6E926800928CF0 /* ScooterConfigView.swift */; };
 		FC6F69BB2B6E933B00928CF0 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC6F69BA2B6E933B00928CF0 /* DashboardView.swift */; };
 		FC6F69BF2B6EE0C000928CF0 /* TripsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC6F69BE2B6EE0C000928CF0 /* TripsView.swift */; };
+		FC74C8732CC84FE20027CF6F /* SHFWVersionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC74C8722CC84FDD0027CF6F /* SHFWVersionItem.swift */; };
 		FC8BECF82B67559B006DCBD8 /* NavigationBackport in Frameworks */ = {isa = PBXBuildFile; productRef = FC8BECF72B67559B006DCBD8 /* NavigationBackport */; };
 		FC8D43482B6AC2E1004177BE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC8D43472B6AC2E1004177BE /* SettingsView.swift */; };
 		FC8D434A2B6AE89C004177BE /* SecretView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC8D43492B6AE89C004177BE /* SecretView.swift */; };
@@ -69,6 +70,7 @@
 		FC6F69B82B6E926800928CF0 /* ScooterConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScooterConfigView.swift; sourceTree = "<group>"; };
 		FC6F69BA2B6E933B00928CF0 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
 		FC6F69BE2B6EE0C000928CF0 /* TripsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TripsView.swift; sourceTree = "<group>"; };
+		FC74C8722CC84FDD0027CF6F /* SHFWVersionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHFWVersionItem.swift; sourceTree = "<group>"; };
 		FC8D43472B6AC2E1004177BE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		FC8D43492B6AE89C004177BE /* SecretView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecretView.swift; sourceTree = "<group>"; };
 		FC8DE1B62ACCAE7300E92501 /* XiaomiCrypto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XiaomiCrypto.swift; sourceTree = "<group>"; };
@@ -187,6 +189,7 @@
 			isa = PBXGroup;
 			children = (
 				FCAF3D2E2C43E13600C09DEF /* ListItem.swift */,
+				FC74C8722CC84FDD0027CF6F /* SHFWVersionItem.swift */,
 				FC97F9DE2CA79AB8004254F3 /* ReleaseSlider.swift */,
 				FC97F9E02CA79AC0004254F3 /* NumericTF.swift */,
 			);
@@ -339,6 +342,7 @@
 			files = (
 				FCF4CC8C2B6BD7B200F0310B /* RawMessageManager.swift in Sources */,
 				FC0579FE2AC9DCDD004D8C1F /* SHFWConfigView.swift in Sources */,
+				FC74C8732CC84FE20027CF6F /* SHFWVersionItem.swift in Sources */,
 				FC5F33802AC213DE006B4E0B /* ScooterManager.swift in Sources */,
 				FCAF3D2D2C4313B600C09DEF /* WriteLoop.swift in Sources */,
 				FCA328472ACB6B1F004D39B6 /* Utilities.swift in Sources */,
