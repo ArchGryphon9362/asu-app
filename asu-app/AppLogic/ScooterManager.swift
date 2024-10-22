@@ -725,10 +725,13 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
                 
                 self.scooterCrypto.reset()
                 
-                self.infoDumpId = 0
                 self.coreInfo = .init()
-                self.infoDump = nil
                 self.shfw = .init()
+                self.coreInfo.setScooterManager(self)
+                self.shfw.setScooterManager(self)
+                
+                self.infoDumpId = 0
+                self.infoDump = nil
             }
         case .ready:
             if !self.scooterCrypto.authenticated {
