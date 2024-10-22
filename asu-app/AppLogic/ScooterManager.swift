@@ -625,6 +625,8 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             }
             
             self.shfw.version = version
+            self.shfw.installed = true
+            self.shfw.compatible = true
         case let .newVersion(version):
             self.shfw.version = version
             self.shfw.installed = true

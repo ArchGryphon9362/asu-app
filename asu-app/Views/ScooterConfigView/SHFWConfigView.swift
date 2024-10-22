@@ -16,16 +16,6 @@ struct SHFWConfigView: View {
     var body: some View {
         VStack {
             List {
-                if let version = self.scooterManager.shfw.version {
-                    if let extraDetails = version.extraDetails {
-                        ListItem(title: "Version", data: "\(version.parsed) | \(extraDetails.buildDetails ?? "no build details") | \(extraDetails.buildType.string)")
-                    } else {
-                        ListItem(title: "Version", data: "\(version.parsed)")
-
-                    }
-                } else {
-                    ListItem(title: "Version", data: nil)
-                }
                 if var config = self.scooterManager.shfw.config {
                     let _config = Binding(get: { config }, set: { newValue in config = newValue })
                     

@@ -12,7 +12,7 @@ struct NinebotRegisterInfo {
     var amount: UInt8 = 2
 }
 
-struct NinebotVersion {
+struct NinebotVersion: Equatable {
     let raw: Data
     var parsed: String {
         guard self.raw.count >= 2 else { return "" }
