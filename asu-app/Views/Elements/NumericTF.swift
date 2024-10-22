@@ -58,52 +58,58 @@ struct NumericTF<T: Numeric>: View {
     }
 
     var body: some View {
-        TextField(
-            name,
-            text: self.$displayValue,
-            onCommit: {
-                // i wish there was a built-in such .value()...
-                guard let newValue: T = self.numberFormatter.number(from: self.displayValue)?.value() else { return }
-                self.value = newValue
+        HStack {
+            Text(self.name)
+                .foregroundColor(.secondary)
+            Spacer()
+            TextField(
+                name,
+                text: self.$displayValue,
+                onCommit: {
+                    // i wish there was a built-in such .value()...
+                    guard let newValue: T = self.numberFormatter.number(from: self.displayValue)?.value() else { return }
+                    self.value = newValue
+                }
+            )
+            .sendLabel()
+            .multilineTextAlignment(.trailing)
+            .onAppear {
+                self.updateUi(value)
             }
-        )
-        .sendLabel()
-        .onAppear {
-            self.updateUi(value)
-        }
-        .onChange(of: self.displayValue) { _ in
-            guard self.displayValue != self.prevDisplayValue else { return }
-            
-            guard !self.displayValue.isEmpty else {
-                self.prevDisplayValue = "0"
-                self.displayValue = "0"
+            .onChange(of: self.displayValue) { _ in
+                guard self.displayValue != self.prevDisplayValue else { return }
                 
-                return
-            }
-            
-            let trailingDot = [".", ","].contains(self.displayValue.suffix(1)) ? self.displayValue.suffix(1) : ""
-            var result = self.displayValue
-            
-            if var floatValue = self.numberFormatter.number(from: self.displayValue)?.floatValue {
-                floatValue = (round((floatValue + self.in.lowerBound) / step) - self.in.lowerBound) * step
-                
-                if !self.in.contains(floatValue) {
-                    floatValue = min(max(floatValue, self.in.lowerBound), self.in.upperBound)
+                guard !self.displayValue.isEmpty else {
+                    self.prevDisplayValue = "0"
+                    self.displayValue = "0"
+                    
+                    return
                 }
                 
-                result = (numberFormatter.string(for: floatValue) ?? "0") + trailingDot
-            } else {
-                result = self.prevDisplayValue
+                let trailingDot = [".", ","].contains(self.displayValue.suffix(1)) ? self.displayValue.suffix(1) : ""
+                var result = self.displayValue
+                
+                if var floatValue = self.numberFormatter.number(from: self.displayValue)?.floatValue {
+                    floatValue = (round((floatValue + self.in.lowerBound) / step) - self.in.lowerBound) * step
+                    
+                    if !self.in.contains(floatValue) {
+                        floatValue = min(max(floatValue, self.in.lowerBound), self.in.upperBound)
+                    }
+                    
+                    result = (numberFormatter.string(for: floatValue) ?? "0") + trailingDot
+                } else {
+                    result = self.prevDisplayValue
+                }
+                
+                if self.displayValue != result {
+                    self.displayValue = result
+                }
+                
+                self.prevDisplayValue = self.displayValue
             }
-            
-            if self.displayValue != result {
-                self.displayValue = result
+            .onChange(of: self.value) { _ in
+                self.updateUi(value)
             }
-            
-            self.prevDisplayValue = self.displayValue
-        }
-        .onChange(of: self.value) { _ in
-            self.updateUi(value)
         }
     }
     

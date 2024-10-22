@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 struct ReleaseSlider<T: Numeric>: View {
+    var name: String
     @Binding var value: T
     var `in`: ClosedRange<Float>
     var step: Float = 0.001
@@ -36,57 +37,67 @@ struct ReleaseSlider<T: Numeric>: View {
     }
     
     var body: some View {
-        VStack {
-            Slider(value: self.$sliderValue, in: self.in) { editing in
-                self.isEditing = editing
-                
-                if !self.isEditing {
-                    DispatchQueue.main.async {
-                        guard let sliderValue = self.updateUi(self.sliderValue) as NSNumber as? T else { return }
-                        self.value = sliderValue
+        VStack(alignment: .leading, spacing: 0.0) {
+            Text(self.name)
+                .font(.footnote)
+                .foregroundColor(.secondary)
+            HStack {
+                Slider(value: self.$sliderValue, in: self.in) { editing in
+                    self.isEditing = editing
+                    
+                    if !self.isEditing {
+                        DispatchQueue.main.async {
+                            guard let sliderValue = self.updateUi(self.sliderValue) as NSNumber as? T else { return }
+                            self.value = sliderValue
+                        }
                     }
                 }
-            }
-            .onAppear {
-                #if !os(macOS)
-                self.feedback.prepare()
-                #endif
-                
-                guard let value = (self.value as? NSNumber)?.floatValue else { return }
-                self.updateUi(value, valueChange: true)
-            }
-            .onChange(of: self.sliderValue) { _ in
-                guard self.sliderValue != self.prevSliderValue else { return }
-                
-                // jittery on macOS. if this is found out to be jittery on any iOS
-                // device this should be perma-falsed. a little hacky, but i feel
-                // like that's literally everything when it comes to SwiftUI
-                #if !os(macOS)
-                // only do if there's enough space for reasonable haptics
-                let numberOfPoints = (self.in.upperBound - self.in.lowerBound) / step
-                let snappySlider = self.width / numberOfPoints >= 3
-                #else
-                let snappySlider = false
-                #endif
-                
-                self.updateUi(self.sliderValue, updateUi: snappySlider)
-            }
-            .onChange(of: self.value) { _ in
-                guard let value = (self.value as? NSNumber)?.floatValue else { return }
-                self.updateUi(value, valueChange: true)
-            }
-            Text("\(self.displayValue)")
-        }
-        .background(
-            GeometryReader { geometry in
-                HStack {}
-                    .onAppear {
-                        // this will have to be moved to somewhere other than onAppear if we
-                        // start doing any dyanmic scaling for WHATEVER reason
-                        self.width = Float(geometry.size.width)
+                .onAppear {
+                    #if !os(macOS)
+                    self.feedback.prepare()
+                    #endif
+                    
+                    guard let value = (self.value as? NSNumber)?.floatValue else { return }
+                    self.updateUi(value, valueChange: true)
+                }
+                .onChange(of: self.sliderValue) { _ in
+                    guard self.sliderValue != self.prevSliderValue else { return }
+                    
+                    // jittery on macOS. if this is found out to be jittery on any iOS
+                    // device this should be perma-falsed. a little hacky, but i feel
+                    // like that's literally everything when it comes to SwiftUI
+                    #if !os(macOS)
+                    // only do if there's enough space for reasonable haptics
+                    let numberOfPoints = (self.in.upperBound - self.in.lowerBound) / step
+                    let snappySlider = self.width / numberOfPoints >= 3
+                    #else
+                    let snappySlider = false
+                    #endif
+                    
+                    self.updateUi(self.sliderValue, updateUi: snappySlider)
+                }
+                .onChange(of: self.value) { _ in
+                    guard let value = (self.value as? NSNumber)?.floatValue else { return }
+                    self.updateUi(value, valueChange: true)
+                }
+                .background(
+                    GeometryReader { geometry in
+                        HStack {}
+                            .onAppear {
+                                // this will have to be moved to somewhere other than onAppear if we
+                                // start doing any dyanmic scaling for WHATEVER reason
+                                self.width = Float(geometry.size.width)
+                            }
                     }
+                )
+                Spacer()
+                TextField("", text: self.$displayValue)
+                    .disabled(true)
+                    .textFieldStyle(.roundedBorder)
+                    .multilineTextAlignment(.center)
+                    .frame(width: 75.0)
             }
-        )
+        }
     }
     
     @discardableResult

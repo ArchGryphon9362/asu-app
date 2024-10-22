@@ -27,19 +27,16 @@ struct ScooterConfigView: View {
                         Label("Main Config", systemImage: "wrench.adjustable")
                     }
                     .tag(0)
-                    .padding()
                 FlashView()
                     .tabItem {
                         Label("Flash", systemImage: "bolt")
                     }
                     .tag(1)
-                    .padding()
                 SHFWConfigView()
                     .tabItem {
                         Label("SHFW Config", systemImage: "gear")
                     }
                     .tag(2)
-                    .padding()
             }
             .navigationTitle("Scooter Config")
             #if !os(macOS)

@@ -15,16 +15,18 @@ struct SHFWConfigView: View {
 
     var body: some View {
         VStack {
-            ListItem(title: "Version", data: scooterManager.shfw.version?.parsed)
-            if var config = self.scooterManager.shfw.config {
-                let _config = Binding(get: { config }, set: { newValue in config = newValue })
-                
-                // text field examples
-                NumericTF(name: "P3 sports 1", value: _config.profile3.sportsAmps[0], in: 0...100, step: 0.01)
-                NumericTF(name: "P3 sports 2", value: _config.profile3.sportsAmps[1], in: 0...100, step: 0.01)
-                // slider examples
-                ReleaseSlider(value: _config.profile3.sportsAmps[2], in: 0...100, step: 0.01)
-                ReleaseSlider(value: _config.profile3.sportsAmps[3], in: 0...100, step: 0.01)
+            List {
+                ListItem(title: "Version", data: scooterManager.shfw.version?.parsed)
+                if var config = self.scooterManager.shfw.config {
+                    let _config = Binding(get: { config }, set: { newValue in config = newValue })
+                    
+                    // text field examples
+                    NumericTF(name: "P3 sports 1", value: _config.profile3.sportsAmps[0], in: 0...100, step: 0.01)
+                    NumericTF(name: "P3 sports 2", value: _config.profile3.sportsAmps[1], in: 0...100, step: 0.01)
+                    // slider examples
+                    ReleaseSlider(name: "P3 sports 3", value: _config.profile3.sportsAmps[2], in: 0...100, step: 0.01)
+                    ReleaseSlider(name: "P3 sports 4", value: _config.profile3.sportsAmps[3], in: 0...100, step: 0.01)
+                }
             }
         }
     }
