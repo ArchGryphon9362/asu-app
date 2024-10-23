@@ -12,6 +12,7 @@ struct ReleaseSlider<T: Numeric>: View {
     var name: String
     @Binding var value: T
     var `in`: ClosedRange<Float>
+    var unit: String? = nil
     var step: Float = 0.001
     
     @State private var sliderValue: Float = 0.0
@@ -96,6 +97,10 @@ struct ReleaseSlider<T: Numeric>: View {
                     .textFieldStyle(.roundedBorder)
                     .multilineTextAlignment(.center)
                     .frame(width: 75.0)
+                if let unit = self.unit {
+                    Text(unit)
+                        .foregroundColor(.secondary)
+                }
             }
         }
     }

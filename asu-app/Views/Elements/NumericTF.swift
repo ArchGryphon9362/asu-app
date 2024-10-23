@@ -40,6 +40,7 @@ struct NumericTF<T: Numeric>: View {
     var name: String
     @Binding var value: T
     var `in`: ClosedRange<Float>
+    var unit: String? = nil
     var step: Float = 0.001
 
     @State private var displayValue: String = ""
@@ -109,6 +110,11 @@ struct NumericTF<T: Numeric>: View {
             }
             .onChange(of: self.value) { _ in
                 self.updateUi(value)
+            }
+            if let unit = self.unit {
+                Spacer()
+                Text(unit)
+                    .foregroundColor(.secondary)
             }
         }
     }
