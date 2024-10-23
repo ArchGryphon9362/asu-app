@@ -14,6 +14,8 @@ struct ReleaseSlider<T: Numeric>: View {
     var `in`: ClosedRange<Float>
     var unit: String? = nil
     var step: Float = 0.001
+    /// one unit of input will result in `scaleFactor` units of change
+    var scaleFactor: Float = 1.0
     
     @State private var sliderValue: Float = 0.0
     @State private var displayValue: String = ""
@@ -48,8 +50,9 @@ struct ReleaseSlider<T: Numeric>: View {
                     
                     if !self.isEditing {
                         DispatchQueue.main.async {
-                            guard let sliderValue = self.updateUi(self.sliderValue) as NSNumber as? T else { return }
-                            self.value = sliderValue
+                            let scaled = self.updateUi(self.sliderValue) * self.scaleFactor
+                            guard let scaled = scaled as NSNumber as? T else { return }
+                            self.value = scaled
                         }
                     }
                 }
@@ -59,7 +62,7 @@ struct ReleaseSlider<T: Numeric>: View {
                     #endif
                     
                     guard let value = (self.value as? NSNumber)?.floatValue else { return }
-                    self.updateUi(value, valueChange: true)
+                    self.updateUi(value / self.scaleFactor, valueChange: true)
                 }
                 .onChange(of: self.sliderValue) { _ in
                     guard self.sliderValue != self.prevSliderValue else { return }
@@ -79,7 +82,7 @@ struct ReleaseSlider<T: Numeric>: View {
                 }
                 .onChange(of: self.value) { _ in
                     guard let value = (self.value as? NSNumber)?.floatValue else { return }
-                    self.updateUi(value, valueChange: true)
+                    self.updateUi(value / self.scaleFactor, valueChange: true)
                 }
                 .background(
                     GeometryReader { geometry in

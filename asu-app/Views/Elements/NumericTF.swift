@@ -42,6 +42,8 @@ struct NumericTF<T: Numeric>: View {
     var `in`: ClosedRange<Float>
     var unit: String? = nil
     var step: Float = 0.001
+    /// one unit of input will result in `scaleFactor` units of change
+    var scaleFactor: Float = 1.0
 
     @State private var displayValue: String = ""
     @State private var prevDisplayValue: String = ""
@@ -68,14 +70,17 @@ struct NumericTF<T: Numeric>: View {
                 text: self.$displayValue,
                 onCommit: {
                     // i wish there was a built-in such .value()...
-                    guard let newValue: T = self.numberFormatter.number(from: self.displayValue)?.value() else { return }
+                    guard let displayValue = self.numberFormatter.number(from: self.displayValue) else { return }
+                    let scaled = displayValue.floatValue * self.scaleFactor as NSNumber
+                    guard let newValue: T = scaled.value() else { return }
                     self.value = newValue
                 }
             )
             .sendLabel()
             .multilineTextAlignment(.trailing)
             .onAppear {
-                self.updateUi(value)
+                guard let value = (self.value as? NSNumber)?.floatValue else { return }
+                self.updateUi(value / self.scaleFactor as NSNumber)
             }
             .onChange(of: self.displayValue) { _ in
                 guard self.displayValue != self.prevDisplayValue else { return }
@@ -109,7 +114,8 @@ struct NumericTF<T: Numeric>: View {
                 self.prevDisplayValue = self.displayValue
             }
             .onChange(of: self.value) { _ in
-                self.updateUi(value)
+                guard let value = (self.value as? NSNumber)?.floatValue else { return }
+                self.updateUi(value / self.scaleFactor as NSNumber)
             }
             if let unit = self.unit {
                 Spacer()
@@ -119,9 +125,7 @@ struct NumericTF<T: Numeric>: View {
         }
     }
     
-    private func updateUi(_ value: T) {
-        guard let value = value as? NSNumber else { return }
-        
+    private func updateUi(_ value: NSNumber) {
         let result = self.numberFormatter.string(from: value) ?? self.displayValue
         
         if self.displayValue != result {
