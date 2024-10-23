@@ -15,8 +15,8 @@ struct SHFWConfigView: View {
 
     var body: some View {
         VStack {
-            List {
-                if var config = self.scooterManager.shfw.config {
+            if var config = self.scooterManager.shfw.config {
+                List {
                     let _config = Binding(get: { config }, set: { newValue in config = newValue })
                     
                     // text field examples
@@ -28,6 +28,11 @@ struct SHFWConfigView: View {
                     
                     // pwm
                     ReleaseSlider(name: "PWM", value: _config.global.pwm, in: 4...24, step: 4)
+                }
+            } else if self.scooterManager.shfw.installed == true {
+                HStack {
+                    ProgressView()
+                    Text("Loading SHFW config")
                 }
             }
         }
