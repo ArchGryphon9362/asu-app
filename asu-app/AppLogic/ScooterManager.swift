@@ -323,20 +323,306 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         }
     }
     
+    class SHFWGlobal : ObservableObject {
+        @Published var activeProfile: Int {
+            didSet { upd(\.activeProfile, { v in .activeProfile(v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var defaultProfile: Int {
+            didSet { upd(\.defaultProfile, { v in .defaultProfile(v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var brakeProfile: Int {
+            didSet { upd(\.brakeProfile, { v in .brakeProfile(v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var throttleProfile: Int {
+            didSet { upd(\.throttleProfile, { v in .throttleProfile(v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var brakeThrottleBootProfile: Int {
+            didSet { upd(\.brakeThrottleBootProfile, { v in .brakeThrottleBootProfile(v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var brakeButtonProfile: Int {
+            didSet { upd(\.brakeButtonProfile, { v in .brakeButtonProfile(v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var brakeDoubleButtonProfile: Int {
+            didSet { upd(\.brakeDoubleButtonProfile, { v in .brakeDoubleButtonProfile(v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var brakeThrottleProfile: Int {
+            didSet { upd(\.brakeThrottleProfile, { v in .brakeThrottleProfile(v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var sequenceProfile: Int {
+            didSet { upd(\.sequenceProfile, { v in .sequenceProfile(v, self.sequenceProfileData) }) }
+        }
+        
+        @Published var sequenceProfileData: SHFWMessage.ProfileSequence {
+            didSet { upd(\.sequenceProfileData, { v in .sequenceProfile(self.sequenceProfile, v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var pwm: Int {
+            didSet { upd(\.pwm, { v in .pwm(v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var pidKd: Int {
+            didSet { upd(\.pidKd, { v in .pidKdLowerLimit(v, self.pidLowerLimit) }) }
+        }
+        
+        @Published var pidLowerLimit: Int {
+            didSet { upd(\.pidLowerLimit, { v in .pidKdLowerLimit(self.pidKd, v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var pidKp: Int {
+            didSet { upd(\.pidKp, { v in .pidKpKi(v, self.pidKi) }) }
+        }
+        
+        @Published var pidKi: Int {
+            didSet { upd(\.pidKi, { v in .pidKpKi(self.pidKp, v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var minThrottle: Int {
+            didSet { upd(\.minThrottle, { v in .minMaxThrottle(v, self.maxThrottle) }) }
+        }
+        
+        @Published var maxThrottle: Int {
+            didSet { upd(\.maxThrottle, { v in .minMaxThrottle(self.minThrottle, v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var minBrake: Int {
+            didSet { upd(\.minBrake, { v in .minMaxBrake(v, self.maxBrake) }) }
+        }
+        
+        @Published var maxBrake: Int {
+            didSet { upd(\.maxBrake, { v in .minMaxBrake(self.minBrake, v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var taillightBrightness: Int {
+            didSet { upd(\.taillightBrightness, { v in .taillightBrightness(v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var idleTimeout: Int {
+            didSet { upd(\.idleTimeout, { v in .idleTimeout(v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var lockedTimeout: Int {
+            didSet { upd(\.lockedTimeout, { v in .lockedTimeout(v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var wheelSize: Float {
+            didSet { upd(\.wheelSize, { v in .wheelSize(v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var bmsEmuSeries: SHFWMessage.BMSEmuSeries {
+            didSet { upd(\.bmsEmuSeries, { v in .bmsEmuSeries(v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var bmsEmuAdc: Float {
+            didSet { upd(\.bmsEmuAdc, { v in .bmsEmuAdc(v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var bmsEmuCapacity: Int {
+            didSet { upd(\.bmsEmuCapacity, { v in .bmsEmuCapacity(v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var bmsEmuMinCell: Float {
+            didSet { upd(\.bmsEmuMinCell, { v in .bmsEmuMinMaxCell(v, self.bmsEmuMinCell) }) }
+        }
+        
+        @Published var bmsEmuMaxCell: Float {
+            didSet { upd(\.bmsEmuMaxCell, { v in .bmsEmuMinMaxCell(self.bmsEmuMaxCell, v) }) }
+        }
+        
+        // ######## //
+        
+        @Published var booleans: SHFWMessage.GlobalBoolean {
+            didSet { upd(\.booleans, { v in .booleans(v) }) }
+        }
+        
+        // ######## //
+        
+        private var scooterManager: ScooterManager
+        private var updateQueue: DispatchQueue
+        private var syncing = false
+        
+        private func upd<T>(
+            _ path: KeyPath<SHFWGlobal, T>,
+            c condition: @escaping (T) -> (Bool) = { _ in true },
+            _ request: @escaping (T) -> (SHFWMessage.SystemSettings.Setting?)
+        ) {
+            guard let settingMsg = request(self[keyPath: path]) else {
+                return
+            }
+            
+            let requestMsg = SHFWMessage.systemSetting(settingMsg)
+            
+            // TODO: read following:
+            //       implement a `.after()` function for my WriteLoop yet that I can have
+            //       schedule a new write only after all writes for a certain write have
+            //       fired. this will need to be implemented under `WriteType.Limit`; this
+            //       will pretty much be a prettier way of scheduling writes instead of
+            //       having to abuse `limitHit` (which is there really of detecting condition
+            //       exhaustion)
+            guard
+                let writeData = self.scooterManager.messageManager.ninebotWrite(requestMsg, ack: false),
+                let readData  = self.scooterManager.messageManager.ninebotRead(requestMsg) else {
+                return
+            }
+            
+            self.scooterManager.writeRaw(writeData, characteristic: .serial, writeType: .conditionLimitTimes(
+                condition: { return true },
+                times: 2,
+                limitHit: {
+                    self.scooterManager.writeRaw(readData, characteristic: .serial, writeType: .foreverLimitTimes(times: 2))
+                }
+            ))
+        }
+        
+        fileprivate func sync<T: Equatable>(_ path: ReferenceWritableKeyPath<SHFWGlobal, T>, _ value: T) {
+            self.updateQueue.async {
+                self.syncing = true
+                DispatchQueue.main.sync {
+                    if self[keyPath: path] != value {
+                        self[keyPath: path] = value
+                    }
+                    self.syncing = false
+                }
+            }
+        }
+        
+        init(
+            scooterManager: ScooterManager,
+            activeProfile: Int,
+            defaultProfile: Int,
+            brakeProfile: Int,
+            throttleProfile: Int,
+            brakeThrottleBootProfile: Int,
+            brakeButtonProfile: Int,
+            brakeDoubleButtonProfile: Int,
+            brakeThrottleProfile: Int,
+            sequenceProfile: Int,
+            sequenceProfileData: SHFWMessage.ProfileSequence,
+            pwm: Int,
+            pidKd: Int,
+            pidLowerLimit: Int,
+            pidKp: Int,
+            pidKi: Int,
+            minThrottle: Int,
+            maxThrottle: Int,
+            minBrake: Int,
+            maxBrake: Int,
+            taillightBrightness: Int,
+            idleTimeout: Int,
+            lockedTimeout: Int,
+            wheelSize: Float,
+            bmsEmuSeries: SHFWMessage.BMSEmuSeries,
+            bmsEmuAdc: Float,
+            bmsEmuCapacity: Int,
+            bmsEmuMinCell: Float,
+            bmsEmuMaxCell: Float,
+            booleans: SHFWMessage.GlobalBoolean
+        ) {
+            self.scooterManager = scooterManager
+            self.updateQueue = DispatchQueue(label: "dev.nyaaa.asu.sm.global.queue", qos: .userInitiated)
+            
+            self.activeProfile = activeProfile
+            self.defaultProfile = defaultProfile
+            self.brakeProfile = brakeProfile
+            self.throttleProfile = throttleProfile
+            self.brakeThrottleBootProfile = brakeThrottleBootProfile
+            self.brakeButtonProfile = brakeButtonProfile
+            self.brakeDoubleButtonProfile = brakeDoubleButtonProfile
+            self.brakeThrottleProfile = brakeThrottleProfile
+            self.sequenceProfile = sequenceProfile
+            self.sequenceProfileData = sequenceProfileData
+            self.pwm = pwm
+            self.pidKd = pidKd
+            self.pidLowerLimit = pidLowerLimit
+            self.pidKp = pidKp
+            self.pidKi = pidKi
+            self.minThrottle = minThrottle
+            self.maxThrottle = maxThrottle
+            self.minBrake = minBrake
+            self.maxBrake = maxBrake
+            self.taillightBrightness = taillightBrightness
+            self.idleTimeout = idleTimeout
+            self.lockedTimeout = lockedTimeout
+            self.wheelSize = wheelSize
+            self.bmsEmuSeries = bmsEmuSeries
+            self.bmsEmuAdc = bmsEmuAdc
+            self.bmsEmuCapacity = bmsEmuCapacity
+            self.bmsEmuMinCell = bmsEmuMinCell
+            self.bmsEmuMaxCell = bmsEmuMaxCell
+            self.booleans = booleans
+        }
+    }
+    
     class SHFWConfig : Observable {
         @Published var profile1: SHFWProfile
         @Published var profile2: SHFWProfile
         @Published var profile3: SHFWProfile
+        @Published var global: SHFWGlobal
         
         func getProfile(_ profile: Int) -> SHFWProfile {
             return [self.profile1, self.profile2, self.profile3][profile]
         }
         
         // init code
-        init(profile1: SHFWProfile, profile2: SHFWProfile, profile3: SHFWProfile) {
+        init(
+            profile1: SHFWProfile,
+            profile2: SHFWProfile,
+            profile3: SHFWProfile,
+            global: SHFWGlobal
+        ) {
             self.profile1 = profile1
             self.profile2 = profile2
             self.profile3 = profile3
+            self.global = global
         }
         
         private var scooterManager: ScooterManager! = nil
@@ -360,8 +646,8 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         fileprivate var initProfile2Extra: SHFWMessage.ProfileExtraData? = nil
         fileprivate var initProfile3Core: SHFWMessage.ProfileData? = nil
         fileprivate var initProfile3Extra: SHFWMessage.ProfileExtraData? = nil
-        fileprivate var settingsCore: SHFWMessage.SystemSettings? = nil
-        fileprivate var settingsExtra: SHFWMessage.ExtraSystemSettings? = nil
+        fileprivate var initSettingsCore: SHFWMessage.SystemSettings? = nil
+        fileprivate var initSettingsExtra: SHFWMessage.ExtraSystemSettings? = nil
         
         fileprivate func initConfig() {
             guard let initProfile1Core = initProfile1Core,
@@ -370,8 +656,8 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
                   let initProfile2Extra = initProfile2Extra,
                   let initProfile3Core = initProfile3Core,
                   let initProfile3Extra = initProfile3Extra,
-//                  let settingsCore = settingsCore,
-//                  let settingsExtra = settingsExtra,
+                  let sc = initSettingsCore,
+                  let se = initSettingsExtra,
                   self.config == nil else {
                 return
             }
@@ -429,10 +715,44 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
                 fatalError("something went seriously wrong")
             }
             
+            let global = SHFWGlobal(
+                scooterManager: self.scooterManager,
+                activeProfile: sc.activeProfile,
+                defaultProfile: sc.defaultProfile,
+                brakeProfile: sc.brakeProfile,
+                throttleProfile: sc.throttleProfile,
+                brakeThrottleBootProfile: sc.brakeThrottleBootProfile,
+                brakeButtonProfile: sc.brakeButtonProfile,
+                brakeDoubleButtonProfile: sc.brakeDoubleButtonProfile,
+                brakeThrottleProfile: sc.brakeThrottleProfile,
+                sequenceProfile: sc.sequenceProfile,
+                sequenceProfileData: sc.sequenceProfileData,
+                pwm: se.pwm,
+                pidKd: se.pidKd,
+                pidLowerLimit: se.pidLowerLimit,
+                pidKp: se.pidKp,
+                pidKi: se.pidKi,
+                minThrottle: se.minThrottle,
+                maxThrottle: se.maxThrottle,
+                minBrake: se.minBrake,
+                maxBrake: se.maxBrake,
+                taillightBrightness: se.taillightBrightness,
+                idleTimeout: se.idleTimeout,
+                lockedTimeout: se.lockedTimeout,
+                wheelSize: se.wheelSize,
+                bmsEmuSeries: se.bmsEmuSeries,
+                bmsEmuAdc: se.bmsEmuAdc,
+                bmsEmuCapacity: se.bmsEmuCapacity,
+                bmsEmuMinCell: se.bmsEmuMinCell,
+                bmsEmuMaxCell: se.bmsEmuMaxCell,
+                booleans: se.booleans
+            )
+            
             self.config = .init(
                 profile1: profiles[0],
                 profile2: profiles[1],
-                profile3: profiles[2]
+                profile3: profiles[2],
+                global: global
             )
         }
         
@@ -603,9 +923,54 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             case .ecoAmps3, .driveAmps3, .sportsAmps3, .brakeAmps3: break
             case .ecoAmps4, .driveAmps4, .sportsAmps4, .brakeAmps4: break
             }
-        case let .systemSettings(settings, _): break
-        case let .extraSystemSettings(settings, _): break
-        case let .systemSetting(settings): break
+        case let .systemSettings(settings, _):
+            self.shfw.initSettingsCore = settings
+            self.shfw.initConfig()
+        case let .extraSystemSettings(settings, _):
+            self.shfw.initSettingsExtra = settings
+            self.shfw.initConfig()
+        case let .systemSetting(setting):
+            guard let settings = self.shfw.config?.global else {
+                return
+            }
+            
+            switch setting {
+            case let .activeProfile(profile): settings.sync(\.activeProfile, profile)
+            case let .defaultProfile(profile): settings.sync(\.defaultProfile, profile)
+            case let .brakeProfile(profile): settings.sync(\.brakeProfile, profile)
+            case let .throttleProfile(profile): settings.sync(\.throttleProfile, profile)
+            case let .brakeThrottleBootProfile(profile): settings.sync(\.brakeThrottleBootProfile, profile)
+            case let .brakeButtonProfile(profile): settings.sync(\.brakeButtonProfile, profile)
+            case let .brakeDoubleButtonProfile(profile): settings.sync(\.brakeDoubleButtonProfile, profile)
+            case let .brakeThrottleProfile(profile): settings.sync(\.brakeThrottleProfile, profile)
+            case let .sequenceProfile(profile, data):
+                settings.sync(\.sequenceProfile, profile)
+                settings.sync(\.sequenceProfileData, data)
+            case let .pwm(pwm): settings.sync(\.pwm, pwm)
+            case let .pidKdLowerLimit(kd, lowerLimit):
+                settings.sync(\.pidKd, kd)
+                settings.sync(\.pidLowerLimit, lowerLimit)
+            case let .pidKpKi(kp, ki):
+                settings.sync(\.pidKp, kp)
+                settings.sync(\.pidKi, ki)
+            case let .minMaxBrake(min, max):
+                settings.sync(\.minBrake, min)
+                settings.sync(\.maxBrake, max)
+            case let .minMaxThrottle(min, max):
+                settings.sync(\.minThrottle, min)
+                settings.sync(\.maxThrottle, max)
+            case let .taillightBrightness(brightness): settings.sync(\.taillightBrightness, brightness)
+            case let .idleTimeout(timeout): settings.sync(\.idleTimeout, timeout)
+            case let .lockedTimeout(timeout): settings.sync(\.lockedTimeout, timeout)
+            case let .wheelSize(size): settings.sync(\.wheelSize, size)
+            case let .bmsEmuSeries(series): settings.sync(\.bmsEmuSeries, series)
+            case let .bmsEmuAdc(adc): settings.sync(\.bmsEmuAdc, adc)
+            case let .bmsEmuCapacity(capacity): settings.sync(\.bmsEmuCapacity, capacity)
+            case let .bmsEmuMinMaxCell(min, max):
+                settings.sync(\.bmsEmuMinCell, min)
+                settings.sync(\.bmsEmuMaxCell, max)
+            case let .booleans(booleans): settings.sync(\.booleans, booleans)
+            }
         case let .version(version):
             guard !version.newVersioning else {
                 let msg = self.messageManager.ninebotRead(SHFWMessage.newVersion())
@@ -639,6 +1004,8 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
                 (SHFWMessage.profileExtra(0), { self.shfw.initProfile1Extra == nil }),
                 (SHFWMessage.profileExtra(1), { self.shfw.initProfile2Extra == nil }),
                 (SHFWMessage.profileExtra(2), { self.shfw.initProfile3Extra == nil }),
+                (SHFWMessage.systemSettings(), { self.shfw.initSettingsCore == nil }),
+                (SHFWMessage.extraSystemSettings(), { self.shfw.initSettingsExtra == nil })
             ]
             
             for (request, check) in requests {

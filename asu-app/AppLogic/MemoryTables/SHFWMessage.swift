@@ -176,8 +176,8 @@ enum SHFWMessage: CaseIterable, NinebotMessage {
         case unknown(Int)
     }
     
-    struct ProfileSequence {
-        enum Action {
+    struct ProfileSequence: Equatable {
+        enum Action: Equatable {
             case none
             case throttle
             case brake
@@ -189,7 +189,7 @@ enum SHFWMessage: CaseIterable, NinebotMessage {
         var sequence: [Action] = []
     }
     
-    enum BMSEmuSeries {
+    enum BMSEmuSeries: Equatable {
         case none
         case s10
         case s11
@@ -327,7 +327,7 @@ enum SHFWMessage: CaseIterable, NinebotMessage {
         var booleans: NewProfileBoolean = .init()
     }
     
-    struct GlobalBoolean {
+    struct GlobalBoolean: Equatable {
         var errorSuppresion: Bool = false
         var noChargingMode: Bool = false
         var spoofBms: Bool = false

@@ -25,6 +25,9 @@ struct SHFWConfigView: View {
                     // slider examples
                     ReleaseSlider(name: "P3 sports 3", value: _config.profile3.sportsAmps[2], in: 0...100, step: 0.01)
                     ReleaseSlider(name: "P3 sports 4", value: _config.profile3.sportsAmps[3], in: 0...100, step: 0.01)
+                    
+                    // pwm
+                    ReleaseSlider(name: "PWM", value: _config.global.pwm, in: 4...24, step: 4)
                 }
             }
         }
