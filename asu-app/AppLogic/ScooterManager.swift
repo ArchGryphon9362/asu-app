@@ -239,7 +239,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         fileprivate func sync<T: Equatable>(_ path: ReferenceWritableKeyPath<SHFWProfile, T>, _ value: T) {
             self.updateQueue.async {
                 self.syncing = true
-                DispatchQueue.main.async {
+                DispatchQueue.main.sync {
                     if self[keyPath: path] != value {
                         self[keyPath: path] = value
                     }
