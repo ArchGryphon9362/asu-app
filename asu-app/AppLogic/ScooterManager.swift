@@ -27,173 +27,173 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     
     class SHFWProfile : ObservableObject {
         @Published var ecoAmps: [Float] {
-            didSet { if !syncing { upd(\.ecoAmps, c: { v in v.count >= 4 }, { v in .ecoAmps(v[0], v[1], v[2], v[3]) }) } }
+            didSet { upd(\.ecoAmps, c: { v in v.count >= 4 }, { v in .ecoAmps(v[0], v[1], v[2], v[3]) }) }
         }
         
         // ######## //
         
         @Published var driveAmps: [Float] {
-            didSet { if !syncing { upd(\.driveAmps, c: { v in v.count >= 4 }, { v in .driveAmps(v[0], v[1], v[2], v[3]) }) } }
+            didSet { upd(\.driveAmps, c: { v in v.count >= 4 }, { v in .driveAmps(v[0], v[1], v[2], v[3]) }) }
         }
         
         // ######## //
 
         @Published var sportsAmps: [Float] {
-            didSet { if self.sportsAmps != oldValue, !syncing { upd(\.sportsAmps, c: { v in v.count >= 4 }, { v in .sportsAmps(v[0], v[1], v[2], v[3]) }) } }
+            didSet { upd(\.sportsAmps, c: { v in v.count >= 4 }, { v in .sportsAmps(v[0], v[1], v[2], v[3]) }) }
         }
         
         // ######## //
 
         @Published var brakeAmps: [Float] {
-            didSet { if !syncing { upd(\.brakeAmps, c: { v in v.count >= 4 }, { v in .brakeAmps(v[0], v[1], v[2], v[3]) }) } }
+            didSet { upd(\.brakeAmps, c: { v in v.count >= 4 }, { v in .brakeAmps(v[0], v[1], v[2], v[3]) }) }
         }
         
         // ######## //
 
         @Published var ecoSmoothness: SHFWMessage.SpeedBasedConfig {
-            didSet { if !syncing { upd(\.ecoSmoothness, { v in .ecoSmoothness(v) }) } }
+            didSet { upd(\.ecoSmoothness, { v in .ecoSmoothness(v) }) }
         }
         
         // ######## //
 
         @Published var driveSmoothness: SHFWMessage.SpeedBasedConfig {
-            didSet { if !syncing { upd(\.driveSmoothness, { v in .driveSmoothness(v) }) } }
+            didSet { upd(\.driveSmoothness, { v in .driveSmoothness(v) }) }
         }
         
         // ######## //
 
         @Published var sportsSmoothness: SHFWMessage.SpeedBasedConfig {
-            didSet { if !syncing { upd(\.sportsSmoothness, { v in .sportsSmoothness(v) }) } }
+            didSet { upd(\.sportsSmoothness, { v in .sportsSmoothness(v) }) }
         }
         
         // ######## //
 
         @Published var msp: Int {
-            didSet { if !syncing { upd(\.msp, { v in .mspBrakeBoost(v, self.brakeBoost) }) } }
+            didSet { upd(\.msp, { v in .mspBrakeBoost(v, self.brakeBoost) }) }
         }
         
         @Published var brakeBoost: Int {
-            didSet { if !syncing { upd(\.brakeBoost, { v in .mspBrakeBoost(self.msp, v) }) } }
+            didSet { upd(\.brakeBoost, { v in .mspBrakeBoost(self.msp, v) }) }
         }
         
         // ######## //
 
         @Published var brakeLight: SHFWMessage.BrakeLightConfig {
-            didSet { if !syncing { upd(\.brakeLight, { v in .brakeLight(v) }) } }
+            didSet { upd(\.brakeLight, { v in .brakeLight(v) }) }
         }
         
         // ######## //
 
         @Published var booleans: SHFWMessage.ProfileBoolean {
-            didSet { if !syncing { upd(\.booleans, { v in .booleans(v) }) } }
+            didSet { upd(\.booleans, { v in .booleans(v) }) }
         }
         
         // ######## //
 
         @Published var idleData: SHFWMessage.DashData {
-            didSet { if !syncing { upd(\.idleData, { v in .idleSpeedData(v, self.speedData) }) } }
+            didSet { upd(\.idleData, { v in .idleSpeedData(v, self.speedData) }) }
         }
 
         @Published var speedData: SHFWMessage.DashData {
-            didSet { if !syncing { upd(\.speedData, { v in .idleSpeedData(self.idleData, v) }) } }
+            didSet { upd(\.speedData, { v in .idleSpeedData(self.idleData, v) }) }
         }
         
         // ######## //
 
         @Published var alternatingData: SHFWMessage.DashData {
-            didSet { if !syncing { upd(\.alternatingData, { v in .alternatingBatteryBarData(v, self.batteryBarData) }) } }
+            didSet { upd(\.alternatingData, { v in .alternatingBatteryBarData(v, self.batteryBarData) }) }
         }
 
         @Published var batteryBarData: SHFWMessage.BatteryBarData {
-            didSet { if !syncing { upd(\.batteryBarData, { v in .alternatingBatteryBarData(self.alternatingData, v) }) } }
+            didSet { upd(\.batteryBarData, { v in .alternatingBatteryBarData(self.alternatingData, v) }) }
         }
         
         // ######## //
 
         @Published var ccMode: SHFWMessage.CCMode {
-            didSet { if !syncing { upd(\.ccMode, { v in .ccModeBeep(v, self.ccEnterBeep) }) } }
+            didSet { upd(\.ccMode, { v in .ccModeBeep(v, self.ccEnterBeep) }) }
         }
 
         @Published var ccEnterBeep: SHFWMessage.Beep {
-            didSet { if !syncing { upd(\.ccEnterBeep, { v in .ccModeBeep(self.ccMode, v) }) } }
+            didSet { upd(\.ccEnterBeep, { v in .ccModeBeep(self.ccMode, v) }) }
         }
         
         // ######## //
 
         @Published var ccDelay: Int {
-            didSet { if !syncing { upd(\.ccDelay, { v in .ccDelayExitBeep(v, self.ccExitBeep) }) } }
+            didSet { upd(\.ccDelay, { v in .ccDelayExitBeep(v, self.ccExitBeep) }) }
         }
 
         @Published var ccExitBeep: SHFWMessage.Beep {
-            didSet { if !syncing { upd(\.ccExitBeep, { v in .ccDelayExitBeep(self.ccDelay, v) }) } }
+            didSet { upd(\.ccExitBeep, { v in .ccDelayExitBeep(self.ccDelay, v) }) }
         }
         
         // ######## //
 
         @Published var initMode: SHFWMessage.DriveMode {
-            didSet { if !syncing { upd(\.initMode, { v in .initModeBeep(v, self.initBeep) }) } }
+            didSet { upd(\.initMode, { v in .initModeBeep(v, self.initBeep) }) }
         }
 
         @Published var initBeep: SHFWMessage.Beep {
-            didSet { if !syncing { upd(\.initBeep, { v in .initModeBeep(self.initMode, v) }) } }
+            didSet { upd(\.initBeep, { v in .initModeBeep(self.initMode, v) }) }
         }
         
         // ######## //
 
         @Published var brakeMsp: Int {
-            didSet { if !syncing { upd(\.brakeMsp, { v in .brakeMspOvershoot(v, self.brakeOvershoot) }) } }
+            didSet { upd(\.brakeMsp, { v in .brakeMspOvershoot(v, self.brakeOvershoot) }) }
         }
 
         @Published var brakeOvershoot: Int {
-            didSet { if !syncing { upd(\.brakeOvershoot, { v in .brakeMspOvershoot(self.brakeMsp, v) }) } }
+            didSet { upd(\.brakeOvershoot, { v in .brakeMspOvershoot(self.brakeMsp, v) }) }
         }
         
         // ######## //
 
         @Published var ccChangeTime: Float {
-            didSet { if !syncing { upd(\.ccChangeTime, { v in .ccChangeTimeAutobrakingAmps(v, self.autobrakeAmps) }) } }
+            didSet { upd(\.ccChangeTime, { v in .ccChangeTimeAutobrakingAmps(v, self.autobrakeAmps) }) }
         }
 
         @Published var autobrakeAmps: Int {
-            didSet { if !syncing { upd(\.autobrakeAmps, { v in .ccChangeTimeAutobrakingAmps(self.ccChangeTime, v) }) } }
+            didSet { upd(\.autobrakeAmps, { v in .ccChangeTimeAutobrakingAmps(self.ccChangeTime, v) }) }
         }
         
         // ######## //
 
         @Published var fwkSpeed: Int {
-            didSet { if !syncing { upd(\.fwkSpeed, { v in .fwkSpeedCurrent(v, self.fwkCurrent) }) } }
+            didSet { upd(\.fwkSpeed, { v in .fwkSpeedCurrent(v, self.fwkCurrent) }) }
         }
 
         @Published var fwkCurrent: Int {
-            didSet { if !syncing { upd(\.fwkCurrent, { v in .fwkSpeedCurrent(self.fwkSpeed, v) }) } }
+            didSet { upd(\.fwkCurrent, { v in .fwkSpeedCurrent(self.fwkSpeed, v) }) }
         }
         
         // ######## //
 
         @Published var fwkVarCurrent: Int {
-            didSet { if !syncing { upd(\.fwkVarCurrent, { v in .fwkVarCurrent(v) }) } }
+            didSet { upd(\.fwkVarCurrent, { v in .fwkVarCurrent(v) }) }
         }
         
         // ######## //
 
         @Published var maxFieldCurrent: Int {
-            didSet { if !syncing { upd(\.maxFieldCurrent, { v in .maxFieldTorqueCurrent(v, self.maxTorqueCurrent) }) } }
+            didSet { upd(\.maxFieldCurrent, { v in .maxFieldTorqueCurrent(v, self.maxTorqueCurrent) }) }
         }
 
         @Published var maxTorqueCurrent: Int {
-            didSet { if !syncing { upd(\.maxTorqueCurrent, { v in .maxFieldTorqueCurrent(self.maxFieldCurrent, v) }) } }
+            didSet { upd(\.maxTorqueCurrent, { v in .maxFieldTorqueCurrent(self.maxFieldCurrent, v) }) }
         }
         
         // ######## //
 
         @Published var accelerationBoost: Int {
-            didSet { if !syncing { upd(\.accelerationBoost, { v in .accelerationBoost(v) }) } }
+            didSet { upd(\.accelerationBoost, { v in .accelerationBoost(v) }) }
         }
         
         // ######## //
 
         @Published var newBooleans: SHFWMessage.NewProfileBoolean {
-            didSet { if !syncing { upd(\.newBooleans, { v in .newBooleans(v) }) } }
+            didSet { upd(\.newBooleans, { v in .newBooleans(v) }) }
         }
         
         // ######## //
@@ -208,7 +208,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
             c condition: @escaping (T) -> (Bool) = { _ in true },
             _ request: @escaping (T) -> (SHFWMessage.ProfileData.ProfileItem?)
         ) {
-            guard let profileMsg = request(self[keyPath: path]) else {
+            guard !syncing, let profileMsg = request(self[keyPath: path]) else {
                 return
             }
             
@@ -227,7 +227,6 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
                 return
             }
             
-            print("update \(profileMsg) for p\(self.profile + 1)")
             self.scooterManager.writeRaw(writeData, characteristic: .serial, writeType: .conditionLimitTimes(
                 condition: { return true },
                 times: 2,
