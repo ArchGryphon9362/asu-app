@@ -98,7 +98,7 @@ struct ScooterConfigView: View {
                         primaryButton: .cancel(Text("OK")) {
                             self.selectedTab = self.prevSelectedTab
                         },
-                        secondaryButton: .default(Text("Install")) {
+                        secondaryButton: .default(Text("Try install")) {
                             self.selectedTab = 1
                             // TODO: pop open shfw flasher
                         }
