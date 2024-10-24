@@ -10,8 +10,8 @@ import Foundation
 import OrderedCollections
 import CoreBluetooth
 
-class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
-    class CoreInfo : Observable {
+class ScooterManager : ObservableObject, ScooterBluetoothDelegate, Identifiable {
+    class CoreInfo : ObservableObject, Identifiable {
         @Published fileprivate(set) var serial: String? = nil
         @Published fileprivate(set) var esc: NinebotVersion? = nil
         @Published fileprivate(set) var ble: NinebotVersion? = nil
@@ -25,7 +25,58 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         }
     }
     
-    class SHFWProfile : ObservableObject {
+    class InfoDump : ObservableObject, Identifiable {
+        @Published var errorCode: StockNBMessage.ErrorCode
+        @Published var alarmCode: StockNBMessage.AlarmCode
+        @Published var scooterStatus: StockNBMessage.ScooterStatus
+        @Published var bat1Pct: Float
+        @Published var bat2Pct: Float
+        @Published var chargePct: Float
+        @Published var speed: Float
+        @Published var averageSpeed: Float
+        @Published var mileage: Float
+        @Published var uptime: Int
+        @Published var bodyTemp: Float
+        @Published var speedLimit: Float
+        @Published var wattage: Int
+        @Published var predictedDistance: Float
+        
+        init(_ infoDump: StockNBMessage.InfoDump) {
+            self.errorCode = infoDump.errorCode
+            self.alarmCode = infoDump.alarmCode
+            self.scooterStatus = infoDump.scooterStatus
+            self.bat1Pct = infoDump.bat1Pct
+            self.bat2Pct = infoDump.bat2Pct
+            self.chargePct = infoDump.chargePct
+            self.speed = infoDump.speed
+            self.averageSpeed = infoDump.averageSpeed
+            self.mileage = infoDump.mileage
+            self.uptime = infoDump.uptime
+            self.bodyTemp = infoDump.bodyTemp
+            self.speedLimit = infoDump.speedLimit
+            self.wattage = infoDump.wattage
+            self.predictedDistance = infoDump.predictedDistance
+        }
+        
+        func newInfo(_ infoDump: StockNBMessage.InfoDump) {
+            if self.errorCode != infoDump.errorCode { self.errorCode = infoDump.errorCode }
+            if self.alarmCode != infoDump.alarmCode { self.alarmCode = infoDump.alarmCode }
+            if self.scooterStatus != infoDump.scooterStatus { self.scooterStatus = infoDump.scooterStatus }
+            if self.bat1Pct != infoDump.bat1Pct { self.bat1Pct = infoDump.bat1Pct }
+            if self.bat2Pct != infoDump.bat2Pct { self.bat2Pct = infoDump.bat2Pct }
+            if self.chargePct != infoDump.chargePct { self.chargePct = infoDump.chargePct }
+            if self.speed != infoDump.speed { self.speed = infoDump.speed }
+            if self.averageSpeed != infoDump.averageSpeed { self.averageSpeed = infoDump.averageSpeed }
+            if self.mileage != infoDump.mileage { self.mileage = infoDump.mileage }
+            if self.uptime != infoDump.uptime { self.uptime = infoDump.uptime }
+            if self.bodyTemp != infoDump.bodyTemp { self.bodyTemp = infoDump.bodyTemp }
+            if self.speedLimit != infoDump.speedLimit { self.speedLimit = infoDump.speedLimit }
+            if self.wattage != infoDump.wattage { self.wattage = infoDump.wattage }
+            if self.predictedDistance != infoDump.predictedDistance { self.predictedDistance = infoDump.predictedDistance }
+        }
+    }
+    
+    class SHFWProfile : ObservableObject, Identifiable {
         @Published var ecoAmps: [Float] {
             didSet { upd(\.ecoAmps, c: { v in v.count >= 4 }, { v in .ecoAmps(v[0], v[1], v[2], v[3]) }) }
         }
@@ -323,7 +374,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         }
     }
     
-    class SHFWGlobal : ObservableObject {
+    class SHFWGlobal : ObservableObject, Identifiable {
         @Published var activeProfile: Int {
             didSet { upd(\.activeProfile, { v in .activeProfile(v) }) }
         }
@@ -602,7 +653,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         }
     }
     
-    class SHFWConfig : Observable {
+    class SHFWConfig : ObservableObject, Identifiable {
         @Published var profile1: SHFWProfile
         @Published var profile2: SHFWProfile
         @Published var profile3: SHFWProfile
@@ -632,7 +683,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         }
     }
     
-    class SHFW : Observable {
+    class SHFW : ObservableObject, Identifiable {
         @Published fileprivate(set) var compatible: Bool? = nil
         @Published fileprivate(set) var installed: Bool? = nil
         @Published fileprivate(set) var version: SHFWVersion? = nil
@@ -777,7 +828,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     @Published var discoveredScooters: OrderedDictionary<UUID, DiscoveredScooter> = [:]
     
     @Published var coreInfo: CoreInfo = .init()
-    @Published var infoDump: StockNBMessage.InfoDump? = nil
+    @Published var infoDump: InfoDump? = nil
     @Published var shfw: SHFW = .init()
     
     var authenticating: Bool = false
@@ -837,7 +888,13 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
         case let .escVersion(version): self.coreInfo.esc = version
         case let .bleVersion(version): self.coreInfo.ble = version
         case let .bmsVersion(version): self.coreInfo.bms = version
-        case let .infoDump(infoDump): self.infoDump = infoDump
+        case let .infoDump(infoDump):
+            guard self.infoDump != nil else {
+                self.infoDump = InfoDump(infoDump)
+                return
+            }
+            
+            self.infoDump?.newInfo(infoDump)
         default: break
         }
     }

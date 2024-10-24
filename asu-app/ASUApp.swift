@@ -10,7 +10,7 @@ import SwiftUI
 // TODO: asu fox theme ;)
 @main
 struct ASUApp: App {
-    let scooterManager: ScooterManager = .init()
+    @StateObject var scooterManager: ScooterManager = .init()
     
     var body: some Scene {
         WindowGroup {
