@@ -81,8 +81,8 @@ struct ReleaseSlider<T: Numeric>: View {
                     
                     self.updateUi(self.sliderValue, updateUi: snappySlider)
                 }
-                .onChange(of: self.value) { _ in
-                    guard let value = (self.value as? NSNumber)?.floatValue else { return }
+                .onChange(of: self.value) { newValue in
+                    guard let value = (newValue as? NSNumber)?.floatValue else { return }
                     self.updateUi(value / self.scaleFactor, valueChange: true)
                 }
                 .background(

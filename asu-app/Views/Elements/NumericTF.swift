@@ -62,6 +62,7 @@ struct NumericTF<T: Numeric>: View {
 
     var body: some View {
         HStack {
+            Text("\(self.value)")
             Text(self.name)
                 .foregroundColor(.secondary)
             Spacer()
@@ -114,8 +115,8 @@ struct NumericTF<T: Numeric>: View {
                 
                 self.prevDisplayValue = self.displayValue
             }
-            .onChange(of: self.value) { _ in
-                guard let value = (self.value as? NSNumber)?.floatValue else { return }
+            .onChange(of: self.value) { newValue in
+                guard let value = (newValue as? NSNumber)?.floatValue else { return }
                 self.updateUi(value / self.scaleFactor as NSNumber)
             }
             if let unit = self.unit {
