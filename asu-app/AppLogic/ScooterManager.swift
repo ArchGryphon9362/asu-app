@@ -1050,6 +1050,11 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
     
     fileprivate func requestShfw() {
         let msg = self.messageManager.ninebotRead(SHFWMessage.version())
+        if msg == nil {
+            // if this is null, stub is most likely being used (or I fucked
+            // something up elsewhere)
+            self.shfw.installed = false
+        }
         self.writeRaw(msg, characteristic: .serial, writeType: .conditionLimitTimes(
             condition: {
                 return self.shfw.installed == nil
