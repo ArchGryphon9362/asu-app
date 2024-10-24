@@ -56,7 +56,7 @@ struct ScooterConfigView: View {
                 }
             }
             .onChange(of: self.selectedTab) { newTab in
-                checkShfwPopup()
+                guard !checkShfwPopup() else { return }
                 self.prevSelectedTab = newTab
             }
 //            .onChange(of: self.scooterManager.shfw.installed) { _ in
@@ -112,16 +112,18 @@ struct ScooterConfigView: View {
         }
     }
     
-    func checkShfwPopup() {
+    @discardableResult
+    func checkShfwPopup() -> Bool {
         guard self.scooterManager.shfw.installed != true else {
             self.shfwMissingAlert = false
-            return
+            return false
         }
         
         guard self.selectedTab == 2 else {
-            return
+            return false
         }
         
         self.shfwMissingAlert = true
+        return true
     }
 }
