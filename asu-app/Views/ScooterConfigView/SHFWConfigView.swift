@@ -7,33 +7,52 @@
 
 import SwiftUI
 
-struct SHFWConfigView: View {
-    @EnvironmentObject var scooterManager: ScooterManager
+private struct ProfileConfigView: View {
+    @ObservedObject var profile: ScooterManager.SHFWProfile
     
-    @State var s1: Float = 0
-    @State var s2: Float = 0
+    var body: some View {
+        Section {
+            // text field examples
+            NumericTF(name: "P3 sports 1", value: $profile.sportsAmps[0], in: 0...100, step: 0.01)
+            NumericTF(name: "P3 sports 2", value: $profile.sportsAmps[1], in: 0...100, step: 0.01)
+            // slider examples
+            ReleaseSlider(name: "P3 sports 3", value: $profile.sportsAmps[2], in: 0...100, step: 0.01)
+            ReleaseSlider(name: "P3 sports 4", value: $profile.sportsAmps[3], in: 0...100, step: 0.01)
+            
+        }
+    }
+}
 
+private struct SystemConfigView: View {
+    @ObservedObject var global: ScooterManager.SHFWGlobal
+    
+    var body: some View {
+        Section {
+            // pwm
+            ReleaseSlider(name: "PWM", value: $global.pwm, in: 4...24, step: 4)
+        }
+    }
+}
+
+struct SHFWConfigView: View {
+    @ObservedObject var shfw: ScooterManager.SHFW
+
+    @State var selectedProfile: Int = 2
+    
     var body: some View {
         VStack {
-            if var config = self.scooterManager.shfw.config {
+            if let config = self.shfw.config {
                 List {
-                    let _config = Binding(get: { config }, set: { newValue in config = newValue })
-                    
-                    // text field examples
-                    NumericTF(name: "P3 sports 1", value: _config.profile3.sportsAmps[0], in: 0...100, step: 0.01)
-                    NumericTF(name: "P3 sports 2", value: _config.profile3.sportsAmps[1], in: 0...100, step: 0.01)
-                    // slider examples
-                    ReleaseSlider(name: "P3 sports 3", value: _config.profile3.sportsAmps[2], in: 0...100, step: 0.01)
-                    ReleaseSlider(name: "P3 sports 4", value: _config.profile3.sportsAmps[3], in: 0...100, step: 0.01)
-                    
-                    // pwm
-                    ReleaseSlider(name: "PWM", value: _config.global.pwm, in: 4...24, step: 4)
+                    ProfileConfigView(profile: config.getProfile(self.selectedProfile))
+                    SystemConfigView(global: config.global)
                 }
-            } else if self.scooterManager.shfw.installed == true {
+            } else if self.shfw.installed == true {
                 HStack {
                     ProgressView()
                     Text("Loading SHFW config")
                 }
+            } else {
+                Text("Dear hyuman, we do not have the kinds of resources needed to switch you back to the tab you came from, and the popup doing that for us appears to have not shown. Kindly go back to the previous tab as this one is empty :(").padding()
             }
         }
     }

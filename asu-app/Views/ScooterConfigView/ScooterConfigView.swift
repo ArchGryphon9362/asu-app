@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import NavigationBackport
+import Combine
 
 struct ScooterConfigView: View {
     @Environment(\.presentationMode) var presentation
@@ -18,6 +19,8 @@ struct ScooterConfigView: View {
     @State var prevSelectedTab = 0
     
     @State var shfwMissingAlert = false
+    
+    @State private var shfwCancellable: AnyCancellable? = nil
     
     var body: some View {
         NBNavigationStack {
@@ -32,7 +35,7 @@ struct ScooterConfigView: View {
                         Label("Flash", systemImage: "bolt")
                     }
                     .tag(1)
-                SHFWConfigView()
+                SHFWConfigView(shfw: self.scooterManager.shfw)
                     .tabItem {
                         Label("SHFW Config", systemImage: "gear")
                     }
@@ -47,17 +50,18 @@ struct ScooterConfigView: View {
                     self.presentation.wrappedValue.dismiss()
                 }
             }
-            .onChange(of: self.selectedTab) { newTab in
-                if newTab == 2 {
-                    checkShfwPopup()
-                    return
+            .onAppear {
+                self.shfwCancellable = self.scooterManager.shfw.objectWillChange.sink { _ in
+                    self.checkShfwPopup()
                 }
-                
+            }
+            .onChange(of: self.selectedTab) { newTab in
+                checkShfwPopup()
                 self.prevSelectedTab = newTab
             }
-            .onChange(of: self.scooterManager.shfw.installed) { _ in
-                checkShfwPopup()
-            }
+//            .onChange(of: self.scooterManager.shfw.installed) { _ in
+//                checkShfwPopup()
+//            }
             .alert(isPresented: self.$shfwMissingAlert, content: {
                 guard self.scooterManager.shfw.installed != nil else {
                     return Alert(
@@ -111,6 +115,10 @@ struct ScooterConfigView: View {
     func checkShfwPopup() {
         guard self.scooterManager.shfw.installed != true else {
             self.shfwMissingAlert = false
+            return
+        }
+        
+        guard self.selectedTab == 2 else {
             return
         }
         
