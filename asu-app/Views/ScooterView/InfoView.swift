@@ -14,7 +14,7 @@ private struct BaseInfoView: View {
     @ObservedObject var shfw: ScooterManager.SHFW
     
     var body: some View {
-        Section {
+        Section(header: Text("General Info")) {
             ListItem(title: "Model", data: model?.name)
             ListItem(title: "BLE", data: coreInfo.ble?.parsed)
             if let shfwVersion = shfw.version {
