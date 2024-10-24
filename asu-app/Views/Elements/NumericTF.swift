@@ -85,9 +85,10 @@ struct NumericTF<T: Numeric>: View {
             .onChange(of: self.displayValue) { _ in
                 guard self.displayValue != self.prevDisplayValue else { return }
                 
+                let lower = numberFormatter.string(for: self.in.lowerBound) ?? "0"
                 guard !self.displayValue.isEmpty else {
-                    self.prevDisplayValue = "0"
-                    self.displayValue = "0"
+                    self.prevDisplayValue = lower
+                    self.displayValue = lower
                     
                     return
                 }
@@ -96,13 +97,13 @@ struct NumericTF<T: Numeric>: View {
                 var result = self.displayValue
                 
                 if var floatValue = self.numberFormatter.number(from: self.displayValue)?.floatValue {
-                    floatValue = (round((floatValue + self.in.lowerBound) / step) - self.in.lowerBound) * step
+                    floatValue = round((floatValue - self.in.lowerBound) / step) * step + self.in.lowerBound
                     
                     if !self.in.contains(floatValue) {
                         floatValue = min(max(floatValue, self.in.lowerBound), self.in.upperBound)
                     }
                     
-                    result = (numberFormatter.string(for: floatValue) ?? "0") + trailingDot
+                    result = (numberFormatter.string(for: floatValue) ?? lower) + trailingDot
                 } else {
                     result = self.prevDisplayValue
                 }

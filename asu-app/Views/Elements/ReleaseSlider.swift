@@ -110,7 +110,7 @@ struct ReleaseSlider<T: Numeric>: View {
     
     @discardableResult
     private func updateUi(_ value: Float, valueChange: Bool = false, updateUi: Bool = true) -> Float {
-        let result = round((value + self.in.lowerBound) / step) * step - self.in.lowerBound
+        let result = round((value - self.in.lowerBound) / step) * step + self.in.lowerBound
         var stringUpdate = result
         
         if updateUi {
