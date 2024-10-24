@@ -7,6 +7,27 @@
 
 import SwiftUI
 
+private struct BaseInfoView: View {
+    var model: ScooterModel?
+    @ObservedObject var coreInfo: ScooterManager.CoreInfo
+    @ObservedObject var infoDump: ScooterManager.InfoDump
+    @ObservedObject var shfw: ScooterManager.SHFW
+    
+    var body: some View {
+        Section {
+            ListItem(title: "Model", data: model?.name)
+            ListItem(title: "BLE", data: coreInfo.ble?.parsed)
+            if let shfwVersion = shfw.version {
+                SHFWVersionItem(version: shfwVersion)
+            } else {
+                ListItem(title: "DRV", data: coreInfo.esc?.parsed)
+            }
+            ListItem(title: "BMS", data: coreInfo.bms?.parsed)
+            ListItem(title: "Serial Number", data: coreInfo.serial)
+        }
+    }
+}
+
 struct InfoView: View {
     @EnvironmentObject var scooterManager: ScooterManager
     @State var showConfig: Bool = false
@@ -15,17 +36,12 @@ struct InfoView: View {
     var body: some View {
         VStack {
             List {
-                Section {
-                    ListItem(title: "Model", data: self.scooterManager.model?.name)
-                    ListItem(title: "BLE", data: self.scooterManager.coreInfo.ble?.parsed)
-                    if let shfwVersion = self.scooterManager.shfw.version {
-                        SHFWVersionItem(version: shfwVersion)
-                    } else {
-                        ListItem(title: "DRV", data: self.scooterManager.coreInfo.esc?.parsed)
-                    }
-                    ListItem(title: "BMS", data: self.scooterManager.coreInfo.bms?.parsed)
-                    ListItem(title: "Serial Number", data: self.scooterManager.coreInfo.serial)
-                }
+                BaseInfoView(
+                    model: self.scooterManager.model,
+                    coreInfo: self.scooterManager.coreInfo,
+                    infoDump: self.scooterManager.infoDump,
+                    shfw: self.scooterManager.shfw
+                )
                 
                 Button("Scooter Config", action: {
                     self.showConfig = true

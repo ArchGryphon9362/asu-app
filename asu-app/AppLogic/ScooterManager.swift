@@ -26,37 +26,20 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate, Identifiable 
     }
     
     class InfoDump : ObservableObject, Identifiable {
-        @Published var errorCode: StockNBMessage.ErrorCode
-        @Published var alarmCode: StockNBMessage.AlarmCode
-        @Published var scooterStatus: StockNBMessage.ScooterStatus
-        @Published var bat1Pct: Float
-        @Published var bat2Pct: Float
-        @Published var chargePct: Float
-        @Published var speed: Float
-        @Published var averageSpeed: Float
-        @Published var mileage: Float
-        @Published var uptime: Int
-        @Published var bodyTemp: Float
-        @Published var speedLimit: Float
-        @Published var wattage: Int
-        @Published var predictedDistance: Float
-        
-        init(_ infoDump: StockNBMessage.InfoDump) {
-            self.errorCode = infoDump.errorCode
-            self.alarmCode = infoDump.alarmCode
-            self.scooterStatus = infoDump.scooterStatus
-            self.bat1Pct = infoDump.bat1Pct
-            self.bat2Pct = infoDump.bat2Pct
-            self.chargePct = infoDump.chargePct
-            self.speed = infoDump.speed
-            self.averageSpeed = infoDump.averageSpeed
-            self.mileage = infoDump.mileage
-            self.uptime = infoDump.uptime
-            self.bodyTemp = infoDump.bodyTemp
-            self.speedLimit = infoDump.speedLimit
-            self.wattage = infoDump.wattage
-            self.predictedDistance = infoDump.predictedDistance
-        }
+        @Published var errorCode: StockNBMessage.ErrorCode? = nil
+        @Published var alarmCode: StockNBMessage.AlarmCode? = nil
+        @Published var scooterStatus: StockNBMessage.ScooterStatus? = nil
+        @Published var bat1Pct: Float? = nil
+        @Published var bat2Pct: Float? = nil
+        @Published var chargePct: Float? = nil
+        @Published var speed: Float? = nil
+        @Published var averageSpeed: Float? = nil
+        @Published var mileage: Float? = nil
+        @Published var uptime: Int? = nil
+        @Published var bodyTemp: Float? = nil
+        @Published var speedLimit: Float? = nil
+        @Published var wattage: Int? = nil
+        @Published var predictedDistance: Float? = nil
         
         func newInfo(_ infoDump: StockNBMessage.InfoDump) {
             if self.errorCode != infoDump.errorCode { self.errorCode = infoDump.errorCode }
@@ -828,12 +811,12 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate, Identifiable 
     @Published var discoveredScooters: OrderedDictionary<UUID, DiscoveredScooter> = [:]
     
     @Published var coreInfo: CoreInfo = .init()
-    @Published var infoDump: InfoDump? = nil
+    @Published var infoDump: InfoDump = .init()
     @Published var shfw: SHFW = .init()
     
-    var authenticating: Bool = false
-    var model: ScooterModel? = nil
-    var connectionState: ConnectionState = .disconnected
+    @Published var authenticating: Bool = false
+    @Published var model: ScooterModel? = nil
+    @Published var connectionState: ConnectionState = .disconnected
     
     init() {
         self.scooterBluetooth.setScooterBluetoothDelegate(self)
@@ -888,13 +871,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate, Identifiable 
         case let .escVersion(version): self.coreInfo.esc = version
         case let .bleVersion(version): self.coreInfo.ble = version
         case let .bmsVersion(version): self.coreInfo.bms = version
-        case let .infoDump(infoDump):
-            guard self.infoDump != nil else {
-                self.infoDump = InfoDump(infoDump)
-                return
-            }
-            
-            self.infoDump?.newInfo(infoDump)
+        case let .infoDump(infoDump): self.infoDump.newInfo(infoDump)
         default: break
         }
     }
@@ -1159,7 +1136,7 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate, Identifiable 
                 self.shfw.setScooterManager(self)
                 
                 self.infoDumpId = 0
-                self.infoDump = nil
+                self.infoDump = .init()
             }
         case .ready:
             if !self.scooterCrypto.authenticated {
