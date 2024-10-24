@@ -1104,7 +1104,6 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate {
                 self.scooterCrypto.startAuthenticating(withScooterManager: self)
             }
         case .connected:
-            // TODO: start collecting info and whatnot
             self.startInfoDump()
             self.requestAll()
         default: return
