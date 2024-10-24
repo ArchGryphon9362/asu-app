@@ -59,9 +59,6 @@ struct ScooterConfigView: View {
                 guard !checkShfwPopup() else { return }
                 self.prevSelectedTab = newTab
             }
-//            .onChange(of: self.scooterManager.shfw.installed) { _ in
-//                checkShfwPopup()
-//            }
             .alert(isPresented: self.$shfwMissingAlert, content: {
                 guard self.scooterManager.shfw.installed != nil else {
                     return Alert(
