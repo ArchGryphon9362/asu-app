@@ -32,8 +32,8 @@ struct DiscoveryView: View {
                                            // way to avoid i sudden jump when the list loads (and that's
                                            // plain ugly). as a small argument for this, this is how
                                            // Apple does it in Settings
-                                .navigationBarTitleDisplayMode(.inline)
                                 #if !os(macOS)
+                                .navigationBarTitleDisplayMode(.inline)
                                 .toolbar {
                                     Button("Settings") {
                                         // TODO: fix this. ios doesn't like it. (only from ScooterView)
