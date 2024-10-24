@@ -422,7 +422,7 @@ class ScooterBluetooth : NSObject, CBCentralManagerDelegate, CBPeripheralDelegat
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
         if error != nil {
             print("### ERROR!! ###")
-            debugPrint(error)
+            debugPrint(error ?? "N/A")
             print("### ------- ###")
         }
         if error == nil && characteristic.uuid == serialTXCharUUID {
