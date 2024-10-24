@@ -28,6 +28,11 @@ struct DiscoveryView: View {
                                 forceNbCrypto: forceNbCrypto[scooter.peripheral.identifier] ?? false
                             )
                                 .navigationTitle(scooter.name)
+                                           // i would prefer not to have to do inline, but it's the only
+                                           // way to avoid i sudden jump when the list loads (and that's
+                                           // plain ugly). as a small argument for this, this is how
+                                           // Apple does it in Settings
+                                .navigationBarTitleDisplayMode(.inline)
                                 #if !os(macOS)
                                 .toolbar {
                                     Button("Settings") {
