@@ -16,6 +16,7 @@ struct ReleaseSlider<T: Numeric>: View {
     var step: Float = 0.001
     /// one unit of input will result in `scaleFactor` units of change
     var scaleFactor: Float = 1.0
+    var mapping: [Float: String] = [:]
     
     @State private var sliderValue: Float = 0.0
     @State private var displayValue: String = ""
@@ -139,7 +140,11 @@ struct ReleaseSlider<T: Numeric>: View {
             #endif
         }
         
-        self.displayValue = self.numberFormatter.string(from: stringUpdate as NSNumber) ?? "N/A"
+        if let stringUpdate = self.mapping[stringUpdate] {
+            self.displayValue = stringUpdate
+        } else {
+            self.displayValue = self.numberFormatter.string(from: stringUpdate as NSNumber) ?? "N/A"
+        }
         
         return result
     }
