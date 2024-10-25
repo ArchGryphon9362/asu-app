@@ -1,12 +1,11 @@
 //
-//  SHFWConfigView.swift
+//  ProfileConfigView.swift
 //  asu-app
 //
-//  Created by ArchGryphon9362 on 01/10/2023.
+//  Created by ArchGryphon9362 on 25/10/2024.
 //
 
 import SwiftUI
-import NavigationBackport
 
 private struct ProfileOptionsView: View {
     @Binding var selectedProfile: Int
@@ -91,7 +90,7 @@ private struct CurveView: View {
     }
 }
 
-private struct ProfileConfigView: View {
+private struct ProfileDataView: View {
     @ObservedObject var profile: ScooterManager.SHFWProfile
     
     @State private var throttleCurve = 0
@@ -147,52 +146,13 @@ private struct ProfileConfigView: View {
     }
 }
 
-private struct SystemConfigView: View {
-    @ObservedObject var global: ScooterManager.SHFWGlobal
+struct ProfileConfigView: View {
+    @ObservedObject var config: ScooterManager.SHFWConfig
     
-    var body: some View {
-        Section(header: Text("System Settings")) {
-            // pwm
-            ReleaseSlider(name: "PWM", value: self.$global.pwm, in: 4...24, step: 4)
-        }
-    }
-}
-
-struct SHFWConfigView: View {
-    @ObservedObject var shfw: ScooterManager.SHFW
-
     @State private var selectedProfile: Int = 0
-    
+
     var body: some View {
-        VStack {
-            if let config = self.shfw.config {
-                NBNavigationStack {
-                    List {
-                        NavigationLink("Profile Settings") {
-                            List {
-                                ProfileOptionsView(selectedProfile: self.$selectedProfile)
-                                ProfileConfigView(profile: config.getProfile(self.selectedProfile))
-                            }
-                            .navigationTitle("Profile Settings")
-                            .navigationBarTitleDisplayMode(.large)
-                        }
-                        NavigationLink("System Settings") {
-                            List {
-                                SystemConfigView(global: config.global)
-                            }
-                            .navigationTitle("System Settings")
-                            .navigationBarTitleDisplayMode(.large)
-                        }
-                    }
-                }
-            } else if self.shfw.installed == true {
-                HStack {
-                    ProgressView()
-                    Text("Loading SHFW config")
-                }
-            } else {
-                Text("Dear hyuman, we do not have the kinds of resources needed to switch you back to the tab you came from, and the popup doing that for us appears to have not shown. Kindly go back to the previous tab as this one is empty :(").padding()
-            }
-        }
+        ProfileOptionsView(selectedProfile: self.$selectedProfile)
+        ProfileDataView(profile: self.config.getProfile(self.selectedProfile))
     }
 }
