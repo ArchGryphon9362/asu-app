@@ -666,10 +666,18 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate, Identifiable 
         }
     }
     
+    enum SHFWUpdateStatus {
+        case none
+        case available
+        case required
+        case unknown
+    }
+    
     class SHFW : ObservableObject, Identifiable {
         @Published fileprivate(set) var compatible: Bool? = nil
         @Published fileprivate(set) var installed: Bool? = nil
         @Published fileprivate(set) var version: SHFWVersion? = nil
+        @Published fileprivate(set) var updateStatus: SHFWUpdateStatus = .unknown
         
         @Published var config: SHFWConfig? = nil
         
@@ -1025,12 +1033,17 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate, Identifiable 
             self.shfw.version = version
             self.shfw.installed = true
             self.shfw.compatible = true
+            self.shfw.updateStatus = .required
         case let .newVersion(version):
             self.shfw.version = version
             self.shfw.installed = true
             self.shfw.compatible = true
+
+            if version < SHFWVersion(major: 3, minor: 9, patch: 1, extraDetails: .init(buildType: 0, buildDetails: nil)) {
+                self.shfw.updateStatus = .required
+                return
+            }
             
-            // TODO: allow to compare shfw versions using operators and make sure running >= 3.9.1 or whatev
             let requests: [(NinebotMessage, () -> (Bool))] = [
                 (SHFWMessage.profileCore(0), { self.shfw.initProfile1Core == nil }),
                 (SHFWMessage.profileCore(1), { self.shfw.initProfile2Core == nil }),

@@ -70,6 +70,20 @@ struct ScooterConfigView: View {
                     )
                 }
                 
+                guard self.scooterManager.shfw.updateStatus != .required else {
+                    return Alert(
+                        title: Text("SHFW Update Required!"),
+                        message: Text("This app doesn't support your version of SHFW (\(self.scooterManager.shfw.version?.parsed ?? "unknown")). If you want to use this app to configure your SHFW install you will have to flash a newer version!"),
+                        primaryButton: .cancel(Text("OK")) {
+                            self.selectedTab = self.prevSelectedTab
+                        },
+                        secondaryButton: .default(Text("Update")) {
+                            self.selectedTab = 1
+                            // TODO: pop open shfw flasher
+                        }
+                    )
+                }
+
                 switch self.scooterManager.shfw.compatible {
                 case true:
                     return Alert(
@@ -111,7 +125,9 @@ struct ScooterConfigView: View {
     
     @discardableResult
     func checkShfwPopup() -> Bool {
-        guard self.scooterManager.shfw.installed != true else {
+        guard
+            self.scooterManager.shfw.installed != true ||
+            self.scooterManager.shfw.updateStatus == .required else {
             self.shfwMissingAlert = false
             return false
         }
