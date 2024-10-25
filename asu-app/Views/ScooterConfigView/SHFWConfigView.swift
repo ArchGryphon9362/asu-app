@@ -40,17 +40,17 @@ private struct ProfileConfigView: View {
                 Text("Drive").tag(1)
                 Text("Sports").tag(2)
             }.pickerStyle(.segmented)
-            ReleaseSlider(name: "Point 1", value: self.getCurve(self.throttleCurve)[0], in: 0...100, step: 0.01)
-            ReleaseSlider(name: "Point 2", value: self.getCurve(self.throttleCurve)[1], in: 0...100, step: 0.01)
-            ReleaseSlider(name: "Point 3", value: self.getCurve(self.throttleCurve)[2], in: 0...100, step: 0.01)
-            ReleaseSlider(name: "Point 4", value: self.getCurve(self.throttleCurve)[3], in: 0...100, step: 0.01)
+            ReleaseSlider(name: "Point 1", value: self.getCurve(self.throttleCurve)[0], in: 0...100, unit: "A", step: 0.01)
+            ReleaseSlider(name: "Point 2", value: self.getCurve(self.throttleCurve)[1], in: 0...100, unit: "A", step: 0.01)
+            ReleaseSlider(name: "Point 3", value: self.getCurve(self.throttleCurve)[2], in: 0...100, unit: "A", step: 0.01)
+            ReleaseSlider(name: "Point 4", value: self.getCurve(self.throttleCurve)[3], in: 0...100, unit: "A", step: 0.01)
         }
         
         Section(header: Text("Brake")) {
-            ReleaseSlider(name: "Point 1", value: self.$profile.brakeAmps[0], in: 0...100, step: 0.01)
-            ReleaseSlider(name: "Point 2", value: self.$profile.brakeAmps[1], in: 0...100, step: 0.01)
-            ReleaseSlider(name: "Point 3", value: self.$profile.brakeAmps[2], in: 0...100, step: 0.01)
-            ReleaseSlider(name: "Point 4", value: self.$profile.brakeAmps[3], in: 0...100, step: 0.01)
+            ReleaseSlider(name: "Point 1", value: self.$profile.brakeAmps[0], in: 0...100, unit: "A", step: 0.01)
+            ReleaseSlider(name: "Point 2", value: self.$profile.brakeAmps[1], in: 0...100, unit: "A", step: 0.01)
+            ReleaseSlider(name: "Point 3", value: self.$profile.brakeAmps[2], in: 0...100, unit: "A", step: 0.01)
+            ReleaseSlider(name: "Point 4", value: self.$profile.brakeAmps[3], in: 0...100, unit: "A", step: 0.01)
         }
     }
     
