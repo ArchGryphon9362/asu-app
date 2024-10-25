@@ -12,9 +12,9 @@ private struct ProfileOptionsView: View {
     @Binding var selectedProfile: Int
     
     var body: some View {
-        Section(header: Text("Profile")) {
+        Section {
             VStack(alignment: .leading) {
-                Text("Selected Profile")
+                Text("Editing Profile")
                     .font(.footnote)
                     .foregroundColor(.secondary)
                 Picker("", selection: self.$selectedProfile) {
