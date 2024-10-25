@@ -30,13 +30,28 @@ private struct ProfileOptionsView: View {
 private struct ProfileConfigView: View {
     @ObservedObject var profile: ScooterManager.SHFWProfile
     
+    @State private var throttleCurve = 1
+    
     var body: some View {
         Section(header: Text("Throttle")) {
-            ReleaseSlider(name: "Sports 1", value: self.$profile.sportsAmps[0], in: 0...100, step: 0.01)
-            ReleaseSlider(name: "Sports 2", value: self.$profile.sportsAmps[1], in: 0...100, step: 0.01)
-            ReleaseSlider(name: "Sports 3", value: self.$profile.sportsAmps[2], in: 0...100, step: 0.01)
-            ReleaseSlider(name: "Sports 4", value: self.$profile.sportsAmps[3], in: 0...100, step: 0.01)
+            Picker("", selection: self.$throttleCurve) {
+                Text("Eco").tag(0)
+                Text("Drive").tag(1)
+                Text("Sports").tag(2)
+            }.pickerStyle(.segmented)
+            ReleaseSlider(name: "Point 1", value: self.getCurve(self.throttleCurve)[0], in: 0...100, step: 0.01)
+            ReleaseSlider(name: "Point 2", value: self.getCurve(self.throttleCurve)[1], in: 0...100, step: 0.01)
+            ReleaseSlider(name: "Point 3", value: self.getCurve(self.throttleCurve)[2], in: 0...100, step: 0.01)
+            ReleaseSlider(name: "Point 4", value: self.getCurve(self.throttleCurve)[3], in: 0...100, step: 0.01)
         }
+    }
+    
+    private func getCurve(_ curveNumber: Int) -> Binding<[Float]> {
+        [
+            self.$profile.ecoAmps,
+            self.$profile.driveAmps,
+            self.$profile.sportsAmps
+        ][curveNumber]
     }
 }
 
@@ -54,7 +69,7 @@ private struct SystemConfigView: View {
 struct SHFWConfigView: View {
     @ObservedObject var shfw: ScooterManager.SHFW
 
-    @State var selectedProfile: Int = 0
+    @State private var selectedProfile: Int = 0
     
     var body: some View {
         VStack {
