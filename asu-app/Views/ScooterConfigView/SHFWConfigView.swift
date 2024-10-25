@@ -43,6 +43,7 @@ private struct ProfileConfigView: View {
     
     @State private var throttleCurve = 0
     
+    
     var body: some View {
         // TODO: DisclosureGroup? would need to make indentation not ugly...
         Section(header: Text("Throttle")) {
@@ -51,6 +52,34 @@ private struct ProfileConfigView: View {
                 Text("Drive").tag(1)
                 Text("Sports").tag(2)
             }.pickerStyle(.segmented)
+            let minSpeedLimit: Float = self.getSpeedBased(self.throttleCurve).wrappedValue ? 1 : 0
+            ReleaseSlider(
+                name: "Speed Limit",
+                value: self.getSmoothness(self.throttleCurve).speedLimit,
+                in: minSpeedLimit...65,
+                unit: "km/h",
+                step: 1,
+                mapping: [
+                    0: "Off"
+                ]
+            )
+            VStack(alignment: .leading) {
+                Text("Throttle Mode")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                Picker("", selection: self.getSpeedBased(self.throttleCurve)) {
+                    Text("Speed Based")
+                        .tag(true)
+                        .disabled(self.getSmoothness(self.throttleCurve).speedLimit.wrappedValue == 0)
+                    Text("Power Based (DPC)")
+                        .tag(false)
+                }
+                .pickerStyle(.segmented)
+                .disabled(
+                    self.getSmoothness(self.throttleCurve).speedLimit.wrappedValue == 0 &&
+                    !self.getSpeedBased(self.throttleCurve).wrappedValue
+                )
+            }
             CurveView(curve: self.getCurve(self.throttleCurve))
         }
         
@@ -64,6 +93,22 @@ private struct ProfileConfigView: View {
             self.$profile.ecoAmps,
             self.$profile.driveAmps,
             self.$profile.sportsAmps
+        ][curveNumber]
+    }
+    
+    private func getSmoothness(_ curveNumber: Int) -> Binding<SHFWMessage.SpeedBasedConfig> {
+        [
+            self.$profile.ecoSmoothness,
+            self.$profile.driveSmoothness,
+            self.$profile.sportsSmoothness
+        ][curveNumber]
+    }
+    
+    private func getSpeedBased(_ curveNumber: Int) -> Binding<Bool> {
+        [
+            self.$profile.booleans.ecoSpeedBased,
+            self.$profile.booleans.driveSpeedBased,
+            self.$profile.booleans.sportsSpeedBased
         ][curveNumber]
     }
 }
