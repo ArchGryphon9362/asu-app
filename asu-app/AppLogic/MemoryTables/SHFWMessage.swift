@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SHFWVersion: Equatable {
+struct SHFWVersion: Equatable, Comparable {
     struct ExtraDetails: Equatable {
         enum BuildType: Equatable {
             case production
@@ -46,6 +46,10 @@ struct SHFWVersion: Equatable {
         self.major = 0
         self.minor = 0
         self.patch = 0
+    }
+    
+    static func < (lhs: SHFWVersion, rhs: SHFWVersion) -> Bool {
+        return false
     }
     
     var parsed: String {
