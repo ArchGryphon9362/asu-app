@@ -11,9 +11,11 @@ struct SystemConfigView: View {
     @ObservedObject var global: ScooterManager.SHFWGlobal
     
     var body: some View {
-        Section(header: Text("System Settings")) {
-            // pwm
-            ReleaseSlider(name: "PWM", value: self.$global.pwm, in: 4...24, step: 4)
+        List {
+            Section(header: Text("System Settings")) {
+                // pwm
+                ReleaseSlider(name: "PWM", value: self.$global.pwm, in: 4...24, step: 4)
+            }
         }
     }
 }

@@ -152,7 +152,9 @@ struct ProfileConfigView: View {
     @State private var selectedProfile: Int = 0
 
     var body: some View {
-        ProfileOptionsView(selectedProfile: self.$selectedProfile)
-        ProfileDataView(profile: self.config.getProfile(self.selectedProfile))
+        List {
+            ProfileOptionsView(selectedProfile: self.$selectedProfile)
+            ProfileDataView(profile: self.config.getProfile(self.selectedProfile))
+        }
     }
 }

@@ -17,18 +17,14 @@ struct SHFWConfigView: View {
                 NBNavigationStack {
                     List {
                         NavigationLink("Profile Settings") {
-                            List {
-                                ProfileConfigView(config: config)
-                            }
-                            .navigationTitle("Profile Settings")
-                            .navigationBarTitleDisplayMode(.large)
+                            ProfileConfigView(config: config)
+                                .navigationTitle("Profile Settings")
+                                .navigationBarTitleDisplayMode(.large)
                         }
                         NavigationLink("System Settings") {
-                            List {
-                                SystemConfigView(global: config.global)
-                            }
-                            .navigationTitle("System Settings")
-                            .navigationBarTitleDisplayMode(.large)
+                            SystemConfigView(global: config.global)
+                                .navigationTitle("System Settings")
+                                .navigationBarTitleDisplayMode(.large)
                         }
                     }
                 }
