@@ -27,6 +27,59 @@ private struct ProfileOptionsView: View {
     }
 }
 
+private struct ThrottleSelectionView: View {
+    @Binding var throttleCurve: Int
+    
+    var body: some View {
+        Picker("", selection: self.$throttleCurve) {
+            Text("Eco").tag(0)
+            Text("Drive").tag(1)
+            Text("Sports").tag(2)
+        }.pickerStyle(.segmented)
+    }
+}
+
+private struct SpeedLimitView: View {
+    @Binding var speedLimit: Int
+    @Binding var speedBased: Bool
+    
+    var body: some View {
+        let minSpeedLimit: Float = self.speedBased ? 1 : 0
+        ReleaseSlider(
+            name: "Speed Limit",
+            value: self.$speedLimit,
+            in: minSpeedLimit...65,
+            unit: "km/h",
+            step: 1,
+            mapping: [
+                0: "Off"
+            ]
+        )
+    }
+}
+
+private struct ThrottleModeView: View {
+    @Binding var speedLimit: Int
+    @Binding var speedBased: Bool
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("Throttle Mode")
+                .font(.footnote)
+                .foregroundColor(.secondary)
+            Picker("", selection: self.$speedBased) {
+                Text("Speed Based")
+                    .tag(true)
+                    .disabled(self.speedLimit == 0)
+                Text("Power Based (DPC)")
+                    .tag(false)
+            }
+            .pickerStyle(.segmented)
+            .disabled(self.speedLimit == 0 && !self.speedBased)
+        }
+    }
+}
+
 private struct CurveView: View {
     @Binding var curve: [Float]
     
@@ -43,43 +96,19 @@ private struct ProfileConfigView: View {
     
     @State private var throttleCurve = 0
     
-    
     var body: some View {
         // TODO: DisclosureGroup? would need to make indentation not ugly...
+        // TODO: using listRowSeparator's would be nice, but iOS 15+
         Section(header: Text("Throttle")) {
-            Picker("", selection: self.$throttleCurve) {
-                Text("Eco").tag(0)
-                Text("Drive").tag(1)
-                Text("Sports").tag(2)
-            }.pickerStyle(.segmented)
-            let minSpeedLimit: Float = self.getSpeedBased(self.throttleCurve).wrappedValue ? 1 : 0
-            ReleaseSlider(
-                name: "Speed Limit",
-                value: self.getSmoothness(self.throttleCurve).speedLimit,
-                in: minSpeedLimit...65,
-                unit: "km/h",
-                step: 1,
-                mapping: [
-                    0: "Off"
-                ]
+            ThrottleSelectionView(throttleCurve: self.$throttleCurve)
+            SpeedLimitView(
+                speedLimit: self.getSmoothness(self.throttleCurve).speedLimit,
+                speedBased: self.getSpeedBased(self.throttleCurve)
             )
-            VStack(alignment: .leading) {
-                Text("Throttle Mode")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-                Picker("", selection: self.getSpeedBased(self.throttleCurve)) {
-                    Text("Speed Based")
-                        .tag(true)
-                        .disabled(self.getSmoothness(self.throttleCurve).speedLimit.wrappedValue == 0)
-                    Text("Power Based (DPC)")
-                        .tag(false)
-                }
-                .pickerStyle(.segmented)
-                .disabled(
-                    self.getSmoothness(self.throttleCurve).speedLimit.wrappedValue == 0 &&
-                    !self.getSpeedBased(self.throttleCurve).wrappedValue
-                )
-            }
+            ThrottleModeView(
+                speedLimit: self.getSmoothness(self.throttleCurve).speedLimit,
+                speedBased: self.getSpeedBased(self.throttleCurve)
+            )
             if !self.getSpeedBased(self.throttleCurve).wrappedValue {
                 CurveView(curve: self.getCurve(self.throttleCurve))
             } else {
