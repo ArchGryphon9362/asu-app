@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import NavigationBackport
 
 private struct ProfileOptionsView: View {
     @Binding var selectedProfile: Int
@@ -58,10 +59,24 @@ struct SHFWConfigView: View {
     var body: some View {
         VStack {
             if let config = self.shfw.config {
-                List {
-                    ProfileOptionsView(selectedProfile: self.$selectedProfile)
-                    ProfileConfigView(profile: config.getProfile(self.selectedProfile))
-                    SystemConfigView(global: config.global)
+                NBNavigationStack {
+                    List {
+                        NavigationLink("Profile Settings") {
+                            List {
+                                ProfileOptionsView(selectedProfile: self.$selectedProfile)
+                                ProfileConfigView(profile: config.getProfile(self.selectedProfile))
+                            }
+                            .navigationTitle("Profile Settings")
+                            .navigationBarTitleDisplayMode(.large)
+                        }
+                        NavigationLink("System Settings") {
+                            List {
+                                SystemConfigView(global: config.global)
+                            }
+                            .navigationTitle("System Settings")
+                            .navigationBarTitleDisplayMode(.large)
+                        }
+                    }
                 }
             } else if self.shfw.installed == true {
                 HStack {
