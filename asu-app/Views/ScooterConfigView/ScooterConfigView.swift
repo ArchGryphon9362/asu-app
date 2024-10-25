@@ -18,6 +18,15 @@ struct ScooterConfigView: View {
     @State var selectedTab = 0
     @State var prevSelectedTab = 0
     
+    var navigationTitle: String {
+        switch self.selectedTab {
+        case 0: "Main Config"
+        case 1: "Flash"
+        case 2: "SHFW Config"
+        default: "Scooter Config"
+        }
+    }
+
     @State var shfwMissingAlert = false
     
     @State private var shfwCancellable: AnyCancellable? = nil
@@ -41,9 +50,9 @@ struct ScooterConfigView: View {
                     }
                     .tag(2)
             }
-            .navigationTitle("Scooter Config")
+            .navigationTitle(self.navigationTitle)
             #if !os(macOS)
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.automatic)
             #endif
             .toolbar {
                 Button("Close") {
