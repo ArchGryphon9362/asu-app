@@ -30,9 +30,10 @@ private struct ProfileOptionsView: View {
 private struct ProfileConfigView: View {
     @ObservedObject var profile: ScooterManager.SHFWProfile
     
-    @State private var throttleCurve = 1
+    @State private var throttleCurve = 0
     
     var body: some View {
+        // TODO: DisclosureGroup? would need to make indentation not ugly...
         Section(header: Text("Throttle")) {
             Picker("", selection: self.$throttleCurve) {
                 Text("Eco").tag(0)
@@ -43,6 +44,13 @@ private struct ProfileConfigView: View {
             ReleaseSlider(name: "Point 2", value: self.getCurve(self.throttleCurve)[1], in: 0...100, step: 0.01)
             ReleaseSlider(name: "Point 3", value: self.getCurve(self.throttleCurve)[2], in: 0...100, step: 0.01)
             ReleaseSlider(name: "Point 4", value: self.getCurve(self.throttleCurve)[3], in: 0...100, step: 0.01)
+        }
+        
+        Section(header: Text("Brake")) {
+            ReleaseSlider(name: "Point 1", value: self.$profile.brakeAmps[0], in: 0...100, step: 0.01)
+            ReleaseSlider(name: "Point 2", value: self.$profile.brakeAmps[1], in: 0...100, step: 0.01)
+            ReleaseSlider(name: "Point 3", value: self.$profile.brakeAmps[2], in: 0...100, step: 0.01)
+            ReleaseSlider(name: "Point 4", value: self.$profile.brakeAmps[3], in: 0...100, step: 0.01)
         }
     }
     
