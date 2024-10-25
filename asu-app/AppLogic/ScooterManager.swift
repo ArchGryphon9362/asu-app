@@ -798,6 +798,27 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate, Identifiable 
             )
         }
         
+        static func demoObject(scooterManager: ScooterManager) -> SHFW {
+            var profiles: [SHFWProfile] = []
+            for profile in 0...2 {
+                profiles.append(.init(profile: 0, scooterManager: scooterManager, ecoAmps: [0, 0, 0, 0], driveAmps: [0, 0, 0, 0], sportsAmps: [0, 0, 0, 0], brakeAmps: [0, 0, 0, 0], ecoSmoothness: .init(), driveSmoothness: .init(), sportsSmoothness: .init(), msp: 0, brakeBoost: 0, brakeLight: .init(), booleans: .init(), idleData: .off, speedData: .off, alternatingData: .off, batteryBarData: .off, ccMode: .off, ccEnterBeep: .none, ccDelay: 0, ccExitBeep: .none, initMode: .last, initBeep: .none, brakeMsp: 0, brakeOvershoot: 0, ccChangeTime: 0.0, autobrakeAmps: 0, fwkSpeed: 0, fwkCurrent: 0, fwkVarCurrent: 0, maxFieldCurrent: 0, maxTorqueCurrent: 0, accelerationBoost: 0, newBooleans: .init()))
+            }
+            let global = SHFWGlobal(scooterManager: scooterManager, activeProfile: 0, defaultProfile: 0, brakeProfile: 0, throttleProfile: 0, brakeThrottleBootProfile: 0, brakeButtonProfile: 0, brakeDoubleButtonProfile: 0, brakeThrottleProfile: 0, sequenceProfile: 0, sequenceProfileData: .init(), pwm: 0, pidKd: 0, pidLowerLimit: 0, pidKp: 0, pidKi: 0, minThrottle: 0, maxThrottle: 0, minBrake: 0, maxBrake: 0, taillightBrightness: 0, idleTimeout: 0, lockedTimeout: 0, wheelSize: 0.0, bmsEmuSeries: .none, bmsEmuAdc: 0.0, bmsEmuCapacity: 0, bmsEmuMinCell: 0.0, bmsEmuMaxCell: 0.0, booleans: .init())
+            
+            let shfw = SHFW()
+            shfw.installed = true
+            shfw.compatible = true
+            shfw.updateStatus = .none
+            shfw.config = .init(
+                profile1: profiles[0],
+                profile2: profiles[1],
+                profile3: profiles[2],
+                global: global
+            )
+            
+            return shfw
+        }
+        
         // init code
         private var scooterManager: ScooterManager! = nil
         
