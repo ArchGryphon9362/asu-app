@@ -27,6 +27,11 @@ struct SHFWVersion: Equatable, Comparable {
             }
         }
         
+        init(buildType: Int, buildDetails: String?) {
+            self.buildType = .unknown(buildType)
+            self.buildDetails = buildDetails
+        }
+        
         let buildType: BuildType
         let buildDetails: String?
     }
@@ -39,7 +44,7 @@ struct SHFWVersion: Equatable, Comparable {
     private let minor: Int
     private let patch: Int
     
-    init() {
+    init(raw: Data) {
         self.extraDetails = nil
         self.newVersioning = false
         self.extra = 0
@@ -48,6 +53,15 @@ struct SHFWVersion: Equatable, Comparable {
         self.patch = 0
     }
     
+    init(major: Int, minor: Int, patch: Int, extraDetails: ExtraDetails) {
+        self.extraDetails = nil
+        self.newVersioning = false
+        self.extra = 0
+        self.major = 0
+        self.minor = 0
+        self.patch = 0
+    }
+
     static func < (lhs: SHFWVersion, rhs: SHFWVersion) -> Bool {
         return false
     }
@@ -437,8 +451,8 @@ enum SHFWMessage: CaseIterable, NinebotMessage {
     case systemSettings(SystemSettings = .init(), Data = Data())
     case extraSystemSettings(ExtraSystemSettings = .init(), Data = Data())
     case systemSetting(SystemSettings.Setting)
-    case version(SHFWVersion = .init())
-    case newVersion(SHFWVersion = .init())
+    case version(SHFWVersion = .init(raw: Data()))
+    case newVersion(SHFWVersion = .init(raw: Data()))
     case resetSHFW
     
     static func getMessageType(address: UInt8, size: UInt8) -> Self? {
