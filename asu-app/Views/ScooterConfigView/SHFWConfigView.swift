@@ -80,7 +80,12 @@ private struct ProfileConfigView: View {
                     !self.getSpeedBased(self.throttleCurve).wrappedValue
                 )
             }
-            CurveView(curve: self.getCurve(self.throttleCurve))
+            if !self.getSpeedBased(self.throttleCurve).wrappedValue {
+                CurveView(curve: self.getCurve(self.throttleCurve))
+            } else {
+                ReleaseSlider(name: "Power Limit", value: self.getCurve(self.throttleCurve)[3], in: 0...100, unit: "A", step: 0.01)
+                ReleaseSlider(name: "Current Smoothness", value: self.getSmoothness(self.throttleCurve).smoothness, in: 0...2500, unit: "mA", step: 100)
+            }
         }
         
         Section(header: Text("Brake")) {
