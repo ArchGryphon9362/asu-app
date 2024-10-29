@@ -10,13 +10,14 @@ import SwiftUI
 private struct BaseInfoView: View {
     var model: ScooterModel?
     @ObservedObject var coreInfo: ScooterManager.CoreInfo
-    var shfwVersion: SHFWVersion?
+    @ObservedObject var shfw: ScooterManager.SHFW
     
     var body: some View {
         Section(header: Text("General Info")) {
             ListItem(title: "Model", data: model?.name)
             ListItem(title: "BLE", data: coreInfo.ble?.parsed)
-            if let shfwVersion = shfwVersion {
+            if let shfwVersion = self.shfw.version {
+                // TODO: fix self.shfw.config assignment causing rerender (and thus collapse)
                 SHFWVersionItem(version: shfwVersion)
             } else {
                 ListItem(title: "DRV", data: coreInfo.esc?.parsed)
@@ -37,7 +38,7 @@ struct InfoView: View {
                 BaseInfoView(
                     model: self.scooterManager.model,
                     coreInfo: self.scooterManager.coreInfo,
-                    shfwVersion: self.scooterManager.shfw.version
+                    shfw: self.scooterManager.shfw
                 )
                 
                 Button("Scooter Config", action: {

@@ -790,12 +790,14 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate, Identifiable 
                 booleans: se.booleans
             )
             
-            self.config = .init(
-                profile1: profiles[0],
-                profile2: profiles[1],
-                profile3: profiles[2],
-                global: global
-            )
+            DispatchQueue.main.async {
+                self.config = .init(
+                    profile1: profiles[0],
+                    profile2: profiles[1],
+                    profile3: profiles[2],
+                    global: global
+                )
+            }
         }
         
         static func demoObject(scooterManager: ScooterManager) -> SHFW {
@@ -1035,6 +1037,15 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate, Identifiable 
             case let .booleans(booleans): settings.sync(\.booleans, booleans)
             }
         case let .version(version):
+            guard self.shfw.version == nil else {
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self.shfw.installed = true
+                self.shfw.compatible = true
+            }
+
             guard !version.newVersioning else {
                 let msg = self.messageManager.ninebotRead(SHFWMessage.newVersion())
                 self.writeRaw(msg, characteristic: .serial, writeType: .conditionLimitTimes(
@@ -1044,24 +1055,34 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate, Identifiable 
                     times: 10,
                     limitHit: {
                         print("[ScooterManager]", "version response indicates new versioning is used, but scooter refused to let us have it. pretending shfw not installed")
-                        self.shfw.installed = false
-                        self.shfw.compatible = true
+                        DispatchQueue.main.async {
+                            self.shfw.installed = false
+                            self.shfw.compatible = true
+                        }
                     }
                 ))
                 return
             }
             
-            self.shfw.version = version
-            self.shfw.installed = true
-            self.shfw.compatible = true
-            self.shfw.updateStatus = .required
+            DispatchQueue.main.async {
+                self.shfw.version = version
+                self.shfw.updateStatus = .required
+            }
         case let .newVersion(version):
-            self.shfw.version = version
-            self.shfw.installed = true
-            self.shfw.compatible = true
+            guard self.shfw.version == nil else {
+                return
+            }
+            
+            DispatchQueue.main.async {
+                self.shfw.version = version
+                self.shfw.installed = true
+                self.shfw.compatible = true
+            }
 
             if version < SHFWVersion(major: 3, minor: 9, patch: 1, extraDetails: .init(buildType: 0, buildDetails: nil)) {
-                self.shfw.updateStatus = .required
+                DispatchQueue.main.async {
+                    self.shfw.updateStatus = .required
+                }
                 return
             }
             
@@ -1129,7 +1150,9 @@ class ScooterManager : ObservableObject, ScooterBluetoothDelegate, Identifiable 
             },
             times: 10,
             limitHit: {
-                self.shfw.installed = false
+                DispatchQueue.main.async {
+                    self.shfw.installed = false
+                }
                 // TODO: when SHFWApi is ready, set self.shfw.compatability to api's response
             }
         ))
