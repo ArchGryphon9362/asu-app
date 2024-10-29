@@ -19,12 +19,16 @@ struct SHFWConfigView: View {
                         NavigationLink("Profile Settings") {
                             ProfileConfigView(config: config)
                                 .navigationTitle("Profile Settings")
+                                #if !os(macOS)
                                 .navigationBarTitleDisplayMode(.large)
+                                #endif
                         }
                         NavigationLink("System Settings") {
                             SystemConfigView(global: config.global)
                                 .navigationTitle("System Settings")
+                                #if !os(macOS)
                                 .navigationBarTitleDisplayMode(.large)
+                                #endif
                         }
                     }
                 }
