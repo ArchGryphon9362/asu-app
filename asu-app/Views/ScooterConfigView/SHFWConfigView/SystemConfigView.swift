@@ -1,5 +1,5 @@
 //
-//  SettingsConfigView.swift
+//  SystemConfigView.swift
 //  asu-app
 //
 //  Created by ArchGryphon9362 on 25/10/2024.
@@ -14,7 +14,7 @@ struct SystemConfigView: View {
         List {
             Section(header: Text("System Settings")) {
                 // pwm
-                ReleaseSlider(name: "PWM", value: self.$global.pwm, in: 4...24, step: 4)
+                ReleaseSlider(name: "PWM", value: self.$global.pwm, in: 4...24, unit: "kHz", step: 4)
             }
         }
     }
