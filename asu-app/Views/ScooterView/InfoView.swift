@@ -10,14 +10,13 @@ import SwiftUI
 private struct BaseInfoView: View {
     var model: ScooterModel?
     @ObservedObject var coreInfo: ScooterManager.CoreInfo
-    @ObservedObject var infoDump: ScooterManager.InfoDump
-    @ObservedObject var shfw: ScooterManager.SHFW
+    var shfwVersion: SHFWVersion?
     
     var body: some View {
         Section(header: Text("General Info")) {
             ListItem(title: "Model", data: model?.name)
             ListItem(title: "BLE", data: coreInfo.ble?.parsed)
-            if let shfwVersion = shfw.version {
+            if let shfwVersion = shfwVersion {
                 SHFWVersionItem(version: shfwVersion)
             } else {
                 ListItem(title: "DRV", data: coreInfo.esc?.parsed)
@@ -39,8 +38,7 @@ struct InfoView: View {
                 BaseInfoView(
                     model: self.scooterManager.model,
                     coreInfo: self.scooterManager.coreInfo,
-                    infoDump: self.scooterManager.infoDump,
-                    shfw: self.scooterManager.shfw
+                    shfwVersion: self.scooterManager.shfw.version
                 )
                 
                 Button("Scooter Config", action: {
