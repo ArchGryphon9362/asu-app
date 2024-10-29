@@ -16,6 +16,7 @@ struct ReleaseSlider<T: Numeric>: View {
     var step: Float = 0.001
     /// one unit of input will result in `scaleFactor` units of change
     var scaleFactor: Float = 1.0
+    var displayPrecision: Int? = nil
     var mapping: [Float: String] = [:]
     
     @State private var sliderValue: Float = 0.0
@@ -34,8 +35,8 @@ struct ReleaseSlider<T: Numeric>: View {
         if points == 1 && String(step).split(separator: ".")[1] == "0" {
             points = 0
         }
-        formatter.minimumFractionDigits = points
-        formatter.maximumFractionDigits = points
+        formatter.minimumFractionDigits = self.displayPrecision ?? points
+        formatter.maximumFractionDigits = self.displayPrecision ?? points
         formatter.numberStyle = .none
         return formatter
     }
