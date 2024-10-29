@@ -44,12 +44,17 @@ private struct SpeedLimitView: View {
     
     var body: some View {
         let minSpeedLimit: Float = self.speedBased ? 1 : 0
+        let unitConversion: Float = appSettings.correctSpeedUnits ? 1.0 : 1.6
+        let unit: String = appSettings.correctSpeedUnits ? "km/h" : "mi/h"
+        let displayPrecision: Int = appSettings.correctSpeedUnits ? 0 : 1
         ReleaseSlider(
             name: "Speed Limit",
             value: self.$speedLimit,
-            in: minSpeedLimit...65,
-            unit: "km/h",
-            step: 1,
+            in: (minSpeedLimit / unitConversion)...(65 / unitConversion),
+            unit: unit,
+            step: 1 / unitConversion,
+            scaleFactor: unitConversion,
+            displayPrecision: displayPrecision,
             mapping: [
                 0: "Off"
             ]
